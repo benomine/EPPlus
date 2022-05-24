@@ -157,12 +157,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
             return SimplifyFwdSlashPath(pathName);
         }
 
+        static System.Text.Encoding ibm437 = System.Text.Encoding.GetEncoding("UTF-8");
 
-#if (Core)
-        static System.Text.Encoding ibm437 = System.Text.Encoding.GetEncoding("UTF-8");   
-#else
-        static System.Text.Encoding ibm437 = System.Text.Encoding.GetEncoding("IBM437");
-#endif
         static System.Text.Encoding utf8 = System.Text.Encoding.GetEncoding("UTF-8");
 
         internal static byte[] StringToByteArray(string value, System.Text.Encoding encoding)
@@ -426,7 +422,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
             if (hour >= 24) { day++; hour = 0; }
 
             DateTime d = System.DateTime.Now;
-            bool success= false;
+            bool success = false;
             try
             {
                 d = new System.DateTime(year, month, day, hour, minute, second, 0);
@@ -439,14 +435,14 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                     try
                     {
                         d = new System.DateTime(1980, 1, 1, hour, minute, second, 0);
-                success= true;
+                        success= true;
                     }
                     catch (System.ArgumentOutOfRangeException)
                     {
                         try
                         {
                             d = new System.DateTime(1980, 1, 1, 0, 0, 0, 0);
-                success= true;
+                            success= true;
                         }
                         catch (System.ArgumentOutOfRangeException) { }
 
@@ -593,9 +589,9 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         {
             int n = 0;
             bool done = false;
-//#if !NETCF && !SILVERLIGHT
-//            int retries = 0;
-//#endif
+            //#if !NETCF && !SILVERLIGHT
+            //            int retries = 0;
+            //#endif
             do
             {
                 try
@@ -629,10 +625,10 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                     //}
                     //else
                     //{
-                        // The permission.Demand() failed. Therefore, we cannot call
-                        // GetHRForException, and cannot do the subtle handling of
-                        // ERROR_LOCK_VIOLATION.  Just bail.
-                        throw;
+                    // The permission.Demand() failed. Therefore, we cannot call
+                    // GetHRForException, and cannot do the subtle handling of
+                    // ERROR_LOCK_VIOLATION.  Just bail.
+                    throw;
                     //}
                 }
 #endif

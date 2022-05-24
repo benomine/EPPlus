@@ -1,36 +1,9 @@
-// ZipEntry.Read.cs
-// ------------------------------------------------------------------
-//
-// Copyright (c) 2009-2011 Dino Chiesa
-// All rights reserved.
-//
-// This code module is part of DotNetZip, a zipfile class library.
-//
-// ------------------------------------------------------------------
-//
-// This code is licensed under the Microsoft Public License.
-// See the file License.txt for the license details.
-// More info on: http://dotnetzip.codeplex.com
-//
-// ------------------------------------------------------------------
-//
-// last saved (in emacs):
-// Time-stamp: <2011-July-09 21:31:28>
-//
-// ------------------------------------------------------------------
-//
-// This module defines logic for Reading the ZipEntry from a
-// zip file.
-//
-// ------------------------------------------------------------------
-
-
 using System;
 using System.IO;
 
 namespace OfficeOpenXml.Packaging.Ionic.Zip
 {
-    internal partial class ZipEntry
+    public partial class ZipEntry
     {
         private int _readExtraDepth;
         private void ReadExtraField()
@@ -644,14 +617,15 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                                                          dataSize, posn));
             int remainingData = dataSize;
 
-            var slurp = new Func<Int64>( () => {
-                    if (remainingData < 8)
-                        throw new BadReadException(String.Format("  Missing data for ZIP64 extra field, position 0x{0:X16}", posn));
-                    var x = BitConverter.ToInt64(buffer, j);
-                    j+= 8;
-                    remainingData -= 8;
-                    return x;
-                });
+            var slurp = new Func<Int64>(() =>
+            {
+                if (remainingData < 8)
+                    throw new BadReadException(String.Format("  Missing data for ZIP64 extra field, position 0x{0:X16}", posn));
+                var x = BitConverter.ToInt64(buffer, j);
+                j+= 8;
+                remainingData -= 8;
+                return x;
+            });
 
             if (this._UncompressedSize == 0xFFFFFFFF)
                 this._UncompressedSize = slurp();
@@ -700,12 +674,13 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
             int remainingData = dataSize;
 
-            var slurp = new Func<DateTime>( () => {
-                    Int32 timet = BitConverter.ToInt32(buffer, j);
-                    j += 4;
-                    remainingData -= 4;
-                    return _unixEpoch.AddSeconds(timet);
-                });
+            var slurp = new Func<DateTime>(() =>
+            {
+                Int32 timet = BitConverter.ToInt32(buffer, j);
+                j += 4;
+                remainingData -= 4;
+                return _unixEpoch.AddSeconds(timet);
+            });
 
             if (dataSize == 13 || _readExtraDepth > 0)
             {
@@ -715,13 +690,13 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                 if ((flag & 0x0001) != 0 && remainingData >= 4)
                     this._Mtime = slurp();
 
-                 this._Atime = ((flag & 0x0002) != 0 && remainingData >= 4)
-                     ? slurp()
-                     : DateTime.UtcNow;
+                this._Atime = ((flag & 0x0002) != 0 && remainingData >= 4)
+                    ? slurp()
+                    : DateTime.UtcNow;
 
-                 this._Ctime =  ((flag & 0x0004) != 0 && remainingData >= 4)
-                     ? slurp()
-                     :DateTime.UtcNow;
+                this._Ctime =  ((flag & 0x0004) != 0 && remainingData >= 4)
+                    ? slurp()
+                    : DateTime.UtcNow;
 
                 _timestamp |= ZipEntryTimestamp.Unix;
                 _ntfsTimesAreSet = true;
@@ -790,11 +765,11 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                 _timestamp |= ZipEntryTimestamp.Windows;
                 _emitNtfsTimes = true;
             }
-   	    else
-	    {
+            else
+            {
                 // An unknown NTFS tag so simply skip it.
-                j += dataSize;				
-  	    }
+                j += dataSize;
+            }
             return j;
         }
 

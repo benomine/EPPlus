@@ -31,32 +31,26 @@
  * Eyal Seagull		    Conditional Formatting      2012-04-03
  *******************************************************************************/
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
 using System.Data;
-using System.Threading;
-using OfficeOpenXml.FormulaParsing;
-using OfficeOpenXml.Style;
-using System.Xml;
-using System.Drawing;
 using System.Globalization;
-using System.Collections;
-using OfficeOpenXml.Table;
-using System.Text.RegularExpressions;
 using System.IO;
 using System.Linq;
-using OfficeOpenXml.DataValidation;
-using OfficeOpenXml.DataValidation.Contracts;
 using System.Reflection;
-using OfficeOpenXml.Style.XmlAccess;
-using System.Security;
-using OfficeOpenXml.ConditionalFormatting;
-using OfficeOpenXml.ConditionalFormatting.Contracts;
-using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
-using w = System.Windows;
-using OfficeOpenXml.Utils;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Xml;
 using OfficeOpenXml.Compatibility;
+using OfficeOpenXml.ConditionalFormatting;
+using OfficeOpenXml.DataValidation;
+using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
+using OfficeOpenXml.Style;
+using OfficeOpenXml.Style.XmlAccess;
+using OfficeOpenXml.Table;
+using OfficeOpenXml.Utils;
+using SkiaSharp;
 
 namespace OfficeOpenXml
 {
@@ -759,13 +753,7 @@ namespace OfficeOpenXml
         /// <summary>
         /// Returns the formatted value.
         /// </summary>
-        public string Text
-        {
-            get
-            {
-                return GetFormattedText(false);
-            }
-        }
+        public string Text => GetFormattedText(false);
         /// <summary>
         /// Set the column width from the content of the range. The minimum width is the value of the ExcelWorksheet.defaultColumnWidth property.
         /// Note: Cells containing formulas must be calculated before autofit is called.
@@ -780,23 +768,11 @@ namespace OfficeOpenXml
         /// Set the column width from the content of the range.
         /// Note: Cells containing formulas are ignored if no calculation is made.
         ///       Wrapped and merged cells are also ignored.
-        /// </summary>
-        /// <remarks>This method will not work if you run in an environment that does not support GDI</remarks>
-        /// <param name="MinimumWidth">Minimum column width</param>
-        public void AutoFitColumns(double MinimumWidth)
-        {
-            AutoFitColumns(MinimumWidth, double.MaxValue);
-        }
-
-        /// <summary>
-        /// Set the column width from the content of the range.
-        /// Note: Cells containing formulas are ignored if no calculation is made.
-        ///       Wrapped and merged cells are also ignored.
         ///      Hidden columns are left hidden.
         /// </summary>
         /// <param name="MinimumWidth">Minimum column width</param>
         /// <param name="MaximumWidth">Maximum column width</param>
-        public void AutoFitColumns(double MinimumWidth, double MaximumWidth)
+        public void AutoFitColumns(double MinimumWidth, double MaximumWidth = double.MaxValue)
         {
             if (_worksheet.Dimension == null)
             {
@@ -806,7 +782,7 @@ namespace OfficeOpenXml
             {
                 SetToSelectedRange();
             }
-            var fontCache = new Dictionary<int, Font>();
+            var fontCache = new Dictionary<int, SKFont>();
 
             bool doAdjust = _worksheet._package.DoAdjustDrawings;
             _worksheet._package.DoAdjustDrawings = false;
@@ -839,7 +815,7 @@ namespace OfficeOpenXml
                                                     _worksheet.AutoFilterAddress._fromCol,
                                                     _worksheet.AutoFilterAddress._fromRow,
                                                     _worksheet.AutoFilterAddress._toCol));
-                afAddr[afAddr.Count - 1]._ws = WorkSheet;
+                afAddr[^1]._ws = WorkSheet;
             }
             foreach (var tbl in _worksheet.Tables)
             {
@@ -855,28 +831,28 @@ namespace OfficeOpenXml
 
             var styles = _worksheet.Workbook.Styles;
             var nf = styles.Fonts[styles.CellXfs[0].FontId];
-            var fs = FontStyle.Regular;
-            if (nf.Bold) fs |= FontStyle.Bold;
-            if (nf.UnderLine) fs |= FontStyle.Underline;
-            if (nf.Italic) fs |= FontStyle.Italic;
-            if (nf.Strike) fs |= FontStyle.Strikeout;
-            var nfont = new Font(nf.Name, nf.Size, fs);
+            var fs = SKFontStyle.Normal;
+            if (nf.Bold)
+            {
+                fs = SKFontStyle.Bold;
+            }
+            //if (nf.UnderLine) fs |= FontStyle.Underline;
+            if (nf.Italic)
+            {
+                fs = SKFontStyle.Italic;
+            }
+            if (nf.Italic && nf.Bold)
+            {
+                fs = SKFontStyle.BoldItalic;
+            }
+            //if (nf.Strike) fs |= FontStyle.Strikeout;
+
+            var font = SKFontManager.Default.MatchTypeface(SKTypeface.FromFamilyName(nf.Name), fs);
+            var nfont = new SKFont(font, nf.Size);
+
+            nfont.GetFontMetrics(out var metrics);
 
             var normalSize = Convert.ToSingle(ExcelWorkbook.GetWidthPixels(nf.Name, nf.Size));
-
-            Bitmap b;
-            Graphics g = null;
-            try
-            {
-                //Check for missing GDI+, then use WPF istead.
-                b = new Bitmap(1, 1);
-                g = Graphics.FromImage(b);
-                g.PageUnit = GraphicsUnit.Pixel;
-            }
-            catch
-            {
-                return;
-            }
 
             foreach (var cell in this)
             {
@@ -885,7 +861,7 @@ namespace OfficeOpenXml
 
                 if (cell.Merge == true || cell.Style.WrapText) continue;
                 var fntID = styles.CellXfs[cell.StyleID].FontId;
-                Font f;
+                SKFont f;
                 if (fontCache.ContainsKey(fntID))
                 {
                     f = fontCache[fntID];
@@ -893,31 +869,48 @@ namespace OfficeOpenXml
                 else
                 {
                     var fnt = styles.Fonts[fntID];
-                    fs = FontStyle.Regular;
-                    if (fnt.Bold) fs |= FontStyle.Bold;
-                    if (fnt.UnderLine) fs |= FontStyle.Underline;
-                    if (fnt.Italic) fs |= FontStyle.Italic;
-                    if (fnt.Strike) fs |= FontStyle.Strikeout;
-                    f = new Font(fnt.Name, fnt.Size, fs);
+                    fs = SKFontStyle.Normal;
+                    if (fnt.Bold)
+                    {
+                        fs = SKFontStyle.Bold;
+                    }
+                    //if (fnt.UnderLine) fs |= FontStyle.Underline;
+                    if (fnt.Italic)
+                    {
+                        fs = SKFontStyle.Italic;
+                    }
+                    //if (fnt.Strike) fs |= FontStyle.Strikeout;
+                    if (fnt.Italic && fnt.Bold)
+                    {
+                        fs = SKFontStyle.BoldItalic;
+                    }
+                    var typeface = SKFontManager.Default.MatchTypeface(SKTypeface.FromFamilyName(fnt.Name), fs);
+                    f = new SKFont(typeface, fnt.Size);
 
                     fontCache.Add(fntID, f);
                 }
                 var ind = styles.CellXfs[cell.StyleID].Indent;
                 var textForWidth = cell.TextForWidth;
                 var t = textForWidth + (ind > 0 && !string.IsNullOrEmpty(textForWidth) ? new string('_', ind) : "");
-                if (t.Length > 32000) t = t.Substring(0, 32000); //Issue
-                var size = g.MeasureString(t, f, 10000, StringFormat.GenericDefault);
+                if (t.Length > 32000) t = t.Substring(0, 32000);
+
+                var rect = new SKRect();
+                using (var paint = new SKPaint(f))
+                {
+                    paint.TextSize = f.Size;
+                    paint.MeasureText(t, ref rect);
+                }
 
                 double width;
                 double r = styles.CellXfs[cell.StyleID].TextRotation;
                 if (r <= 0)
                 {
-                    width = (size.Width + 5) / normalSize;
+                    width = metrics.AverageCharacterWidth * (t.Length + 1) + normalSize;
                 }
                 else
                 {
-                    r = (r <= 90 ? r : r - 90);
-                    width = (((size.Width - size.Height) * Math.Abs(System.Math.Cos(System.Math.PI * r / 180.0)) + size.Height) + 5) / normalSize;
+                    r = r <= 90 ? r : r - 90;
+                    width = (((rect.Width - rect.Height) * Math.Abs(Math.Cos(Math.PI * r / 180.0)) + rect.Height) + 10) / normalSize;
                 }
 
                 foreach (var a in afAddr)
@@ -1089,11 +1082,11 @@ namespace OfficeOpenXml
 
         private static string GetDateText(DateTime d, string format, ExcelNumberFormatXml.ExcelFormatTranslator nf)
         {
-            if(nf.SpecialDateFormat==ExcelNumberFormatXml.ExcelFormatTranslator.eSystemDateFormat.SystemLongDate)
+            if (nf.SpecialDateFormat==ExcelNumberFormatXml.ExcelFormatTranslator.eSystemDateFormat.SystemLongDate)
             {
                 return d.ToLongDateString();
             }
-            else if(nf.SpecialDateFormat == ExcelNumberFormatXml.ExcelFormatTranslator.eSystemDateFormat.SystemLongTime)
+            else if (nf.SpecialDateFormat == ExcelNumberFormatXml.ExcelFormatTranslator.eSystemDateFormat.SystemLongTime)
             {
                 return d.ToLongTimeString();
             }
@@ -2450,11 +2443,7 @@ namespace OfficeOpenXml
         {
             if (string.IsNullOrEmpty(Author))
             {
-#if Core
                 Author = System.Security.Claims.ClaimsPrincipal.Current.Identity.Name;
-#else
-                Author = Thread.CurrentPrincipal.Identity.Name;
-#endif
             }
             //Check if any comments exists in the range and throw an exception
             _changePropMethod(this, _setExistsCommentDelegate, null);

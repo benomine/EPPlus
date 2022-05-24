@@ -30,10 +30,9 @@
  * Jan Källman		License changed GPL-->LGPL 2011-12-16
  *******************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Globalization;
 using System.Xml;
-using System.Drawing;
+using SkiaSharp;
 
 namespace OfficeOpenXml.Drawing
 {
@@ -42,17 +41,14 @@ namespace OfficeOpenXml.Drawing
     /// </summary>
     public sealed class ExcelDrawingFill : XmlHelper
     {
-        //ExcelShape _shp;                
         string _fillPath;
         XmlNode _fillNode;
-        internal ExcelDrawingFill(XmlNamespaceManager nameSpaceManager, XmlNode topNode, string fillPath) : 
+        internal ExcelDrawingFill(XmlNamespaceManager nameSpaceManager, XmlNode topNode, string fillPath) :
             base(nameSpaceManager, topNode)
         {
-          //  _shp=shp;
             _fillPath = fillPath;
             _fillNode = topNode.SelectSingleNode(_fillPath, NameSpaceManager);
-            SchemaNodeOrder = new string[] { "tickLblPos", "spPr", "txPr","dLblPos", "crossAx", "printSettings", "showVal", "prstGeom", "noFill", "solidFill", "blipFill", "gradFill", "noFill", "pattFill", "ln", "prstDash" };
-            //Setfill node
+            SchemaNodeOrder = new string[] { "tickLblPos", "spPr", "txPr", "dLblPos", "crossAx", "printSettings", "showVal", "prstGeom", "noFill", "solidFill", "blipFill", "gradFill", "noFill", "pattFill", "ln", "prstDash" };
             if (_fillNode != null)
             {
                 _fillTypeNode = topNode.SelectSingleNode("solidFill");
@@ -107,7 +103,7 @@ namespace OfficeOpenXml.Drawing
 
         private eFillStyle GetStyleEnum(string name)
         {
-            switch(name)
+            switch (name)
             {
                 case "noFill":
                     return eFillStyle.NoFill;
@@ -135,7 +131,7 @@ namespace OfficeOpenXml.Drawing
                 case eFillStyle.GroupFill:
                     return "grpFill";
                 case eFillStyle.NoFill:
-                    return "noFill";                
+                    return "noFill";
                 case eFillStyle.PatternFill:
                     return "pattFill";
                 default:
@@ -147,18 +143,18 @@ namespace OfficeOpenXml.Drawing
         /// <summary>
         /// Fill color for solid fills
         /// </summary>
-        public Color Color
+        public SKColor Color
         {
             get
             {
                 string col = GetXmlNodeString(_fillPath + ColorPath);
                 if (col == "")
                 {
-                    return Color.FromArgb(79, 129, 189);
+                    return new SKColor(79, 129, 189);
                 }
                 else
                 {
-                    return Color.FromArgb(int.Parse(col,System.Globalization.NumberStyles.AllowHexSpecifier));
+                    return new SKColor((uint)int.Parse(col, NumberStyles.AllowHexSpecifier));
                 }
             }
             set
@@ -172,8 +168,7 @@ namespace OfficeOpenXml.Drawing
                     throw new Exception("FillStyle must be set to SolidFill");
                 }
                 CreateNode(_fillPath, false);
-                //fix ArgumentOutOfRangeException for Fill colors for solid fills with an alpha-value from zero (100% transparency)
-                SetXmlNodeString(_fillPath + ColorPath, value.ToArgb().ToString("X8").Substring(2));
+                SetXmlNodeString(_fillPath + ColorPath, value.ToString().Substring(3));
             }
         }
         const string alphaPath = "/a:solidFill/a:srgbClr/a:alpha/@val";
@@ -182,22 +177,18 @@ namespace OfficeOpenXml.Drawing
         /// </summary>
         public int Transparancy
         {
-            get
-            {
-                return 100 - (GetXmlNodeInt(_fillPath + alphaPath) / 1000);
-            }
+            get => 100 - (GetXmlNodeInt(_fillPath + alphaPath) / 1000);
             set
             {
                 if (_fillTypeNode == null)
                 {
                     _style = eFillStyle.SolidFill;
-                    Color = Color.FromArgb(79, 129, 189);   //Set a Default color
+                    Color = new SKColor(79, 129, 189);
                 }
                 else if (_style != eFillStyle.SolidFill)
                 {
                     throw new Exception("FillStyle must be set to SolidFill");
                 }
-                //CreateNode(_fillPath, false);
                 SetXmlNodeString(_fillPath + alphaPath, ((100 - value) * 1000).ToString());
             }
         }

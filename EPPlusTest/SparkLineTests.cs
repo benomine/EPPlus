@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.IO;
 using OfficeOpenXml;
 using OfficeOpenXml.Sparkline;
 
@@ -25,10 +24,10 @@ namespace EPPlusTest
         {
             _pck = new ExcelPackage();
             OpenPackage(_pckfile);
-            var ws = _pck.Workbook.Worksheets[_pck.Compatibility.IsWorksheets1Based?1:0];
+            var ws = _pck.Workbook.Worksheets[_pck.Compatibility.IsWorksheets1Based ? 1 : 0];
             Assert.AreEqual(4, ws.SparklineGroups.Count);
             var sg1 = ws.SparklineGroups[0];
-            Assert.AreEqual("A1:A4",sg1.LocationRange.Address);
+            Assert.AreEqual("A1:A4", sg1.LocationRange.Address);
             Assert.AreEqual("B1:C4", sg1.DataRange.Address);
             Assert.AreEqual(null, sg1.DateAxisRange);
 
@@ -52,7 +51,7 @@ namespace EPPlusTest
             var t = sg1.Type;
         }
         public void WriteSparklines()
-        {            
+        {
             var ws = _pck.Workbook.Worksheets.Add("Sparklines");
             ws.Cells["B1"].Value = 15;
             ws.Cells["B2"].Value = 30;

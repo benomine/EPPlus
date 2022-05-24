@@ -33,14 +33,12 @@
  * Raziq York		                Added support for Any type  2014-08-08
 *******************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
-using OfficeOpenXml.Utils;
 using System.Xml;
 using OfficeOpenXml.DataValidation.Contracts;
+using OfficeOpenXml.Utils;
 
 namespace OfficeOpenXml.DataValidation
 {
@@ -178,7 +176,7 @@ namespace OfficeOpenXml.DataValidation
                     var result = validation.Address.Collide(newAddress);
                     if (result != ExcelAddressBase.eAddressCollition.No)
                     {
-                         throw new InvalidOperationException(string.Format("The address ({0}) collides with an existing validation ({1})", address, validation.Address.Address));
+                        throw new InvalidOperationException(string.Format("The address ({0}) collides with an existing validation ({1})", address, validation.Address.Address));
                     }
                 }
             }

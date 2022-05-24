@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
-using System.Drawing;
+using SkiaSharp;
+
 namespace EPPlusSamples
 {
     class Sample7
@@ -27,9 +25,9 @@ namespace EPPlusSamples
                 //Format all cells
                 ExcelRange cols = ws.Cells["A:XFD"];
                 cols.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                cols.Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+                cols.Style.Fill.BackgroundColor.SetColor(SKColors.LightGray);
 
-                var rnd = new Random();                
+                var rnd = new Random();
                 for (int row = 1; row <= rows; row++)
                 {
                     ws.SetValue(row, 1, row);                               //The SetValue method is a little bit faster than using the Value property
@@ -70,12 +68,12 @@ namespace EPPlusSamples
                 using (var rng = ws.Cells["A1:E1"])
                 {
                     rng.Style.Font.Bold = true;
-                    rng.Style.Font.Color.SetColor(Color.White);
+                    rng.Style.Font.Color.SetColor(SKColors.White);
                     rng.Style.WrapText = true;
                     rng.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                     rng.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                     rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    rng.Style.Fill.BackgroundColor.SetColor(Color.DarkBlue);
+                    rng.Style.Fill.BackgroundColor.SetColor(SKColors.DarkBlue);
                 }
 
                 //Calculate (Commented away thisk, it was a bit time consuming... /MA)
@@ -89,9 +87,9 @@ namespace EPPlusSamples
                 //Now we set the sheetprotection and a password.
                 ws.Cells[2, 3, rows + 1, 4].Style.Locked = false;
                 ws.Cells[2, 3, rows + 1, 4].Style.Fill.PatternType = ExcelFillStyle.Solid;
-                ws.Cells[2, 3, rows + 1, 4].Style.Fill.BackgroundColor.SetColor(Color.White);
+                ws.Cells[2, 3, rows + 1, 4].Style.Fill.BackgroundColor.SetColor(SKColors.White);
                 ws.Cells[1, 5, rows + 2, 5].Style.Hidden = true;    //Hide the formula
-                
+
                 ws.Protection.SetPassword("EPPlus");
 
                 ws.Select("C2");

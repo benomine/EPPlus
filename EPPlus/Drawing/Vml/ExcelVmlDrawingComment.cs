@@ -30,11 +30,9 @@
  * Jan Källman		License changed GPL-->LGPL 2011-12-16
  *******************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml;
 using System.Globalization;
-using System.Drawing;
+using System.Xml;
+using SkiaSharp;
 
 namespace OfficeOpenXml.Drawing.Vml
 {
@@ -48,7 +46,7 @@ namespace OfficeOpenXml.Drawing.Vml
         {
             Range = range;
             SchemaNodeOrder = new string[] { "fill", "stroke", "shadow", "path", "textbox", "ClientData", "MoveWithCells", "SizeWithCells", "Anchor", "Locked", "AutoFill", "LockText", "TextHAlign", "TextVAlign", "Row", "Column", "Visible" };
-        }   
+        }
         internal ExcelRangeBase Range { get; set; }
 
         /// <summary>
@@ -62,7 +60,7 @@ namespace OfficeOpenXml.Drawing.Vml
             }
         }
 
-        const string VERTICAL_ALIGNMENT_PATH="x:ClientData/x:TextVAlign";
+        const string VERTICAL_ALIGNMENT_PATH = "x:ClientData/x:TextVAlign";
         /// <summary>
         /// Vertical alignment for text
         /// </summary>
@@ -96,7 +94,7 @@ namespace OfficeOpenXml.Drawing.Vml
                 }
             }
         }
-        const string HORIZONTAL_ALIGNMENT_PATH="x:ClientData/x:TextHAlign";
+        const string HORIZONTAL_ALIGNMENT_PATH = "x:ClientData/x:TextHAlign";
         /// <summary>
         /// Horizontal alignment for text
         /// </summary>
@@ -134,8 +132,8 @@ namespace OfficeOpenXml.Drawing.Vml
         /// <summary>
         /// If the drawing object is visible.
         /// </summary>
-        public bool Visible 
-        { 
+        public bool Visible
+        {
             get
             {
                 return (TopNode.SelectSingleNode(VISIBLE_PATH, NameSpaceManager)!=null);
@@ -145,13 +143,13 @@ namespace OfficeOpenXml.Drawing.Vml
                 if (value)
                 {
                     CreateNode(VISIBLE_PATH);
-                    Style = SetStyle(Style,"visibility", "visible");
+                    Style = SetStyle(Style, "visibility", "visible");
                 }
                 else
                 {
                     DeleteNode(VISIBLE_PATH);
-                    Style = SetStyle(Style,"visibility", "hidden");
-                }                
+                    Style = SetStyle(Style, "visibility", "hidden");
+                }
             }
         }
 
@@ -160,46 +158,45 @@ namespace OfficeOpenXml.Drawing.Vml
         /// <summary>
         /// Background color
         /// </summary>
-        public Color BackgroundColor
+        public SKColor BackgroundColor
         {
             get
             {
                 string col = GetXmlNodeString(BACKGROUNDCOLOR_PATH);
                 if (col == "")
                 {
-                    return Color.FromArgb(0xff, 0xff, 0xe1);
+                    return SKColor.FromHsl(0xff, 0xff, 0xe1);
                 }
                 else
                 {
-                    if(col.StartsWith("#")) col=col.Substring(1,col.Length-1);
+                    if (col.StartsWith("#")) col=col.Substring(1, col.Length-1);
                     int res;
-                    if (int.TryParse(col,System.Globalization.NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out res))
+                    if (int.TryParse(col, NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out res))
                     {
-                        return Color.FromArgb(res);
+                        return SKColor.Parse(col);
                     }
                     else
                     {
-                        return Color.Empty;
+                        return SKColors.Empty;
                     }
                 }
             }
             set
             {
-                string color = "#" + value.ToArgb().ToString("X").Substring(2, 6);
+                string color = "#" + value.ToString().Substring(2, 6);
                 SetXmlNodeString(BACKGROUNDCOLOR_PATH, color);
-                //SetXmlNode(BACKGROUNDCOLOR2_PATH, color);
             }
         }
-        const string LINESTYLE_PATH="v:stroke/@dashstyle";
+        const string LINESTYLE_PATH = "v:stroke/@dashstyle";
         const string ENDCAP_PATH = "v:stroke/@endcap";
         /// <summary>
         /// Linestyle for border
         /// </summary>
-        public eLineStyleVml LineStyle 
-        { 
+        public eLineStyleVml LineStyle
+        {
             get
             {
-                string v=GetXmlNodeString(LINESTYLE_PATH);
+                string v = GetXmlNodeString(LINESTYLE_PATH);
                 if (v == "")
                 {
                     return eLineStyleVml.Solid;
@@ -237,53 +234,53 @@ namespace OfficeOpenXml.Drawing.Vml
                 }
             }
         }
-        const string LINECOLOR_PATH="@strokecolor";
+        const string LINECOLOR_PATH = "@strokecolor";
         /// <summary>
         /// Line color 
         /// </summary>
-        public Color LineColor
+        public SKColor LineColor
         {
             get
             {
                 string col = GetXmlNodeString(LINECOLOR_PATH);
                 if (col == "")
                 {
-                    return Color.Black;
+                    return SKColors.Black;
                 }
                 else
                 {
                     if (col.StartsWith("#")) col = col.Substring(1, col.Length - 1);
                     int res;
-                    if (int.TryParse(col, System.Globalization.NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out res))
+                    if (int.TryParse(col, NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out res))
                     {
-                        return Color.FromArgb(res);
+                        return SKColor.Parse(col);
                     }
                     else
                     {
-                        return Color.Empty;
+                        return SKColors.Empty;
                     }
-                }                
+                }
             }
             set
             {
-                string color = "#" + value.ToArgb().ToString("X").Substring(2, 6);
+                string color = "#" + value.ToString().Substring(2, 6);
                 SetXmlNodeString(LINECOLOR_PATH, color);
             }
         }
-        const string LINEWIDTH_PATH="@strokeweight";
+        const string LINEWIDTH_PATH = "@strokeweight";
         /// <summary>
         /// Width of the border
         /// </summary>
-        public Single LineWidth 
+        public Single LineWidth
         {
             get
             {
-                string wt=GetXmlNodeString(LINEWIDTH_PATH);
+                string wt = GetXmlNodeString(LINEWIDTH_PATH);
                 if (wt == "") return (Single).75;
-                if(wt.EndsWith("pt")) wt=wt.Substring(0,wt.Length-2);
+                if (wt.EndsWith("pt")) wt=wt.Substring(0, wt.Length-2);
 
                 Single ret;
-                if(Single.TryParse(wt,System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out ret))
+                if (Single.TryParse(wt, NumberStyles.Any, CultureInfo.InvariantCulture, out ret))
                 {
                     return ret;
                 }
@@ -297,62 +294,7 @@ namespace OfficeOpenXml.Drawing.Vml
                 SetXmlNodeString(LINEWIDTH_PATH, value.ToString(CultureInfo.InvariantCulture) + "pt");
             }
         }
-        ///// <summary>
-        ///// Width of the Comment 
-        ///// </summary>
-        //public Single Width
-        //{
-        //    get
-        //    {
-        //        string v;
-        //        GetStyle("width", out v);
-        //        if(v.EndsWith("pt"))
-        //        {
-        //            v = v.Substring(0, v.Length - 2);
-        //        }
-        //        short ret;
-        //        if (short.TryParse(v,System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out ret))
-        //        {
-        //            return ret;
-        //        }
-        //        else
-        //        {
-        //            return 0;
-        //        }
-        //    }
-        //    set
-        //    {
-        //        SetStyle("width", value.ToString("N2",CultureInfo.InvariantCulture) + "pt");
-        //    }
-        //}
-        ///// <summary>
-        ///// Height of the Comment 
-        ///// </summary>
-        //public Single Height
-        //{
-        //    get
-        //    {
-        //        string v;
-        //        GetStyle("height", out v);
-        //        if (v.EndsWith("pt"))
-        //        {
-        //            v = v.Substring(0, v.Length - 2);
-        //        }
-        //        short ret;
-        //        if (short.TryParse(v, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out ret))
-        //        {
-        //            return ret;
-        //        }
-        //        else
-        //        {
-        //            return 0;
-        //        }
-        //    }
-        //    set
-        //    {
-        //        SetStyle("height", value.ToString("N2", CultureInfo.InvariantCulture) + "pt");
-        //    }
-        //}
+
         const string TEXTBOX_STYLE_PATH = "v:textbox/@style";
         /// <summary>
         /// Autofits the drawingobject 
@@ -366,15 +308,13 @@ namespace OfficeOpenXml.Drawing.Vml
                 return value=="t";
             }
             set
-            {                
-                SetXmlNodeString(TEXTBOX_STYLE_PATH, SetStyle(GetXmlNodeString(TEXTBOX_STYLE_PATH),"mso-fit-shape-to-text", value?"t":"")); 
+            {
+                SetXmlNodeString(TEXTBOX_STYLE_PATH, SetStyle(GetXmlNodeString(TEXTBOX_STYLE_PATH), "mso-fit-shape-to-text", value ? "t" : ""));
             }
-        }        
+        }
         const string LOCKED_PATH = "x:ClientData/x:Locked";
-        /// <summary>
-        /// If the object is locked when the sheet is protected
-        /// </summary>
-        public bool Locked 
+
+        public bool Locked
         {
             get
             {
@@ -382,13 +322,11 @@ namespace OfficeOpenXml.Drawing.Vml
             }
             set
             {
-                SetXmlNodeBool(LOCKED_PATH, value, false);                
+                SetXmlNodeBool(LOCKED_PATH, value, false);
             }
         }
-        const string LOCK_TEXT_PATH = "x:ClientData/x:LockText";        
-        /// <summary>
-        /// Specifies that the object's text is locked
-        /// </summary>
+        const string LOCK_TEXT_PATH = "x:ClientData/x:LockText";
+
         public bool LockText
         {
             get
@@ -401,9 +339,7 @@ namespace OfficeOpenXml.Drawing.Vml
             }
         }
         ExcelVmlDrawingPosition _from = null;
-        /// <summary>
-        /// From position. For comments only when Visible=true.
-        /// </summary>
+
         public ExcelVmlDrawingPosition From
         {
             get
@@ -416,9 +352,7 @@ namespace OfficeOpenXml.Drawing.Vml
             }
         }
         ExcelVmlDrawingPosition _to = null;
-        /// <summary>
-        /// To position. For comments only when Visible=true.
-        /// </summary>
+
         public ExcelVmlDrawingPosition To
         {
             get
@@ -431,9 +365,7 @@ namespace OfficeOpenXml.Drawing.Vml
             }
         }
         const string ROW_PATH = "x:ClientData/x:Row";
-        /// <summary>
-        /// Row position for a comment
-        /// </summary>
+
         internal int Row
         {
             get
@@ -446,9 +378,7 @@ namespace OfficeOpenXml.Drawing.Vml
             }
         }
         const string COLUMN_PATH = "x:ClientData/x:Column";
-        /// <summary>
-        /// Column position for a comment
-        /// </summary>
+
         internal int Column
         {
             get
@@ -461,7 +391,7 @@ namespace OfficeOpenXml.Drawing.Vml
             }
         }
         const string STYLE_PATH = "@style";
-        internal string Style
+        public string Style
         {
             get
             {
@@ -482,7 +412,7 @@ namespace OfficeOpenXml.Drawing.Vml
             }
             set
             {
-                
+
             }
         }
 

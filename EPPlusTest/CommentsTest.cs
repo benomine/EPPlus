@@ -55,7 +55,7 @@ namespace EPPlusTest
                     var stylesDict = new System.Collections.Generic.Dictionary<string, string>();
                     string[] styles = a1.Comment.Style
                         .Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
-                    foreach(var s in styles)
+                    foreach (var s in styles)
                     {
                         string[] split = s.Split(':');
                         if (split.Length == 2)
@@ -66,7 +66,6 @@ namespace EPPlusTest
                         }
                     }
                     Assert.IsTrue(stylesDict.ContainsKey("visibility"));
-                    //Assert.AreEqual("visible", stylesDict["visibility"]);
                     Assert.AreEqual("hidden", stylesDict["visibility"]);
                     Assert.IsFalse(a1.Comment.Visible);
                     pkg.Save();
@@ -75,9 +74,6 @@ namespace EPPlusTest
             }
             finally
             {
-                //open results file in program for view xlsx.
-                //comments of cell A1 must be hidden.
-                //System.Diagnostics.Process.Start(Path.GetDirectoryName(xlsxName));
                 File.Delete(xlsxName);
             }
         }

@@ -1,8 +1,8 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OfficeOpenXml;
 using System.IO;
 using System.Reflection;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OfficeOpenXml;
 
 namespace EPPlusTest
 {
@@ -10,61 +10,30 @@ namespace EPPlusTest
     public abstract class TestBase
     {
         protected ExcelPackage _pck;
-        protected string _clipartPath="";
-        protected string _worksheetPath= @"c:\epplusTest\Testoutput\";
-        protected string _testInputPath = @"c:\epplusTest\workbooks\";
+        protected string _clipartPath = "";
+        protected string _worksheetPath = "F:\\Workbooks";
+        protected string _testInputPath = ".\\Workbooks\\";
         public TestContext TestContext { get; set; }
-        
+
         [TestInitialize]
         public void InitBase()
         {
-            _clipartPath = Path.Combine(Path.GetTempPath(), @"EPPlus clipart");
+            _clipartPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources");
             if (!Directory.Exists(_clipartPath))
             {
                 Directory.CreateDirectory(_clipartPath);
             }
-            if(Environment.GetEnvironmentVariable("EPPlusTestInputPath")!=null)
-            {
-                _testInputPath = Environment.GetEnvironmentVariable("EPPlusTestInputPath");
-            }
-            var asm = Assembly.GetExecutingAssembly();
-            var validExtensions = new[]
-                {
-                    ".gif", ".wmf"
-                };
 
-            foreach (var name in asm.GetManifestResourceNames())
-            {
-                foreach (var ext in validExtensions)
-                {
-                    if (name.EndsWith(ext, StringComparison.OrdinalIgnoreCase))
-                    {
-                        string fileName = name.Replace("EPPlusTest.Resources.", "");
-                        using (var stream = asm.GetManifestResourceStream(name))
-                        using (var file = File.Create(Path.Combine(_clipartPath, fileName)))
-                        {
-                            stream.CopyTo(file);
-                        }
-                        break;
-                    }
-                }
-            }
-            
-            //_worksheetPath = Path.Combine(Path.GetTempPath(), @"EPPlus worksheets");
-            //if (!Directory.Exists(_worksheetPath))
-            //{
-            //    Directory.CreateDirectory(_worksheetPath);
-            //}
-            var di=new DirectoryInfo(_worksheetPath);            
+            var di = new DirectoryInfo(_worksheetPath);
             _worksheetPath = di.FullName + "\\";
 
             _pck = new ExcelPackage();
         }
 
-        protected ExcelPackage OpenPackage(string name, bool delete=false)
+        protected ExcelPackage OpenPackage(string name, bool delete = false)
         {
             var fi = new FileInfo(_worksheetPath + name);
-            if(delete && fi.Exists)
+            if (delete && fi.Exists)
             {
                 fi.Delete();
             }

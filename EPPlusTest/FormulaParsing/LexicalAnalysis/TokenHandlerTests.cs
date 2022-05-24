@@ -1,7 +1,6 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeOpenXml.FormulaParsing;
+using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 
 namespace EPPlusTest.FormulaParsing.LexicalAnalysis
 {
@@ -22,7 +21,7 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
         {
             var parsingContext = ParsingContext.Create();
             var tokenFactory = new TokenFactory(parsingContext.Configuration.FunctionRepository, null);
-            _handler = new TokenHandler(_tokenizerContext, tokenFactory, new TokenSeparatorProvider()); 
+            _handler = new TokenHandler(_tokenizerContext, tokenFactory, new TokenSeparatorProvider());
         }
 
         [TestMethod]
@@ -34,7 +33,7 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
         [TestMethod]
         public void HasMoreTokensShouldBeFalseWhenAllAreHandled()
         {
-            for (var x = 0; x < "test".Length; x++ )
+            for (var x = 0; x < "test".Length; x++)
             {
                 _handler.Next();
             }

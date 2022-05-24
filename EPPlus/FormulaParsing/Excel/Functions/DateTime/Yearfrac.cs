@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using OfficeOpenXml.FormulaParsing.Exceptions;
 using OfficeOpenXml.FormulaParsing.ExpressionGraph;
 
 namespace OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime
@@ -44,7 +41,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime
                     if (date1.Month == 2 && date2.Day==31)
                     {
                         var daysInFeb = calendar.IsLeapYear(date1.Year) ? 29 : 28;
-                        if (date1.Day == daysInFeb) d360Result++;  
+                        if (date1.Day == daysInFeb) d360Result++;
                     }
                     return CreateResult(d360Result / 360d, DataType.Decimal);
                 case 1:
@@ -83,7 +80,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime
                 else if (dt2.Month == 2 && dt2.Day == 29)
                     perYear = 366;
             }
-            return perYear/(double) nYears;  
+            return perYear/(double)nYears;
         }
     }
 }

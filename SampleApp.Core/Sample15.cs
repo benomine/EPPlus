@@ -27,15 +27,13 @@
  * Jan Källman                      Added       		        2012-05-01
  *******************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
+using System.Text;
 using OfficeOpenXml;
-using System.Security.Cryptography.X509Certificates;
-using System.Drawing;
-using OfficeOpenXml.Style;
 using OfficeOpenXml.Drawing.Chart;
+using OfficeOpenXml.Style;
+using SkiaSharp;
+
 namespace EPPlusSamples
 {
     class Sample15
@@ -44,7 +42,7 @@ namespace EPPlusSamples
         {
             //Create a macro-enabled workbook from scratch.
             VBASample1();
-            
+
             //Open Sample 1 and add code to change the chart to a bubble chart.
             VBASample2();
 
@@ -56,9 +54,9 @@ namespace EPPlusSamples
             ExcelPackage pck = new ExcelPackage();
 
             //Add a worksheet.
-            var ws=pck.Workbook.Worksheets.Add("VBA Sample");
+            var ws = pck.Workbook.Worksheets.Add("VBA Sample");
             ws.Drawings.AddShape("VBASampleRect", eShapeStyle.RoundRect);
-            
+
             //Create a vba project             
             pck.Workbook.CreateVBAProject();
 
@@ -76,7 +74,7 @@ namespace EPPlusSamples
         }
         private static void VBASample2()
         {
-            FileInfo sample1File = Utils.GetFileInfo("sample1.xlsx",false);
+            FileInfo sample1File = Utils.GetFileInfo("sample1.xlsx", false);
             //Open Sample 1 again
             ExcelPackage pck = new ExcelPackage(sample1File);
             var p = new ExcelPackage();
@@ -106,7 +104,7 @@ namespace EPPlusSamples
             //pck.Workbook.VbaProject.Signature.Certificate = store.Certificates[0];
 
             //And Save as xlsm
-            FileInfo fi =Utils.GetFileInfo("sample15-2.xlsm");
+            FileInfo fi = Utils.GetFileInfo("sample15-2.xlsm");
             pck.SaveAs(fi);
         }
         private static void VBASample3()
@@ -125,7 +123,7 @@ namespace EPPlusSamples
             ws.DefaultColWidth = 3;
             ws.DefaultRowHeight = 15;
 
-            int gridSize=10;
+            int gridSize = 10;
 
             //Create the boards
             var board1 = ws.Cells[2, 2, 2 + gridSize - 1, 2 + gridSize - 1];
@@ -148,7 +146,7 @@ namespace EPPlusSamples
 
             //Add the sheet code
             ws.CodeModule.Code = GetCodeModule(codeDir, "BattleshipSheet.txt");
-            var m1=pck.Workbook.VbaProject.Modules.AddModule("Code");
+            var m1 = pck.Workbook.VbaProject.Modules.AddModule("Code");
             string code = GetCodeModule(codeDir, "CodeModule.txt");
 
             //Insert your ships on the right board. you can changes these, but don't cheat ;)
@@ -158,29 +156,29 @@ namespace EPPlusSamples
                 "V9:V11",
                 "O10:Q10",
                 "R11:S11"};
-            
+
             //Note: For security reasons you should never mix external data and code(to avoid code injections!), especially not on a webserver. 
             //If you deside to do that anyway, be very careful with the validation of the data.
             //Be extra carefull if you sign the code.
             //Read more here http://en.wikipedia.org/wiki/Code_injection
 
-            code = string.Format(code, ships[0],ships[1],ships[2],ships[3],ships[4], board1.Address, board2.Address);  //Ships are injected into the constants in the module
+            code = string.Format(code, ships[0], ships[1], ships[2], ships[3], ships[4], board1.Address, board2.Address);  //Ships are injected into the constants in the module
             m1.Code = code;
 
             //Ships are displayed with a black background
             string shipsaddress = string.Join(",", ships);
-            ws.Cells[shipsaddress].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-            ws.Cells[shipsaddress].Style.Fill.BackgroundColor.SetColor(Color.Black);
+            ws.Cells[shipsaddress].Style.Fill.PatternType = ExcelFillStyle.Solid;
+            ws.Cells[shipsaddress].Style.Fill.BackgroundColor.SetColor(SKColors.Black);
 
             var m2 = pck.Workbook.VbaProject.Modules.AddModule("ComputerPlay");
-            m2.Code = GetCodeModule(codeDir, "ComputerPlayModule.txt"); 
-            var c1 = pck.Workbook.VbaProject.Modules.AddClass("Ship",false);
-            c1.Code = GetCodeModule(codeDir, "ShipClass.txt"); 
+            m2.Code = GetCodeModule(codeDir, "ComputerPlayModule.txt");
+            var c1 = pck.Workbook.VbaProject.Modules.AddClass("Ship", false);
+            c1.Code = GetCodeModule(codeDir, "ShipClass.txt");
 
             //Add the info text shape.
             var tb = ws.Drawings.AddShape("txtInfo", eShapeStyle.Rect);
             tb.SetPosition(1, 0, 27, 0);
-            tb.Fill.Color = Color.LightSlateGray;
+            tb.Fill.Color = SKColors.LightSlateGray;
             var rt1 = tb.RichText.Add("Battleships");
             rt1.Bold = true;
             tb.RichText.Add("\r\nDouble-click on the left board to make your move. Find and sink all ships to win!");
@@ -194,14 +192,14 @@ namespace EPPlusSamples
             AddChart(ws.Cells["M13"], "chtComputerHitPercent", "Computer");
 
             ws.Names.Add("LogStart", ws.Cells["B24"]);
-            ws.Cells["B24:X224"].Style.Border.BorderAround(ExcelBorderStyle.Thin, Color.Black);
+            ws.Cells["B24:X224"].Style.Border.BorderAround(ExcelBorderStyle.Thin, SKColors.Black);
             ws.Cells["B25:X224"].Style.Font.Name = "Consolas";
             ws.SetValue("B24", "Log");
             ws.Cells["B24"].Style.Font.Bold = true;
-            ws.Cells["B24:X24"].Style.Border.BorderAround(ExcelBorderStyle.Thin, Color.Black);
-            var cf=ws.Cells["B25:B224"].ConditionalFormatting.AddContainsText();
+            ws.Cells["B24:X24"].Style.Border.BorderAround(ExcelBorderStyle.Thin, SKColors.Black);
+            var cf = ws.Cells["B25:B224"].ConditionalFormatting.AddContainsText();
             cf.Text = "hit";
-            cf.Style.Font.Color.Color = Color.Red;
+            cf.Style.Font.Color.Color = SKColors.Red;
 
             //If you have a valid certificate for code signing you can use this code to set it.
             ///*** Try to find a cert valid for signing... ***/
@@ -225,7 +223,7 @@ namespace EPPlusSamples
             return File.ReadAllText(Utils.GetFileInfo(codeDir, fileName, false).FullName);
         }
 
-        private static void AddChart(ExcelRange rng,string name, string prefix)
+        private static void AddChart(ExcelRange rng, string name, string prefix)
         {
             var chrt = (ExcelPieChart)rng.Worksheet.Drawings.AddChart(name, eChartType.Pie);
             chrt.SetPosition(rng.Start.Row-1, 0, rng.Start.Column-1, 0);
@@ -236,22 +234,22 @@ namespace EPPlusSamples
 
             var serie = chrt.Series.Add(rng.Offset(2, 2, 1, 2), rng.Offset(1, 2, 1, 2));
             serie.Header = "Hits";
-            
+
             chrt.Title.Text = "Hit ratio";
-            
+
             var n1 = rng.Worksheet.Names.Add(prefix + "Misses", rng.Offset(2, 2));
             n1.Value = 0;
             var n2 = rng.Worksheet.Names.Add(prefix + "Hits", rng.Offset(2, 3));
             n2.Value = 0;
             rng.Offset(1, 2).Value = "Misses";
-            rng.Offset(1, 3).Value = "Hits";            
+            rng.Offset(1, 3).Value = "Hits";
         }
 
         private static void CreateBoard(ExcelRange rng)
         {
             //Create a gradiant background with one dark and one light blue color
-            rng.Style.Fill.Gradient.Color1.SetColor(Color.FromArgb(0x80, 0x80, 0XFF));
-            rng.Style.Fill.Gradient.Color2.SetColor(Color.FromArgb(0x20, 0x20, 0XFF));
+            rng.Style.Fill.Gradient.Color1.SetColor(new SKColor(0x80, 0x80, 0XFF));
+            rng.Style.Fill.Gradient.Color2.SetColor(new SKColor(0x20, 0x20, 0XFF));
             rng.Style.Fill.Gradient.Type = ExcelFillGradientType.None;
             for (int col = 0; col <= rng.End.Column - rng.Start.Column; col++)
             {
@@ -277,16 +275,16 @@ namespace EPPlusSamples
             }
             //Set the inner cell border to thin, light gray
             rng.Style.Border.Top.Style = ExcelBorderStyle.Thin;
-            rng.Style.Border.Top.Color.SetColor(Color.Gray);
+            rng.Style.Border.Top.Color.SetColor(SKColors.Gray);
             rng.Style.Border.Right.Style = ExcelBorderStyle.Thin;
-            rng.Style.Border.Right.Color.SetColor(Color.Gray);
+            rng.Style.Border.Right.Color.SetColor(SKColors.Gray);
             rng.Style.Border.Left.Style = ExcelBorderStyle.Thin;
-            rng.Style.Border.Left.Color.SetColor(Color.Gray);
+            rng.Style.Border.Left.Color.SetColor(SKColors.Gray);
             rng.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-            rng.Style.Border.Bottom.Color.SetColor(Color.Gray);
+            rng.Style.Border.Bottom.Color.SetColor(SKColors.Gray);
 
             //Solid black border around the board.
-            rng.Style.Border.BorderAround(ExcelBorderStyle.Medium, Color.Black);
+            rng.Style.Border.BorderAround(ExcelBorderStyle.Medium, SKColors.Black);
         }
     }
 }

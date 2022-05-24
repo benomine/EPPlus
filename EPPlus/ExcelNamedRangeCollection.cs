@@ -30,9 +30,8 @@
  * Jan Källman		License changed GPL-->LGPL 2011-12-27
  *******************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using OfficeOpenXml.FormulaParsing.ExcelUtilities;
 
@@ -45,7 +44,7 @@ namespace OfficeOpenXml
     {
         internal ExcelWorksheet _ws;
         internal ExcelWorkbook _wb;
-        internal ExcelNamedRangeCollection(ExcelWorkbook wb)
+        public ExcelNamedRangeCollection(ExcelWorkbook wb)
         {
             _wb = wb;
             _ws = null;
@@ -66,14 +65,14 @@ namespace OfficeOpenXml
         public ExcelNamedRange Add(string Name, ExcelRangeBase Range)
         {
             ExcelNamedRange item;
-            if(!ExcelAddressUtil.IsValidName(Name))
+            if (!ExcelAddressUtil.IsValidName(Name))
             {
                 throw (new ArgumentException($"Name {Name} contains invalid characters"));  //Issue 458
             }
             if (Range.IsName)
             {
 
-                item = new ExcelNamedRange(Name, _wb,_ws, _dic.Count);
+                item = new ExcelNamedRange(Name, _wb, _ws, _dic.Count);
             }
             else
             {
@@ -98,7 +97,7 @@ namespace OfficeOpenXml
         /// <returns></returns>
         public ExcelNamedRange AddValue(string Name, object value)
         {
-            var item = new ExcelNamedRange(Name,_wb, _ws, _dic.Count);
+            var item = new ExcelNamedRange(Name, _wb, _ws, _dic.Count);
             item.NameValue = value;
             AddName(Name, item);
             return item;
@@ -115,7 +114,7 @@ namespace OfficeOpenXml
         [Obsolete("Call AddFormula() instead.  See Issue Tracker Id #14687")]
         public ExcelNamedRange AddFormla(string Name, string Formula)
         {
-            return  this.AddFormula(Name, Formula);
+            return this.AddFormula(Name, Formula);
         }
 
         /// <summary>
@@ -140,7 +139,7 @@ namespace OfficeOpenXml
         internal void Insert(int rowFrom, int colFrom, int rows, int cols, Func<ExcelNamedRange, bool> filter)
         {
             var namedRanges = this._list.Where(filter);
-            foreach(var namedRange in namedRanges)
+            foreach (var namedRange in namedRanges)
             {
                 InsertRows(rowFrom, rows, namedRange);
                 InsertColumns(colFrom, cols, namedRange);
@@ -209,12 +208,12 @@ namespace OfficeOpenXml
                 if (rowFrom <= namedRange.Start.Row)
                 {
                     var newAddress = ExcelCellBase.GetAddress(namedRange.Start.Row + rows, namedRange.Start.Column, namedRange.End.Row + rows, namedRange.End.Column);
-                    namedRange.Address = BuildNewAddress(namedRange, newAddress); 
+                    namedRange.Address = BuildNewAddress(namedRange, newAddress);
                 }
                 else if (rowFrom <= namedRange.End.Row && namedRange.End.Row+rows <= ExcelPackage.MaxRows)
                 {
                     var newAddress = ExcelCellBase.GetAddress(namedRange.Start.Row, namedRange.Start.Column, namedRange.End.Row + rows, namedRange.End.Column);
-                    namedRange.Address = BuildNewAddress(namedRange, newAddress); 
+                    namedRange.Address = BuildNewAddress(namedRange, newAddress);
                 }
             }
         }
@@ -225,7 +224,7 @@ namespace OfficeOpenXml
         /// <param name="Name">The name</param>
         public void Remove(string Name)
         {
-            if(_dic.ContainsKey(Name))
+            if (_dic.ContainsKey(Name))
             {
                 var ix = _dic[Name];
 
@@ -307,7 +306,7 @@ namespace OfficeOpenXml
 
         internal void Clear()
         {
-            while(Count>0)
+            while (Count>0)
             {
                 Remove(_list[0].Name);
             }

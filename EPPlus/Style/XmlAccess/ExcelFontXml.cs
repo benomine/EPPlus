@@ -30,11 +30,10 @@
  * Jan Källman		License changed GPL-->LGPL 2011-12-16
  *******************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Globalization;
-using System.Text;
 using System.Xml;
+using SkiaSharp;
+
 namespace OfficeOpenXml.Style.XmlAccess
 {
     /// <summary>
@@ -53,7 +52,7 @@ namespace OfficeOpenXml.Style.XmlAccess
             _bold = false;
             _italic = false;
             _strike = false;
-            _underlineType = ExcelUnderLineType.None ;
+            _underlineType = ExcelUnderLineType.None;
             _verticalAlign = "";
         }
         internal ExcelFontXml(XmlNamespaceManager nsm, XmlNode topNode) :
@@ -153,13 +152,13 @@ namespace OfficeOpenXml.Style.XmlAccess
             {
                 return _color;
             }
-            internal set 
+            internal set
             {
                 _color=value;
             }
         }
         const string schemePath = "d:scheme/@val";
-        string _scheme="";
+        string _scheme = "";
         /// <summary>
         /// Font Scheme
         /// </summary>
@@ -269,15 +268,14 @@ namespace OfficeOpenXml.Style.XmlAccess
                 _verticalAlign=value;
             }
         }
-        public void SetFromFont(System.Drawing.Font Font)
+        public void SetFromFont(SKFont Font)
         {
-            Name=Font.Name;
-            //Family=fnt.FontFamily.;
-            Size=(int)Font.Size;
-            Strike=Font.Strikeout;
-            Bold = Font.Bold;
-            UnderLine=Font.Underline;
-            Italic=Font.Italic;
+            Name = Font.Typeface.FamilyName;
+            Size = (int)Font.Size;
+            //Strike = Font.Strikeout;
+            Bold = Font.Typeface.IsBold;
+            //UnderLine = Font.Underline;
+            Italic = Font.Typeface.IsItalic;
         }
         public static float GetFontHeight(string name, float size)
         {
@@ -328,7 +326,7 @@ namespace OfficeOpenXml.Style.XmlAccess
         }
         internal ExcelFontXml Copy()
         {
-            ExcelFontXml newFont = new ExcelFontXml(NameSpaceManager);
+            var newFont = new ExcelFontXml(NameSpaceManager);
             newFont.Name = _name;
             newFont.Size = _size;
             newFont.Family = _family;
@@ -348,30 +346,30 @@ namespace OfficeOpenXml.Style.XmlAccess
             if (_bold) CreateNode(boldPath); else DeleteAllNode(boldPath);
             if (_italic) CreateNode(italicPath); else DeleteAllNode(italicPath);
             if (_strike) CreateNode(strikePath); else DeleteAllNode(strikePath);
-            
+
             if (_underlineType == ExcelUnderLineType.None)
             {
                 DeleteAllNode(underLinedPath);
             }
-            else if(_underlineType==ExcelUnderLineType.Single)
+            else if (_underlineType==ExcelUnderLineType.Single)
             {
                 CreateNode(underLinedPath);
             }
             else
             {
-                var v=_underlineType.ToString();
+                var v = _underlineType.ToString();
                 SetXmlNodeString(underLinedPath + "/@val", v.Substring(0, 1).ToLower(CultureInfo.InvariantCulture) + v.Substring(1));
             }
 
             if (_verticalAlign!="") SetXmlNodeString(verticalAlignPath, _verticalAlign.ToString());
-            if(_size>0) SetXmlNodeString(sizePath, _size.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            if (_size>0) SetXmlNodeString(sizePath, _size.ToString(CultureInfo.InvariantCulture));
             if (_color.Exists)
             {
                 CreateNode(_colorPath);
                 TopNode.AppendChild(_color.CreateXmlNode(TopNode.SelectSingleNode(_colorPath, NameSpaceManager)));
             }
-            if(!string.IsNullOrEmpty(_name)) SetXmlNodeString(namePath, _name);
-            if(_family>int.MinValue) SetXmlNodeString(familyPath, _family.ToString());
+            if (!string.IsNullOrEmpty(_name)) SetXmlNodeString(namePath, _name);
+            if (_family>int.MinValue) SetXmlNodeString(familyPath, _family.ToString());
             if (_scheme != "") SetXmlNodeString(schemePath, _scheme.ToString());
 
             return TopNode;

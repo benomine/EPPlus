@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
-using OfficeOpenXml.Utils;
-using OfficeOpenXml;
-using OfficeOpenXml.Utils.CompundDocument;
-using OfficeOpenXml.Style;
-using System.Drawing;
 using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
+using OfficeOpenXml.Utils.CompundDocument;
+using SkiaSharp;
 
 namespace EPPlusTest
 {
@@ -43,44 +40,22 @@ namespace EPPlusTest
             }
         }
 
-        #region Additional test attributes
-        //
-        // You can use the following additional attributes as you write your tests:
-        //
-        // Use ClassInitialize to run code before running the first test in the class
-        // [ClassInitialize()]
-        // public static void MyClassInitialize(TestContext testContext) { }
-        //
-        // Use ClassCleanup to run code after all tests in a class have run
-        // [ClassCleanup()]
-        // public static void MyClassCleanup() { }
-        //
-        // Use TestInitialize to run code before running each test 
-        // [TestInitialize()]
-        // public void MyTestInitialize() { }
-        //
-        // Use TestCleanup to run code after each test has run
-        // [TestCleanup()]
-        // public void MyTestCleanup() { }
-        //
-        #endregion
-
         [TestMethod, Ignore]
         public void Read()
         {
-           //var doc = File.ReadAllBytes(@"c:\temp\vbaProject.bin");
-           var doc = File.ReadAllBytes(@"c:\temp\vba.bin");
-           var cd = new CompoundDocumentFile(doc);
-           var ms = new MemoryStream();
-           cd.Write(ms);
-           printitems(cd.RootItem);
-           File.WriteAllBytes(@"c:\temp\vba.bin", ms.ToArray());
+            //var doc = File.ReadAllBytes(@"c:\temp\vbaProject.bin");
+            var doc = File.ReadAllBytes(@"c:\temp\vba.bin");
+            var cd = new CompoundDocumentFile(doc);
+            var ms = new MemoryStream();
+            cd.Write(ms);
+            printitems(cd.RootItem);
+            File.WriteAllBytes(@"c:\temp\vba.bin", ms.ToArray());
         }
 
-        private void printitems(CompoundDocumentItem item)
+        public void printitems(CompoundDocumentItem item)
         {
-            File.AppendAllText(@"c:\temp\items.txt", item.Name+ "\t");            
-            foreach(var c in item.Children)
+            File.AppendAllText(@"c:\temp\items.txt", item.Name+ "\t");
+            foreach (var c in item.Children)
             {
                 printitems(c);
             }
@@ -88,10 +63,10 @@ namespace EPPlusTest
         [TestMethod]
         public void WriteReadCompundDoc()
         {
-            for(int i=1;i<50;i++)
+            for (int i = 1; i<50; i++)
             {
-                var b=CreateFile(i);
-                ReadFile(b,i);
+                var b = CreateFile(i);
+                ReadFile(b, i);
                 GC.Collect();
             }
             for (int i = 5; i < 20; i++)
@@ -107,7 +82,7 @@ namespace EPPlusTest
             var ms = new MemoryStream(b);
             using (var p = new ExcelPackage(ms))
             {
-                Assert.AreEqual(p.Workbook.VbaProject.Modules.Count,noSheets+2);
+                Assert.AreEqual(p.Workbook.VbaProject.Modules.Count, noSheets+2);
                 Assert.AreEqual(noSheets, p.Workbook.Worksheets.Count);
             }
         }
@@ -132,7 +107,7 @@ namespace EPPlusTest
         [TestMethod, Ignore]
         public void ReadEncLong()
         {
-            var doc=File.ReadAllBytes(@"c:\temp\EncrDocRead.xlsx");
+            var doc = File.ReadAllBytes(@"c:\temp\EncrDocRead.xlsx");
             var cd = new CompoundDocumentFile(doc);
             var ms = new MemoryStream();
             cd.Write(ms);
@@ -151,7 +126,7 @@ namespace EPPlusTest
             var baseFolder = Path.Combine(@"c:\temp\bug\");
             return new FileInfo(Path.Combine(baseFolder, name));
         }
-        [TestMethod, Ignore]
+        [TestMethod]
         public void Issue131()
         {
             var src = TempFile("report.xlsm");
@@ -168,18 +143,18 @@ namespace EPPlusTest
 
             package.Save();
         }
-        [TestMethod, Ignore]
+        [TestMethod]
         public void Sample7EncrLargeTest()
         {
             int Rows = 1000000;
             int colMult = 20;
-            FileInfo newFile = new FileInfo(@"C:\temp\bug\sample7compdoctest.xlsx");
+            var newFile = new FileInfo(@"C:\temp\bug\sample7compdoctest.xlsx");
             if (newFile.Exists)
             {
                 newFile.Delete();  // ensures we create a new workbook
                 newFile = new FileInfo(@"C:\temp\bug\sample7compdoctest.xlsx");
             }
-            using (ExcelPackage package = new ExcelPackage())
+            using (var package = new ExcelPackage())
             {
                 Console.WriteLine("{0:HH.mm.ss}\tStarting...", DateTime.Now);
 
@@ -189,7 +164,7 @@ namespace EPPlusTest
                 //Format all cells
                 ExcelRange cols = ws.Cells["A:XFD"];
                 cols.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                cols.Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+                cols.Style.Fill.BackgroundColor.SetColor(SKColors.LightGray);
 
                 var rnd = new Random();
                 for (int row = 1; row <= Rows; row++)
@@ -199,8 +174,8 @@ namespace EPPlusTest
                         ws.SetValue(row, 1 + c, row);                               //The SetValue method is a little bit faster than using the Value property
                         ws.SetValue(row, 2 + c, string.Format("Row {0}", row));
                         ws.SetValue(row, 3 + c, DateTime.Today.AddDays(row));
-                        ws.SetValue(row, 4 + c, rnd.NextDouble() * 10000); 
-                     }
+                        ws.SetValue(row, 4 + c, rnd.NextDouble() * 10000);
+                    }
                 }
                 var endC = colMult * 5;
                 ws.Cells[1, endC, Rows, endC].FormulaR1C1 = "RC[-4]+RC[-1]";
@@ -232,12 +207,12 @@ namespace EPPlusTest
                 using (var rng = ws.Cells["A1:E1"])
                 {
                     rng.Style.Font.Bold = true;
-                    rng.Style.Font.Color.SetColor(Color.White);
+                    rng.Style.Font.Color.SetColor(SKColors.White);
                     rng.Style.WrapText = true;
                     rng.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                     rng.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                     rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    rng.Style.Fill.BackgroundColor.SetColor(Color.DarkBlue);
+                    rng.Style.Fill.BackgroundColor.SetColor(SKColors.DarkBlue);
                 }
 
                 //Calculate (Commented away thisk, it was a bit time consuming... /MA)
@@ -251,7 +226,7 @@ namespace EPPlusTest
                 //Now we set the sheetprotection and a password.
                 ws.Cells[2, 3, Rows + 1, 4].Style.Locked = false;
                 ws.Cells[2, 3, Rows + 1, 4].Style.Fill.PatternType = ExcelFillStyle.Solid;
-                ws.Cells[2, 3, Rows + 1, 4].Style.Fill.BackgroundColor.SetColor(Color.White);
+                ws.Cells[2, 3, Rows + 1, 4].Style.Fill.BackgroundColor.SetColor(SKColors.White);
                 ws.Cells[1, 5, Rows + 2, 5].Style.Hidden = true;    //Hide the formula
 
                 ws.Protection.SetPassword("EPPlus");
@@ -276,9 +251,9 @@ namespace EPPlusTest
         {
             //var p = new ExcelPackage(new FileInfo(@"c:\temp\bug\report.xlsm"));
             //var p = new ExcelPackage(new FileInfo(@"c:\temp\bug\report411.xlsm"));
-            var p = new ExcelPackage(new FileInfo(@"c:\temp\bug\sample7.xlsx"),"");
+            var p = new ExcelPackage(new FileInfo(@"c:\temp\bug\sample7.xlsx"), "");
             var vba = p.Workbook.VbaProject;
         }
-        
+
     }
 }

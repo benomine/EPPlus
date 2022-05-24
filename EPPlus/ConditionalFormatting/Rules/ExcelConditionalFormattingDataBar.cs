@@ -29,13 +29,10 @@
  * Eyal Seagull        Added       		  2012-04-03
  *******************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Drawing;
 using System.Xml;
 using OfficeOpenXml.ConditionalFormatting.Contracts;
-using System.Globalization;
+using SkiaSharp;
+
 namespace OfficeOpenXml.ConditionalFormatting
 {
     /// <summary>
@@ -87,7 +84,7 @@ namespace OfficeOpenXml.ConditionalFormatting
             //Create the <dataBar> node inside the <cfRule> node
             if (itemElementNode!=null && itemElementNode.HasChildNodes)
             {
-                bool high=false;
+                bool high = false;
                 foreach (XmlNode node in itemElementNode.SelectNodes("d:dataBar/d:cfvo", NameSpaceManager))
                 {
                     if (high == false)
@@ -190,7 +187,7 @@ namespace OfficeOpenXml.ConditionalFormatting
         {
         }
         #endregion Constructors
-        private const string _showValuePath="d:dataBar/@showValue";
+        private const string _showValuePath = "d:dataBar/@showValue";
         public bool ShowValue
         {
             get
@@ -216,22 +213,21 @@ namespace OfficeOpenXml.ConditionalFormatting
             internal set;
         }
 
-
         private const string _colorPath = "d:dataBar/d:color/@rgb";
-        public Color Color
+        public SKColor Color
         {
             get
             {
-                var rgb=GetXmlNodeString(_colorPath);
-                if(!string.IsNullOrEmpty(rgb))
+                var rgb = GetXmlNodeString(_colorPath);
+                if (!string.IsNullOrEmpty(rgb))
                 {
-                    return Color.FromArgb(int.Parse(rgb, NumberStyles.HexNumber));
+                    return SKColor.Parse(rgb);
                 }
-                return Color.White;
+                return SKColors.White;
             }
             set
             {
-                SetXmlNodeString(_colorPath, value.ToArgb().ToString("X"));
+                SetXmlNodeString(_colorPath, value.ToString());
             }
         }
     }

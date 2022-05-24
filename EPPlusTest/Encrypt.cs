@@ -1,18 +1,16 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.IO;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeOpenXml;
-using System.IO;
-using System.Runtime.InteropServices.ComTypes;
 
 namespace EPPlusTest
 {
     [TestClass]
     public class Encrypt : TestBase
     {
-        [TestMethod]
-        [Ignore]
+        [TestMethod, Ignore]
         public void ReadWriteEncrypt()
         {
-            using (ExcelPackage pck = new ExcelPackage(new FileInfo(@"Test\Drawing.xlsx"), true))   
+            using (ExcelPackage pck = new ExcelPackage(new FileInfo(@"Test\Drawing.xlsx"), true))
             {
                 pck.Encryption.Password = "EPPlus";
                 pck.Encryption.Algorithm = EncryptionAlgorithm.AES192;
@@ -20,10 +18,10 @@ namespace EPPlusTest
                 pck.Workbook.Protection.LockStructure = true;
                 pck.Workbook.Protection.LockWindows = true;
 
-                pck.SaveAs(new FileInfo(@"Test\DrawingEncr.xlsx"));                
+                pck.SaveAs(new FileInfo(@"Test\DrawingEncr.xlsx"));
             }
 
-            using (ExcelPackage pck = new ExcelPackage(new FileInfo(_worksheetPath + @"\DrawingEncr.xlsx"), true, "EPPlus"))            
+            using (ExcelPackage pck = new ExcelPackage(new FileInfo(_worksheetPath + @"\DrawingEncr.xlsx"), true, "EPPlus"))
             {
                 pck.Encryption.IsEncrypted = false;
                 pck.SaveAs(new FileInfo(_worksheetPath + @"\DrawingNotEncr.xlsx"));
@@ -35,10 +33,9 @@ namespace EPPlusTest
                 pck.Encryption.IsEncrypted = false;
                 pck.SaveAs(new FileInfo(_worksheetPath + @"DrawingNotEncr.xlsx"));
             }
-
         }
+
         [TestMethod]
-        [Ignore]
         public void WriteEncrypt()
         {
             ExcelPackage package = new ExcelPackage();
@@ -59,8 +56,8 @@ namespace EPPlusTest
             package.Encryption.IsEncrypted = true;
             package.SaveAs(new FileInfo(@"c:\temp\encrTest.xlsx"));
         }
-        [TestMethod]
-        [Ignore]
+
+        [TestMethod, Ignore]
         public void WriteProtect()
         {
             ExcelPackage package = new ExcelPackage(new FileInfo(@"c:\temp\workbookprot2.xlsx"), "");
@@ -84,29 +81,29 @@ namespace EPPlusTest
             package.SaveAs(new FileInfo(@"c:\temp\workbookprot2.xlsx"));
 
         }
-        [TestMethod]
-        [Ignore]
+
+        [TestMethod, Ignore]
         public void DecrypTest()
         {
             var p = new ExcelPackage(new FileInfo(@"c:\temp\encr.xlsx"), "test");
 
-            var n = p.Workbook.Worksheets[1].Name;
+            var n = p.Workbook.Worksheets[0].Name;
             p.Encryption.Password = null;
             p.SaveAs(new FileInfo(@"c:\temp\encrNew.xlsx"));
-        
+
         }
         [TestMethod, Ignore]
         public void DecrypTestBug()
         {
             var p = new ExcelPackage(new FileInfo(@"c:\temp\bug\TestExcel_2040.xlsx"), "");
 
-            var n = p.Workbook.Worksheets[1].Name;
+            var n = p.Workbook.Worksheets[0].Name;
             p.Encryption.Password = null;
             p.SaveAs(new FileInfo(@"c:\temp\encrNew.xlsx"));
 
         }
+
         [TestMethod]
-        [Ignore]
         public void EncrypTest()
         {
             var f = new FileInfo(@"c:\temp\encrwrite.xlsx");
@@ -115,7 +112,7 @@ namespace EPPlusTest
                 f.Delete();
             }
             var p = new ExcelPackage(f);
-            
+
             p.Workbook.Protection.SetPassword("");
             p.Workbook.Protection.LockStructure = true;
             p.Encryption.Version = EncryptionVersion.Agile;

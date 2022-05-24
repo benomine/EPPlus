@@ -30,14 +30,11 @@
  * Jan Källman      Added compression support 27-03-2012
  *******************************************************************************/
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace OfficeOpenXml.Utils
 {
-    internal static class VBACompression
+    public static class VBACompression
     {
         #region  Compression
         /// <summary>
@@ -46,7 +43,7 @@ namespace OfficeOpenXml.Utils
         /// </summary>
         /// <param name="part">Byte array to decompress</param>
         /// <returns></returns>
-        internal static byte[] CompressPart(byte[] part)
+        public static byte[] CompressPart(byte[] part)
         {
             MemoryStream ms = new MemoryStream(4096);
             BinaryWriter br = new BinaryWriter(ms);
@@ -153,7 +150,7 @@ namespace OfficeOpenXml.Utils
             startPos = dEnd;
             return ret;
         }
-        internal static byte[] DecompressPart(byte[] part)
+        public static byte[] DecompressPart(byte[] part)
         {
             return DecompressPart(part, 0);
         }
@@ -164,7 +161,7 @@ namespace OfficeOpenXml.Utils
         /// <param name="part">Byte array to decompress</param>
         /// <param name="startPos"></param>
         /// <returns></returns>
-        internal static byte[] DecompressPart(byte[] part, int startPos)
+        public static byte[] DecompressPart(byte[] part, int startPos)
         {
 
             if (part[startPos] != 1)

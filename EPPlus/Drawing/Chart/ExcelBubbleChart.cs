@@ -1,11 +1,8 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
+using System.Xml;
 using OfficeOpenXml.Packaging;
 using OfficeOpenXml.Table.PivotTable;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml;
 
 namespace OfficeOpenXml.Drawing.Chart
 {
@@ -20,20 +17,17 @@ namespace OfficeOpenXml.Drawing.Chart
             ShowNegativeBubbles = false;
             BubbleScale = 100;
             _chartSeries = new ExcelBubbleChartSeries(this, drawings.NameSpaceManager, _chartNode, PivotTableSource!=null);
-            //SetTypeProperties();
         }
 
         internal ExcelBubbleChart(ExcelDrawings drawings, XmlNode node, eChartType type, bool isPivot) :
             base(drawings, node, type, isPivot)
         {
             _chartSeries = new ExcelBubbleChartSeries(this, drawings.NameSpaceManager, _chartNode, isPivot);
-            //SetTypeProperties();
         }
         internal ExcelBubbleChart(ExcelDrawings drawings, XmlNode node, Uri uriChart, ZipPackagePart part, XmlDocument chartXml, XmlNode chartNode) :
             base(drawings, node, uriChart, part, chartXml, chartNode)
         {
             _chartSeries = new ExcelBubbleChartSeries(this, _drawings.NameSpaceManager, _chartNode, false);
-            //SetTypeProperties();
         }
         internal ExcelBubbleChart(ExcelChart topChart, XmlNode chartNode) :
             base(topChart, chartNode)
@@ -52,9 +46,9 @@ namespace OfficeOpenXml.Drawing.Chart
             }
             set
             {
-                if(value < 0 && value > 300)
+                if (value < 0 && value > 300)
                 {
-                    throw(new ArgumentOutOfRangeException("Bubblescale out of range. 0-300 allowed"));
+                    throw (new ArgumentOutOfRangeException("Bubblescale out of range. 0-300 allowed"));
                 }
                 _chartXmlHelper.SetXmlNodeString(BUBBLESCALE_PATH, value.ToString());
             }

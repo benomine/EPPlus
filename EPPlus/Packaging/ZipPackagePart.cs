@@ -29,30 +29,25 @@
  * Jan Källman		Added		25-Oct-2012
  *******************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 using OfficeOpenXml.Packaging.Ionic.Zip;
 
 namespace OfficeOpenXml.Packaging
 {
-    internal class ZipPackagePart : ZipPackageRelationshipBase, IDisposable
+    public class ZipPackagePart : ZipPackageRelationshipBase, IDisposable
     {
-        internal delegate void SaveHandlerDelegate(ZipOutputStream stream, CompressionLevel compressionLevel, string fileName);
+        public delegate void SaveHandlerDelegate(ZipOutputStream stream, CompressionLevel compressionLevel, string fileName);
 
-        internal ZipPackagePart(ZipPackage package, ZipEntry entry)
+        public ZipPackagePart(ZipPackage package, ZipEntry entry)
         {
             Package = package;
             Entry = entry;
             SaveHandler = null;
             Uri = new Uri(package.GetUriKey(entry.FileName), UriKind.Relative);
         }
-        internal ZipPackagePart(ZipPackage package, Uri partUri, string contentType, CompressionLevel compressionLevel)
+        public ZipPackagePart(ZipPackage package, Uri partUri, string contentType, CompressionLevel compressionLevel)
         {
             Package = package;
-            //Entry = new ZipEntry();
-            //Entry.FileName = partUri.OriginalString.Replace('/','\\');
             Uri = partUri;
             ContentType = contentType;
             CompressionLevel = compressionLevel;
@@ -72,22 +67,22 @@ namespace OfficeOpenXml.Packaging
                 _stream = value;
             }
         }
-        internal override ZipPackageRelationship CreateRelationship(Uri targetUri, TargetMode targetMode, string relationshipType)
+        public override ZipPackageRelationship CreateRelationship(Uri targetUri, TargetMode targetMode, string relationshipType)
         {
 
             var rel = base.CreateRelationship(targetUri, targetMode, relationshipType);
             rel.SourceUri = Uri;
             return rel;
         }
-        internal MemoryStream GetStream()
+        public MemoryStream GetStream()
         {
             return GetStream(FileMode.OpenOrCreate, FileAccess.ReadWrite);
         }
-        internal MemoryStream GetStream(FileMode fileMode)
+        public MemoryStream GetStream(FileMode fileMode)
         {
             return GetStream(FileMode.Create, FileAccess.ReadWrite);
         }
-        internal MemoryStream GetStream(FileMode fileMode, FileAccess fileAccess)
+        public MemoryStream GetStream(FileMode fileMode, FileAccess fileAccess)
         {
             if (_stream == null || fileMode == FileMode.CreateNew || fileMode == FileMode.Create)
             {
@@ -95,7 +90,7 @@ namespace OfficeOpenXml.Packaging
             }
             else
             {
-                _stream.Seek(0, SeekOrigin.Begin);                
+                _stream.Seek(0, SeekOrigin.Begin);
             }
             return _stream;
         }

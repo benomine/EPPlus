@@ -1,10 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OfficeOpenXml;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Linq;
-using System.Text;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OfficeOpenXml;
 
 namespace EPPlusTest
 {
@@ -19,7 +16,8 @@ namespace EPPlusTest
             using (var pck = new ExcelPackage())
             {
                 var ws = pck.Workbook.Worksheets.Add("original");
-                ws.Drawings.AddPicture("Pic1", Properties.Resources.Test1);
+                var dir = AppDomain.CurrentDomain.BaseDirectory;
+                ws.Drawings.AddPicture("Pic1", new FileInfo(Path.Combine(dir, "Resources", "Test1.jpg")));
                 pck.Workbook.Worksheets.Copy("original", "copy");
                 pck.SaveAs(ms);
             }
@@ -38,8 +36,9 @@ namespace EPPlusTest
         {
             using (var pck = new ExcelPackage(new MemoryStream()))
             {
+                var dir = AppDomain.CurrentDomain.BaseDirectory;
                 var ws = pck.Workbook.Worksheets.Add("original");
-                ws.Drawings.AddPicture("Pic1", Properties.Resources.Test1);
+                ws.Drawings.AddPicture("Pic1", new FileInfo(Path.Combine(dir, "Resources", "Test1.jpg")));
                 pck.Workbook.Worksheets.Copy("original", "copy");
                 pck.Workbook.Worksheets.Delete(ws);
                 pck.Save();

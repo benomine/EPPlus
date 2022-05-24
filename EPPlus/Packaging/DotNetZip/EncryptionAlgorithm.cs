@@ -99,7 +99,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
     ///   HMACSHA1 class that is required for producing the archive.
     /// </para>
     /// </remarks>
-    internal enum EncryptionAlgorithm
+    public enum EncryptionAlgorithm
     {
         /// <summary>
         /// No encryption at all.

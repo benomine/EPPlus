@@ -28,7 +28,6 @@
 
 using System;
 using System.IO;
-using System.Collections.Generic;
 
 namespace OfficeOpenXml.Packaging.Ionic.Zip
 {
@@ -1139,17 +1138,9 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 #if SILVERLIGHT
             return AddEntry(entryName, content, System.Text.Encoding.UTF8);
 #else
-            return AddEntry(entryName, content,
-#if Core
-                System.Text.Encoding.GetEncoding("UTF-8")
-#else
-                System.Text.Encoding.Default
-#endif
-                );
+            return AddEntry(entryName, content, System.Text.Encoding.GetEncoding("UTF-8"));
 #endif
         }
-
-
 
         /// <summary>
         ///   Adds a named entry into the zip archive, taking content for the entry
@@ -1300,7 +1291,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         public ZipEntry AddEntry(string entryName, Stream stream)
         {
             ZipEntry ze = ZipEntry.CreateForStream(entryName, stream);
-            ze.SetEntryTimes(DateTime.Now,DateTime.Now,DateTime.Now);
+            ze.SetEntryTimes(DateTime.Now, DateTime.Now, DateTime.Now);
             if (Verbose) StatusMessageTextWriter.WriteLine("adding {0}...", entryName);
             return _InternalAddEntry(ze);
         }
@@ -1605,7 +1596,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         public ZipEntry AddEntry(string entryName, OpenDelegate opener, CloseDelegate closer)
         {
             ZipEntry ze = ZipEntry.CreateForJitStreamProvider(entryName, opener, closer);
-            ze.SetEntryTimes(DateTime.Now,DateTime.Now,DateTime.Now);
+            ze.SetEntryTimes(DateTime.Now, DateTime.Now, DateTime.Now);
             if (Verbose) StatusMessageTextWriter.WriteLine("adding {0}...", entryName);
             return _InternalAddEntry(ze);
         }
@@ -1628,7 +1619,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
             ze.EmitTimesInWindowsFormatWhenSaving = this._emitNtfsTimes;
             ze.EmitTimesInUnixFormatWhenSaving = this._emitUnixTimes;
             //string key = DictionaryKeyForEntry(ze);
-            InternalAddEntry(ze.FileName,ze);
+            InternalAddEntry(ze.FileName, ze);
             AfterAddEntry(ze);
             return ze;
         }
@@ -1670,16 +1661,9 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 #if SILVERLIGHT
             return UpdateEntry(entryName, content, System.Text.Encoding.UTF8);
 #else
-            return UpdateEntry(entryName, content,
-#if Core
-                System.Text.Encoding.GetEncoding("UTF-8")
-#else
-                System.Text.Encoding.Default
-#endif
-                );
+            return UpdateEntry(entryName, content, System.Text.Encoding.GetEncoding("UTF-8"));
 #endif
         }
-
 
         /// <summary>
         ///   Updates the given entry in the <c>ZipFile</c>, using the given string as
@@ -1890,11 +1874,11 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         }
 
 
-//         private string DictionaryKeyForEntry(ZipEntry ze1)
-//         {
-//             var filename = SharedUtilities.NormalizePathForUseInZipFile(ze1.FileName);
-//             return filename;
-//         }
+        //         private string DictionaryKeyForEntry(ZipEntry ze1)
+        //         {
+        //             var filename = SharedUtilities.NormalizePathForUseInZipFile(ze1.FileName);
+        //             return filename;
+        //         }
 
 
         /// <summary>
@@ -2051,12 +2035,12 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
             dir.MarkAsDirectory();
             dir.AlternateEncoding = this.AlternateEncoding;  // workitem 8984
             dir.AlternateEncodingUsage = this.AlternateEncodingUsage;
-            dir.SetEntryTimes(DateTime.Now,DateTime.Now,DateTime.Now);
+            dir.SetEntryTimes(DateTime.Now, DateTime.Now, DateTime.Now);
             dir.EmitTimesInWindowsFormatWhenSaving = _emitNtfsTimes;
             dir.EmitTimesInUnixFormatWhenSaving = _emitUnixTimes;
             dir._Source = ZipEntrySource.Stream;
             //string key = DictionaryKeyForEntry(dir);
-            InternalAddEntry(dir.FileName,dir);
+            InternalAddEntry(dir.FileName, dir);
             AfterAddEntry(dir);
             return dir;
         }
@@ -2134,7 +2118,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                 // It's not an error if it already exists.
                 if (!_entries.ContainsKey(baseDir.FileName))
                 {
-                    InternalAddEntry(baseDir.FileName,baseDir);
+                    InternalAddEntry(baseDir.FileName, baseDir);
                     AfterAddEntry(baseDir);
                 }
                 dirForEntries = baseDir.FileName;

@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Text;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
+using System.Threading;
+using FakeItEasy;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeOpenXml;
 using OfficeOpenXml.FormulaParsing;
-using OfficeOpenXml.FormulaParsing.ExpressionGraph;
-using FakeItEasy;
-using System.IO;
-using System.Threading;
 
 namespace EPPlusTest.FormulaParsing.IntegrationTests.BuiltInFunctions
 {
@@ -279,7 +274,7 @@ namespace EPPlusTest.FormulaParsing.IntegrationTests.BuiltInFunctions
             ws.Cells["A1"].Value = "2:23 pm";
             ws.Cells["B1"].Formula = "TimeValue(A1)";
             ws.Calculate();
-            var result = (double) ws.Cells["B1"].Value;
+            var result = (double)ws.Cells["B1"].Value;
             Assert.AreEqual(0.599, Math.Round(result, 3));
         }
 

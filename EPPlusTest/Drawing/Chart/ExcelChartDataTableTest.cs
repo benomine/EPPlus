@@ -1,13 +1,9 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using System.IO;
+using System.Xml;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeOpenXml;
 using OfficeOpenXml.Drawing.Chart;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
 
 namespace EPPlusTest.Drawing.Chart
 {
@@ -18,12 +14,16 @@ namespace EPPlusTest.Drawing.Chart
         /// <summary>
         /// Basic test to check output with excel. need enhanced to be stand alone checking
         /// </summary>
-        [TestMethod,Ignore]
+        [TestMethod]
         public void DataTableFile()
         {
             string outfile = Path.Combine(_worksheetPath, "DataTableFile.xlsx");
             var fileinfo = new FileInfo(outfile);
-            using (ExcelPackage pkg = new ExcelPackage(fileinfo))
+            if(fileinfo.Exists)
+            {
+                fileinfo.Delete();
+            }
+            using (var pkg = new ExcelPackage(fileinfo))
             {
                 // Add worksheet with sample data
                 var worksheet = pkg.Workbook.Worksheets.Add("TestData");

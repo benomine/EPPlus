@@ -26,14 +26,12 @@
  * ******************************************************************************
  * Jan Källman                      Added       		        2018-03-20
  *******************************************************************************/
- using OfficeOpenXml;
+using System.Collections.Generic;
+using System.Globalization;
+using OfficeOpenXml;
 using OfficeOpenXml.Sparkline;
 using OfficeOpenXml.Table;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Globalization;
-using System.Text;
+using SkiaSharp;
 
 namespace EPPlusSamples
 {
@@ -59,7 +57,7 @@ namespace EPPlusSamples
 
                 // Add a new worksheet to the empty workbook and load the fx rates from the text
                 var ws = package.Workbook.Worksheets.Add("SEKRates");
-                
+
                 //Load the sample data with a Swedish culture setting
                 ws.Cells["A1"].LoadFromText(txt, new ExcelTextFormat() { Delimiter = ';', Culture = CultureInfo.GetCultureInfo("sv-SE") }, TableStyles.Light10, true);
                 ws.Cells["A2:A12"].Style.Numberformat.Format = "yyyy-mm-dd";
@@ -68,7 +66,7 @@ namespace EPPlusSamples
                 ws.Cells["A15"].Value = "Column";
                 var sparklineCol = ws.SparklineGroups.Add(eSparklineType.Column, ws.Cells["B15:Q15"], ws.Cells["B2:Q12"]);
                 sparklineCol.High = true;
-                sparklineCol.ColorHigh.SetColor(Color.Red); 
+                sparklineCol.ColorHigh.SetColor(SKColors.Red);
 
                 // Add a line sparkline for  all currencies
                 ws.Cells["A16"].Value = "Line";
@@ -80,11 +78,11 @@ namespace EPPlusSamples
                 ws.Cells["B17:Q17"].LoadFromArrays(new List<object[]> { new object[] { 2, -1, 3, -4, 8, 5, -12, 18, 99, 1, -4, 12, -8, 9, 0, -8 } });
                 var sparklineStacked = ws.SparklineGroups.Add(eSparklineType.Stacked, ws.Cells["R17"], ws.Cells["B17:Q17"]);
                 sparklineStacked.High = true;
-                sparklineStacked.ColorHigh.SetColor(Color.Red);
+                sparklineStacked.ColorHigh.SetColor(SKColors.Red);
                 sparklineStacked.Low = true;
-                sparklineStacked.ColorLow.SetColor(Color.Green);
+                sparklineStacked.ColorLow.SetColor(SKColors.Green);
                 sparklineStacked.Negative = true;
-                sparklineStacked.ColorNegative.SetColor(Color.Blue);
+                sparklineStacked.ColorNegative.SetColor(SKColors.Blue);
 
                 ws.Cells["A15:A17"].Style.Font.Bold = true;
                 ws.Cells.AutoFitColumns();
@@ -95,5 +93,5 @@ namespace EPPlusSamples
                 package.SaveAs(Utils.GetFileInfo("Sample16.xlsx"));
             }
         }
-}
+    }
 }

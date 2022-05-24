@@ -29,17 +29,12 @@
  * Jan Källman		Added		10-SEP-2009
  *******************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Diagnostics;
-using OfficeOpenXml;
-using System.IO;
 using System.Data.SqlClient;
-using OfficeOpenXml.Drawing;
+using System.IO;
+using OfficeOpenXml;
 using OfficeOpenXml.Drawing.Chart;
 using OfficeOpenXml.Style;
-using System.Drawing;
+using SkiaSharp;
 
 namespace EPPlusSamples
 {
@@ -65,11 +60,11 @@ namespace EPPlusSamples
                 ws.Cells["E20"].Value = "Change";
                 ws.Cells["E20:G20"].Merge = true;
                 ws.Cells["B20:E20"].Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
-                using (ExcelRange row = ws.Cells["A20:G20"]) 
+                using (ExcelRange row = ws.Cells["A20:G20"])
                 {
                     row.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    row.Style.Fill.BackgroundColor.SetColor(Color.FromArgb(23,55,93));
-                    row.Style.Font.Color.SetColor(Color.White);
+                    row.Style.Fill.BackgroundColor.SetColor(new SKColor(23, 55, 93));
+                    row.Style.Font.Color.SetColor(SKColors.White);
                     row.Style.Font.Bold = true;
                 }
                 ws.Cells["B21"].Value = "USD/JPY";
@@ -81,8 +76,8 @@ namespace EPPlusSamples
                 using (ExcelRange row = ws.Cells["A21:G21"])
                 {
                     row.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    row.Style.Fill.BackgroundColor.SetColor(Color.FromArgb(184, 204, 228));
-                    row.Style.Font.Color.SetColor(Color.Black);
+                    row.Style.Fill.BackgroundColor.SetColor(new SKColor(184, 204, 228));
+                    row.Style.Font.Color.SetColor(SKColors.Black);
                     row.Style.Font.Bold = true;
                 }
 
@@ -95,7 +90,7 @@ namespace EPPlusSamples
                     using (SqlCommand sqlCmd = new SqlCommand("SELECT CurrencyRateDate, SUM(Case when ToCurrencyCode = 'JPY' Then EndOfDayRate Else 0 END) AS [JPY], SUM(Case when ToCurrencyCode = 'EUR' Then EndOfDayRate Else 0 END) AS [EUR], SUM(Case when ToCurrencyCode = 'GBP' Then EndOfDayRate Else 0 END) AS [GBP] FROM [Sales].[CurrencyRate]  where [FromCurrencyCode]='USD' AND ToCurrencyCode in ('JPY', 'EUR', 'GBP') GROUP BY CurrencyRateDate  ORDER BY CurrencyRateDate", sqlConn))
                     {
                         using (SqlDataReader sqlReader = sqlCmd.ExecuteReader())
-                        {                            
+                        {
                             // get the data and fill rows 22 onwards
                             while (sqlReader.Read())
                             {
@@ -115,7 +110,7 @@ namespace EPPlusSamples
                     }
 
                     //Set the series for the chart. The series must exist in the template or the program will crash.
-                    ExcelChart chart = ((ExcelChart)ws.Drawings["SampleChart"]); 
+                    ExcelChart chart = ((ExcelChart)ws.Drawings["SampleChart"]);
                     chart.Title.Text = "Exchange rate %";
                     chart.Series[0].Header = "USD/JPY";
                     chart.Series[0].XSeries = "'" + ws.Name + "'!" + ExcelRange.GetAddress(startRow+1, 1, row - 1, 1);
@@ -129,9 +124,9 @@ namespace EPPlusSamples
                     chart.Series[2].XSeries = "'" + ws.Name + "'!" + ExcelRange.GetAddress(startRow + 1, 1, row - 1, 1);
                     chart.Series[2].Series = "'" + ws.Name + "'!" + ExcelRange.GetAddress(startRow + 1, 7, row - 1, 7);
                 }
-                
+
                 //Get the documet as a byte array from the stream and save it to disk.  (This is useful in a webapplication) ... 
-                Byte[] bin = p.GetAsByteArray();
+                byte[] bin = p.GetAsByteArray();
 
                 FileInfo file = Utils.GetFileInfo("sample4.xlsx");
                 File.WriteAllBytes(file.FullName, bin);

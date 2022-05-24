@@ -31,7 +31,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Xml;
 
@@ -93,7 +92,7 @@ namespace OfficeOpenXml.Encryption
         /// </summary>
         TRIPLE_DES,
         /// 3DES_112 MUST conform to the [RFC1851] algorithm. 
-        TRIPLE_DES_112        
+        TRIPLE_DES_112
     }
     internal enum eChainingMode
     {
@@ -214,7 +213,7 @@ namespace OfficeOpenXml.Encryption
                     default:
                         try
                         {
-                            return (eHashAlogorithm)Enum.Parse(typeof(eHashAlogorithm),v);
+                            return (eHashAlogorithm)Enum.Parse(typeof(eHashAlogorithm), v);
                         }
                         catch
                         {
@@ -233,7 +232,7 @@ namespace OfficeOpenXml.Encryption
                         return "RIPEMD-160";
                     case eHashAlogorithm.SHA1:
                         return "SHA-1";
-                    default: 
+                    default:
                         return value.ToString();
                 }
             }
@@ -241,7 +240,7 @@ namespace OfficeOpenXml.Encryption
             {
                 get
                 {
-                    var v=GetXmlNodeString("@cipherChaining");
+                    var v = GetXmlNodeString("@cipherChaining");
                     try
                     {
                         return (eChainingMode)Enum.Parse(typeof(eChainingMode), v);
@@ -295,7 +294,7 @@ namespace OfficeOpenXml.Encryption
                     case eCipherAlgorithm.TRIPLE_DES:
                         return "3DES";
                     case eCipherAlgorithm.TRIPLE_DES_112:
-                        return "3DES_112";                    
+                        return "3DES_112";
                     default:
                         return alg.ToString();
                 }
@@ -456,29 +455,7 @@ namespace OfficeOpenXml.Encryption
                 }
             }
         }
-        /*
-        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-           <encryption xmlns="http://schemas.microsoft.com/office/2006/encryption" xmlns:p="http://schemas.microsoft.com/office/2006/keyEncryptor/password" xmlns:c="http://schemas.microsoft.com/office/2006/keyEncryptor/certificate">
-               <keyData saltSize="16" blockSize="16" keyBits="256" hashSize="64" cipherAlgorithm="AES" cipherChaining="ChainingModeCBC" hashAlgorithm="SHA512" saltValue="pa+hrJ3s1zrY6hmVuSa5JQ==" />
-               <dataIntegrity encryptedHmacKey="nd8i4sEKjsMjVN2gLo91oFN2e7bhMpWKDCAUBEpz4GW6NcE3hBXDobLksZvQGwLrPj0SUVzQA8VuDMyjMAfVCA==" encryptedHmacValue="O6oegHpQVz2uO7Om4oZijSi4kzLiiMZGIjfZlq/EFFO6PZbKitenBqe2or1REaxaI7gO/JmtJzZ1ViucqTaw4g==" />
-               <keyEncryptors>
-                   <keyEncryptor uri="http://schemas.microsoft.com/office/2006/keyEncryptor/password">
-                      <p:encryptedKey spinCount="100000" saltSize="16" blockSize="16" keyBits="256" hashSize="64" cipherAlgorithm="AES" cipherChaining="ChainingModeCBC" hashAlgorithm="SHA512" saltValue="u2BNFAuHYn3M/WRja3/uPg==" encryptedVerifierHashInput="M0V+fRolJMRgFyI9w+AVxQ==" encryptedVerifierHashValue="V/6l9pFH7AaXFqEbsnFBfHe7gMOqFeRwaNMjc7D3LNdw6KgZzOOQlt5sE8/oG7GPVBDGfoQMTxjQydVPVy4qng==" encryptedKeyValue="B0/rbSQRiIKG5CQDH6AKYSybdXzxgKAfX1f+S5k7mNE=" />
-                   </keyEncryptor></keyEncryptors></encryption>
-        */
-        
-        /***
-         * <?xml version="1.0" encoding="UTF-8" standalone="true"?>
-            <encryption xmlns:c="http://schemas.microsoft.com/office/2006/keyEncryptor/certificate" xmlns:p="http://schemas.microsoft.com/office/2006/keyEncryptor/password" xmlns="http://schemas.microsoft.com/office/2006/encryption">
-         *      <keyData saltValue="XmTB/XBGJSbwd/GTKzQv5A==" hashAlgorithm="SHA512" cipherChaining="ChainingModeCBC" cipherAlgorithm="AES" hashSize="64" keyBits="256" blockSize="16" saltSize="16"/>
-         *      <dataIntegrity encryptedHmacValue="WWw3Bb2dbcNPMnl9f1o7rO0u7sclWGKTXqBA6rRzKsP2KzWS5T0LxY9qFoC6QE67t/t+FNNtMDdMtE3D1xvT8w==" encryptedHmacKey="p/dVdlJY5Kj0k3jI1HRjqtk4s0Y4HmDAsc8nqZgfxNS7DopAsS3LU/2p3CYoIRObHsnHTAtbueH08DFCYGZURg=="/>
-         *          <keyEncryptors>
-         *              <keyEncryptor uri="http://schemas.microsoft.com/office/2006/keyEncryptor/password">
-         *                  <p:encryptedKey saltValue="EeBtY0QftyOkLztCl7NF0g==" hashAlgorithm="SHA512" cipherChaining="ChainingModeCBC" cipherAlgorithm="AES" hashSize="64" keyBits="256" blockSize="16" saltSize="16" encryptedKeyValue="Z7AO8vHnnPZEb1VqyZLJ6JFc3Mq3E322XPxWXS21fbU=" encryptedVerifierHashValue="G7BxbKnZanldvtsbu51mP9J3f9Wr5vCfCpvWSh5eIJff7Sr3J2DzH1/9aKj9uIpqFQIsLohpRk+oBYDcX7hRgw==" encryptedVerifierHashInput="851eszl5y5rdU1RnTjEWHw==" spinCount="100000"/>
-         *              </keyEncryptor>
-         *      </keyEncryptors>
-         *      </encryption
-         * ***/
+
         internal EncryptionDataIntegrity DataIntegrity { get; set; }
         internal EncryptionKeyData KeyData { get; set; }
         internal List<EncryptionKeyEncryptor> KeyEncryptors
@@ -487,7 +464,7 @@ namespace OfficeOpenXml.Encryption
             private set;
         }
 
-        internal XmlDocument Xml {get;set;}
+        internal XmlDocument Xml { get; set; }
         internal override void Read(byte[] data)
         {
             var byXml = new byte[data.Length - 8];
@@ -532,7 +509,6 @@ namespace OfficeOpenXml.Encryption
             Flags = (Flags)BitConverter.ToInt32(data, 4);
             HeaderSize = (uint)BitConverter.ToInt32(data, 8);
 
-            /**** EncryptionHeader ****/
             Header = new EncryptionHeader();
             Header.Flags = (Flags)BitConverter.ToInt32(data, 12);
             Header.SizeExtra = BitConverter.ToInt32(data, 16);
@@ -545,11 +521,10 @@ namespace OfficeOpenXml.Encryption
 
             byte[] text = new byte[(int)HeaderSize - 34];
             Array.Copy(data, 44, text, 0, (int)HeaderSize - 34);
-            Header.CSPName = UTF8Encoding.Unicode.GetString(text);
+            Header.CSPName = Encoding.Unicode.GetString(text);
 
             int pos = (int)HeaderSize + 12;
 
-            /**** EncryptionVerifier ****/
             Verifier = new EncryptionVerifier();
             Verifier.SaltSize = (uint)BitConverter.ToInt32(data, pos);
             Verifier.Salt = new byte[Verifier.SaltSize];

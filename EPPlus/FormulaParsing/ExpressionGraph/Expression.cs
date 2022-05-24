@@ -31,9 +31,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using OfficeOpenXml.FormulaParsing.Excel.Operators;
-using OfficeOpenXml.FormulaParsing.Exceptions;
 
 namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 {
@@ -63,7 +61,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             get { return _children.Any(); }
         }
 
-        public virtual Expression  PrepareForNextChild()
+        public virtual Expression PrepareForNextChild()
         {
             return this;
         }
@@ -112,7 +110,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             if (Prev != null)
             {
                 Prev.Next = expression;
-            }            
+            }
             return expression;
         }
 

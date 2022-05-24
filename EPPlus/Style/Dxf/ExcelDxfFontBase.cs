@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Drawing;
-using System.Xml;
-
-namespace OfficeOpenXml.Style.Dxf
+﻿namespace OfficeOpenXml.Style.Dxf
 {
     public class ExcelDxfFontBase : DxfStyleBase<ExcelDxfFontBase>
     {

@@ -1,8 +1,5 @@
-﻿using OfficeOpenXml.FormulaParsing;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OfficeOpenXml.FormulaParsing;
 
 namespace EPPlusTest.FormulaParsing
 {
@@ -57,7 +54,7 @@ namespace EPPlusTest.FormulaParsing
             cache.Clear();
             var id3 = cache.GetNewId();
             Assert.AreEqual(1, id3);
-            
+
         }
     }
 }

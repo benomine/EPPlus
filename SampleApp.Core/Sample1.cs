@@ -29,25 +29,21 @@
  *******************************************************************************
  * Jan Källman		Added		21 Mar 2010
  *******************************************************************************/
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
 using OfficeOpenXml;
-using System.Xml;
-using System.Drawing;
 using OfficeOpenXml.Style;
+using SkiaSharp;
+
 namespace EPPlusSamples
 {
-	class Sample1
-	{
+    class Sample1
+    {
         /// <summary>
         /// Sample 1 - simply creates a new workbook from scratch.
         /// The workbook contains one worksheet with a simple invertory list
         /// </summary>
         public static string RunSample1()
         {
-			using (var package = new ExcelPackage())
+            using (var package = new ExcelPackage())
             {
                 // Add a new worksheet to the empty workbook
                 ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Inventory");
@@ -78,21 +74,21 @@ namespace EPPlusSamples
                 worksheet.Cells["E2:E4"].Formula = "C2*D2";
 
                 //Ok now format the values;
-                using (var range = worksheet.Cells[1, 1, 1, 5]) 
+                using (var range = worksheet.Cells[1, 1, 1, 5])
                 {
                     range.Style.Font.Bold = true;
                     range.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    range.Style.Fill.BackgroundColor.SetColor(Color.DarkBlue);
-                    range.Style.Font.Color.SetColor(Color.White);
+                    range.Style.Fill.BackgroundColor.SetColor(SKColors.DarkBlue);
+                    range.Style.Font.Color.SetColor(SKColors.White);
                 }
 
                 worksheet.Cells["A5:E5"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
                 worksheet.Cells["A5:E5"].Style.Font.Bold = true;
 
-                worksheet.Cells[5, 3, 5, 5].Formula = string.Format("SUBTOTAL(9,{0})", new ExcelAddress(2,3,4,3).Address);
+                worksheet.Cells[5, 3, 5, 5].Formula = string.Format("SUBTOTAL(9,{0})", new ExcelAddress(2, 3, 4, 3).Address);
                 worksheet.Cells["C2:C5"].Style.Numberformat.Format = "#,##0";
                 worksheet.Cells["D2:E5"].Style.Numberformat.Format = "#,##0.00";
-                
+
                 //Create an autofilter for the range
                 worksheet.Cells["A1:E4"].AutoFilter = true;
 
@@ -101,7 +97,7 @@ namespace EPPlusSamples
                 //There is actually no need to calculate, Excel will do it for you, but in some cases it might be useful. 
                 //For example if you link to this workbook from another workbook or you will open the workbook in a program that hasn't a calculation engine or 
                 //you want to use the result of a formula in your program.
-                worksheet.Calculate(); 
+                worksheet.Calculate();
 
                 worksheet.Cells.AutoFitColumns(0);  //Autofit columns for all cells
 
@@ -138,6 +134,6 @@ namespace EPPlusSamples
                 package.SaveAs(xlFile);
                 return xlFile.FullName;
             }
-		}
-	}
+        }
+    }
 }

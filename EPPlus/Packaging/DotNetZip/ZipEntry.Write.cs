@@ -1,39 +1,10 @@
-//#define Trace
-
-// ZipEntry.Write.cs
-// ------------------------------------------------------------------
-//
-// Copyright (c) 2009-2011 Dino Chiesa
-// All rights reserved.
-//
-// This code module is part of DotNetZip, a zipfile class library.
-//
-// ------------------------------------------------------------------
-//
-// This code is licensed under the Microsoft Public License.
-// See the file License.txt for the license details.
-// More info on: http://dotnetzip.codeplex.com
-//
-// ------------------------------------------------------------------
-//
-// Last Saved: <2011-July-30 14:55:47>
-//
-// ------------------------------------------------------------------
-//
-// This module defines logic for writing (saving) the ZipEntry into a
-// zip file.
-//
-// ------------------------------------------------------------------
-
-
-using OfficeOpenXml.Packaging.Ionic.Zlib;
 using System;
 using System.IO;
-using RE = System.Text.RegularExpressions;
+using OfficeOpenXml.Packaging.Ionic.Zlib;
 
 namespace OfficeOpenXml.Packaging.Ionic.Zip
 {
-    internal partial class ZipEntry
+    public partial class ZipEntry
     {
         internal void WriteCentralDirectoryEntry(Stream s)
         {
@@ -45,35 +16,9 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
             bytes[i++] = (byte)((ZipConstants.ZipDirEntrySignature & 0x00FF0000) >> 16);
             bytes[i++] = (byte)((ZipConstants.ZipDirEntrySignature & 0xFF000000) >> 24);
 
-            // Version Made By
-            // workitem 7071
-            // We must not overwrite the VersionMadeBy field when writing out a zip
-            // archive.  The VersionMadeBy tells the zip reader the meaning of the
-            // File attributes.  Overwriting the VersionMadeBy will result in
-            // inconsistent metadata.  Consider the scenario where the application
-            // opens and reads a zip file that had been created on Linux. Then the
-            // app adds one file to the Zip archive, and saves it.  The file
-            // attributes for all the entries added on Linux will be significant for
-            // Linux.  Therefore the VersionMadeBy for those entries must not be
-            // changed.  Only the entries that are actually created on Windows NTFS
-            // should get the VersionMadeBy indicating Windows/NTFS.
             bytes[i++] = (byte)(_VersionMadeBy & 0x00FF);
             bytes[i++] = (byte)((_VersionMadeBy & 0xFF00) >> 8);
 
-            // Apparently we want to duplicate the extra field here; we cannot
-            // simply zero it out and assume tools and apps will use the right one.
-
-            ////Int16 extraFieldLengthSave = (short)(_EntryHeader[28] + _EntryHeader[29] * 256);
-            ////_EntryHeader[28] = 0;
-            ////_EntryHeader[29] = 0;
-
-            // Version Needed, Bitfield, compression method, lastmod,
-            // crc, compressed and uncompressed sizes, filename length and extra field length.
-            // These are all present in the local file header, but they may be zero values there.
-            // So we cannot just copy them.
-
-            // workitem 11969: Version Needed To Extract in central directory must be
-            // the same as the local entry or MS .NET System.IO.Zip fails read.
             Int16 vNeeded = (Int16)(VersionNeeded != 0 ? VersionNeeded : 20);
             // workitem 12964
             if (_OutputUsesZip64==null)
@@ -143,36 +88,6 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
             // do this again because now we have real data
             _presumeZip64 = _OutputUsesZip64.Value;
-
-            // workitem 11131
-            //
-            // cannot generate the extra field again, here's why: In the case of a
-            // zero-byte entry, which uses encryption, DotNetZip will "remove" the
-            // encryption from the entry.  It does this in PostProcessOutput; it
-            // modifies the entry header, and rewrites it, resetting the Bitfield
-            // (one bit indicates encryption), and potentially resetting the
-            // compression method - for AES the Compression method is 0x63, and it
-            // would get reset to zero (no compression).  It then calls SetLength()
-            // to truncate the stream to remove the encryption header (12 bytes for
-            // AES256).  But, it leaves the previously-generated "Extra Field"
-            // metadata (11 bytes) for AES in the entry header. This extra field
-            // data is now "orphaned" - it refers to AES encryption when in fact no
-            // AES encryption is used. But no problem, the PKWARE spec says that
-            // unrecognized extra fields can just be ignored. ok.  After "removal"
-            // of AES encryption, the length of the Extra Field can remains the
-            // same; it's just that there will be 11 bytes in there that previously
-            // pertained to AES which are now unused. Even the field code is still
-            // there, but it will be unused by readers, as the encryption bit is not
-            // set.
-            //
-            // Re-calculating the Extra field now would produce a block that is 11
-            // bytes shorter, and that mismatch - between the extra field in the
-            // local header and the extra field in the Central Directory - would
-            // cause problems. (where? why? what problems?)  So we can't do
-            // that. It's all good though, because though the content may have
-            // changed, the length definitely has not. Also, the _EntryHeader
-            // contains the "updated" extra field (after PostProcessOutput) at
-            // offset (30 + filenameLength).
 
             _Extra = ConstructExtraField(true);
 
@@ -609,7 +524,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
             // workitem 6513
             var s1 = NormalizeFileName();
 
-            switch(AlternateEncodingUsage)
+            switch (AlternateEncodingUsage)
             {
                 case ZipOption.Always:
                     if (!(_Comment == null || _Comment.Length == 0))
@@ -658,7 +573,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
             // there is a comment. Get the encoded form.
             byte[] cbytes = ibm437.GetBytes(_Comment);
-            string c2 = ibm437.GetString(cbytes,0,cbytes.Length);
+            string c2 = ibm437.GetString(cbytes, 0, cbytes.Length);
 
             // Check for round-trip.
             if (c2 != Comment)

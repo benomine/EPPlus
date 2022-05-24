@@ -30,13 +30,10 @@
  * Jan Källman		Added		28 Oct 2010
  *******************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 using OfficeOpenXml;
-using System.Drawing;
 using OfficeOpenXml.Style;
+using SkiaSharp;
 
 namespace EPPlusSamples
 {
@@ -73,10 +70,10 @@ namespace EPPlusSamples
                 var sheet = package.Workbook.Worksheets.Add("Quiz");
                 sheet.View.ShowGridLines = false;
                 sheet.View.ShowHeaders = false;
-                using(var range=sheet.Cells["A:XFD"])
+                using (var range = sheet.Cells["A:XFD"])
                 {
                     range.Style.Fill.PatternType=ExcelFillStyle.Solid;
-                    range.Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+                    range.Style.Fill.BackgroundColor.SetColor(SKColors.LightGray);
                     range.Style.Font.Name = "Broadway";
                     range.Style.Hidden = true;
                 }
@@ -96,15 +93,15 @@ namespace EPPlusSamples
 
                 using (var r = sheet.Cells["B3,C7,C9,C11"])
                 {
-                    r.Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
+                    r.Style.Fill.BackgroundColor.SetColor(SKColors.WhiteSmoke);
                     r.Style.Border.Top.Style = ExcelBorderStyle.Dotted;
-                    r.Style.Border.Top.Color.SetColor(Color.Black);
+                    r.Style.Border.Top.Color.SetColor(SKColors.Black);
                     r.Style.Border.Right.Style = ExcelBorderStyle.Dotted;
-                    r.Style.Border.Right.Color.SetColor(Color.Black);
+                    r.Style.Border.Right.Color.SetColor(SKColors.Black);
                     r.Style.Border.Bottom.Style = ExcelBorderStyle.Dotted;
-                    r.Style.Border.Bottom.Color.SetColor(Color.Black);
+                    r.Style.Border.Bottom.Color.SetColor(SKColors.Black);
                     r.Style.Border.Left.Style = ExcelBorderStyle.Dotted;
-                    r.Style.Border.Left.Color.SetColor(Color.Black);
+                    r.Style.Border.Left.Color.SetColor(SKColors.Black);
                     r.Style.Locked = false;
                     r.Style.Hidden = false;
                     r.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
@@ -151,7 +148,7 @@ namespace EPPlusSamples
                     packageAnswers.SaveAs(answerFile, "EPPlus");                        //Save and set the password to EPPlus. The password can also be set using packageAnswers.Encryption.Password property
                 }
 
-                //Ok, Since this is     qan example we create one user answer...
+                //Ok, Since this is an example we create one user answer...
                 using (var packageAnswers = new ExcelPackage(package.Stream))
                 {
                     var sheetUser = packageAnswers.Workbook.Worksheets[0];
@@ -167,7 +164,7 @@ namespace EPPlusSamples
 
             //Now lets correct the user form...
             var packAnswers = new ExcelPackage(answerFile, "EPPlus");    //Supply the password, so the file can be decrypted
-            var packUser =  new ExcelPackage(JKAnswerFile, "JK");        //Supply the password, so the file can be decrypted
+            var packUser = new ExcelPackage(JKAnswerFile, "JK");        //Supply the password, so the file can be decrypted
 
             var wsAnswers = packAnswers.Workbook.Worksheets[0];
             var wsUser = packUser.Workbook.Worksheets[0];
@@ -178,11 +175,11 @@ namespace EPPlusSamples
                 wsUser.Cells[cell.Address].Style.Fill.PatternType = ExcelFillStyle.Solid;
                 if (cell.Value.ToString().Equals(wsUser.Cells[cell.Address].Value.ToString(), StringComparison.OrdinalIgnoreCase)) //Correct Answer?
                 {
-                    wsUser.Cells[cell.Address].Style.Fill.BackgroundColor.SetColor(Color.Green);
+                    wsUser.Cells[cell.Address].Style.Fill.BackgroundColor.SetColor(SKColors.Green);
                 }
                 else
                 {
-                    wsUser.Cells[cell.Address].Style.Fill.BackgroundColor.SetColor(Color.Red);
+                    wsUser.Cells[cell.Address].Style.Fill.BackgroundColor.SetColor(SKColors.Red);
                 }
             }
             packUser.Save();

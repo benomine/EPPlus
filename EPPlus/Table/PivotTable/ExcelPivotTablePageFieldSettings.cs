@@ -29,9 +29,6 @@
  * Jan Källman		Added		21-MAR-2011
  * Jan Källman		License changed GPL-->LGPL 2011-12-16
  *******************************************************************************/
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Xml;
 
 namespace OfficeOpenXml.Table.PivotTable
@@ -39,7 +36,7 @@ namespace OfficeOpenXml.Table.PivotTable
     /// <summary>
     /// A page / report filter field
     /// </summary>
-    public class ExcelPivotTablePageFieldSettings  : XmlHelper
+    public class ExcelPivotTablePageFieldSettings : XmlHelper
     {
         ExcelPivotTableField _field;
         internal ExcelPivotTablePageFieldSettings(XmlNamespaceManager ns, XmlNode topNode, ExcelPivotTableField field, int index) :
@@ -51,15 +48,15 @@ namespace OfficeOpenXml.Table.PivotTable
             }
             _field = field;
         }
-        internal int Index 
-        { 
+        internal int Index
+        {
             get
             {
                 return GetXmlNodeInt("@fld");
             }
             set
             {
-                SetXmlNodeString("@fld",value.ToString());
+                SetXmlNodeString("@fld", value.ToString());
             }
         }
         /// <summary>

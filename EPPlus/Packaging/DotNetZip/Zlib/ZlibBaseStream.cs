@@ -24,9 +24,9 @@
 //
 // ------------------------------------------------------------------
 
-using OfficeOpenXml.Packaging.Ionic.Crc;
 using System;
 using System.IO;
+using OfficeOpenXml.Packaging.Ionic.Crc;
 
 namespace OfficeOpenXml.Packaging.Ionic.Zlib
 {

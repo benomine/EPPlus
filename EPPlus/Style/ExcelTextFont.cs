@@ -30,12 +30,9 @@
  * Jan Källman		License changed GPL-->LGPL 2011-12-16
  *******************************************************************************/
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 using System.Xml;
-using OfficeOpenXml.Drawing;
-using System.Drawing;
+using SkiaSharp;
 
 namespace OfficeOpenXml.Style
 {
@@ -46,7 +43,7 @@ namespace OfficeOpenXml.Style
     {
         Dash,
         DashHeavy,
-        DashLong, 
+        DashLong,
         DashLongHeavy,
         Double,
         DotDash,
@@ -156,24 +153,24 @@ namespace OfficeOpenXml.Style
             }
         }
         string _underLineColorPath = "a:uFill/a:solidFill/a:srgbClr/@val";
-        public Color UnderLineColor
+        public SKColor UnderLineColor
         {
             get
             {
                 string col = GetXmlNodeString(_underLineColorPath);
                 if (col == "")
                 {
-                    return Color.Empty;
+                    return SKColors.Empty;
                 }
                 else
                 {
-                    return Color.FromArgb(int.Parse(col, System.Globalization.NumberStyles.AllowHexSpecifier));
+                    return SKColor.Parse(col);
                 }
             }
             set
             {
                 CreateTopNode();
-                SetXmlNodeString(_underLineColorPath, value.ToArgb().ToString("X").Substring(2, 6));
+                SetXmlNodeString(_underLineColorPath, value.ToString().Substring(2, 6));
             }
         }
         string _italicPath = "@i";
@@ -216,24 +213,24 @@ namespace OfficeOpenXml.Style
             }
         }
         string _colorPath = "a:solidFill/a:srgbClr/@val";
-        public Color Color
+        public SKColor Color
         {
             get
             {
                 string col = GetXmlNodeString(_colorPath);
                 if (col == "")
                 {
-                    return Color.Empty;
+                    return SKColors.Empty;
                 }
                 else
                 {
-                    return Color.FromArgb(int.Parse(col, System.Globalization.NumberStyles.AllowHexSpecifier));
+                    return SKColor.Parse(col);
                 }
             }
             set
             {
                 CreateTopNode();
-                SetXmlNodeString(_colorPath, value.ToArgb().ToString("X").Substring(2, 6));
+                SetXmlNodeString(_colorPath, value.ToString().Substring(2, 6));
             }
         }
         #region "Translate methods"
@@ -293,15 +290,15 @@ namespace OfficeOpenXml.Style
         /// Set the font style from a font object
         /// </summary>
         /// <param name="Font"></param>
-        public void SetFromFont(Font Font)
+        public void SetFromFont(SKFont Font)
         {
-            LatinFont = Font.Name;
-            ComplexFont = Font.Name;
-            Size = Font.Size;
-            if (Font.Bold) Bold = Font.Bold;
-            if (Font.Italic) Italic = Font.Italic;
-            if (Font.Underline) UnderLine = eUnderLineType.Single;
-            if (Font.Strikeout) Strike = eStrikeType.Single;
+            LatinFont = Font.Typeface.FamilyName;
+            ComplexFont = Font.Typeface.FamilyName;
+            Size = (int)Font.Size;
+            //Strike = Font.Strikeout;
+            Bold = Font.Typeface.IsBold;
+            //UnderLine = Font.Underline;
+            Italic = Font.Typeface.IsItalic;
         }
     }
 }

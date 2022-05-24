@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using OfficeOpenXml;
 
 namespace EPPlusSamples
@@ -19,7 +16,7 @@ namespace EPPlusSamples
                 ws1.Cells["A2"].Value = 4;
                 ws1.Cells["A3"].Value = 6;
                 ws1.Cells["A4"].Formula = "SUM(A1:A3)";
-                
+
                 // calculate all formulas on  the worksheet
                 ws1.Calculate();
 
@@ -40,7 +37,7 @@ namespace EPPlusSamples
                 // Calculate a range
                 ws1.Cells["B1"].Formula = "IF(TODAY()<DATE(2014,6,1),\"BEFORE\" &\" FIRST\",CONCATENATE(\"FIRST\",\" OF\",\" JUNE 2014 OR LATER\"))";
                 ws1.Cells["B1"].Calculate();
-                
+
                 // Print the calculated value
                 Console.WriteLine("IF(TODAY()<DATE(2014,6,1),\"BEFORE\" &\" FIRST\",CONCATENATE(\"FIRST\",\" OF\",\" JUNE 2014 OR LATER\")) evaluated to {0}", ws1.Cells["B1"].Value);
 
@@ -56,7 +53,7 @@ namespace EPPlusSamples
                 // Evaluate a formula string (Calculate depending cells)
                 // A1 will be recalculated.
                 var result2 = ws1.Calculate("(2+4)*A1");
-                
+
             }
         }
     }

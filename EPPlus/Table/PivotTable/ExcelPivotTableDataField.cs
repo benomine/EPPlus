@@ -30,9 +30,7 @@
  * Jan Källman		License changed GPL-->LGPL 2011-12-16
  *******************************************************************************/
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 using System.Xml;
 using OfficeOpenXml.Style.XmlAccess;
 
@@ -43,7 +41,7 @@ namespace OfficeOpenXml.Table.PivotTable
     /// </summary>
     public class ExcelPivotTableDataField : XmlHelper
     {
-        internal ExcelPivotTableDataField(XmlNamespaceManager ns, XmlNode topNode,ExcelPivotTableField field) :
+        internal ExcelPivotTableDataField(XmlNamespaceManager ns, XmlNode topNode, ExcelPivotTableField field) :
             base(ns, topNode)
         {
             if (topNode.Attributes.Count == 0)
@@ -52,7 +50,7 @@ namespace OfficeOpenXml.Table.PivotTable
                 BaseField = 0;
                 BaseItem = 0;
             }
-            
+
             Field = field;
         }
         /// <summary>
@@ -66,15 +64,15 @@ namespace OfficeOpenXml.Table.PivotTable
         /// <summary>
         /// The index of the datafield
         /// </summary>
-        public int Index 
-        { 
+        public int Index
+        {
             get
             {
                 return GetXmlNodeInt("@fld");
             }
             internal set
             {
-                SetXmlNodeString("@fld",value.ToString());
+                SetXmlNodeString("@fld", value.ToString());
             }
         }
         /// <summary>
@@ -173,8 +171,8 @@ namespace OfficeOpenXml.Table.PivotTable
         {
             get
             {
-                string s=GetXmlNodeString("@subtotal");
-                if(s=="")
+                string s = GetXmlNodeString("@subtotal");
+                if (s=="")
                 {
                     return DataFieldFunctions.None;
                 }
@@ -186,7 +184,7 @@ namespace OfficeOpenXml.Table.PivotTable
             set
             {
                 string v;
-                switch(value)
+                switch (value)
                 {
                     case DataFieldFunctions.None:
                         DeleteNode("@subtotal");
@@ -203,7 +201,7 @@ namespace OfficeOpenXml.Table.PivotTable
                     default:
                         v=value.ToString().ToLower(CultureInfo.InvariantCulture);
                         break;
-                }                
+                }
                 SetXmlNodeString("@subtotal", v);
             }
         }

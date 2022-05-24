@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Text;
 using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OfficeOpenXml.Utils;
-using OfficeOpenXml;
-using System.Security.Cryptography.X509Certificates;
 using System.IO;
-using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OfficeOpenXml;
+using OfficeOpenXml.Utils;
 using OfficeOpenXml.VBA;
 
 namespace EPPlusTest
@@ -226,7 +224,7 @@ namespace EPPlusTest
             using (var package = new ExcelPackage(new FileInfo(@"c:\temp\bug\makro.xlsm")))
             {
                 Console.WriteLine(package.Workbook.VbaProject.Modules[0].Name);
-                
+
                 package.SaveAs(new FileInfo(@"c:\temp\bug\makroepp.xlsm"));
             }
         }

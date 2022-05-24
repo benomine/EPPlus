@@ -30,10 +30,10 @@
  * Jan Källman		License changed GPL-->LGPL 2011-12-16
  *******************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml;
 using System.Globalization;
+using System.Xml;
+using SkiaSharp;
+
 namespace OfficeOpenXml.Style.XmlAccess
 {
     /// <summary>
@@ -53,7 +53,7 @@ namespace OfficeOpenXml.Style.XmlAccess
         internal ExcelColorXml(XmlNamespaceManager nsm, XmlNode topNode) :
             base(nsm, topNode)
         {
-            if(topNode==null)
+            if (topNode==null)
             {
                 _exists=false;
             }
@@ -67,7 +67,7 @@ namespace OfficeOpenXml.Style.XmlAccess
                 _indexed = GetXmlNodeIntNull("@indexed") ?? int.MinValue;
             }
         }
-        
+
         internal override string Id
         {
             get
@@ -170,21 +170,21 @@ namespace OfficeOpenXml.Style.XmlAccess
             _rgb = "";
             _auto = false;
         }
-        public void SetColor(System.Drawing.Color color)
+        public void SetColor(SKColor color)
         {
             Clear();
-            _rgb = color.ToArgb().ToString("X");
+            _rgb = color.ToString();
         }
 
         internal ExcelColorXml Copy()
         {
-            return new ExcelColorXml(NameSpaceManager) {_indexed=_indexed, _tint=_tint, _rgb=_rgb, _theme=_theme, _auto=_auto, _exists=_exists };
+            return new ExcelColorXml(NameSpaceManager) { _indexed=_indexed, _tint=_tint, _rgb=_rgb, _theme=_theme, _auto=_auto, _exists=_exists };
         }
 
         internal override XmlNode CreateXmlNode(XmlNode topNode)
         {
             TopNode = topNode;
-            if(_rgb!="")
+            if (_rgb!="")
             {
                 SetXmlNodeString("@rgb", _rgb);
             }

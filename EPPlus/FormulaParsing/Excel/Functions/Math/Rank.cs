@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using OfficeOpenXml.FormulaParsing.ExpressionGraph;
 
 namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
@@ -9,7 +8,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
     public class Rank : ExcelFunction
     {
         bool _isAvg;
-        public Rank(bool isAvg=false)
+        public Rank(bool isAvg = false)
         {
             _isAvg=isAvg;
         }
@@ -38,7 +37,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
             if (asc)
             {
                 ix = l.IndexOf(number)+1;
-                if(_isAvg)
+                if (_isAvg)
                 {
                     int st = Convert.ToInt32(ix);
                     while (l.Count > st && l[st] == number) st++;

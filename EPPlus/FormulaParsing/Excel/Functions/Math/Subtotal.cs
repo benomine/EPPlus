@@ -22,10 +22,8 @@
  *******************************************************************************
  * Mats Alm   		                Added		                2013-12-03
  *******************************************************************************/
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using OfficeOpenXml.FormulaParsing.ExpressionGraph;
 
 namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
@@ -33,7 +31,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
     public class Subtotal : ExcelFunction
     {
         private Dictionary<int, HiddenValuesHandlingFunction> _functions = new Dictionary<int, HiddenValuesHandlingFunction>();
-        
+
         public Subtotal()
         {
             Initialize();
@@ -99,7 +97,6 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
             if (!_functions.ContainsKey(funcNum))
             {
                 ThrowExcelErrorValueException(eErrorType.Value);
-                //throw new ArgumentException("Invalid funcNum " + funcNum + ", valid ranges are 1-11 and 101-111");
             }
             return _functions[funcNum];
         }

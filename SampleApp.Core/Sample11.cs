@@ -27,10 +27,8 @@
  * Mats Alm   		                Added       		        2011-01-08
  *******************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
+using System.Text;
 using OfficeOpenXml;
 using OfficeOpenXml.DataValidation;
 using OfficeOpenXml.DataValidation.Contracts;
@@ -95,7 +93,7 @@ namespace EPPlusSamples
             sheet.Cells["B2"].Value = 1;
             sheet.Cells["B3"].Value = 2;
             sheet.Cells["B4"].Value = 3;
-            
+
             // add a validation and set values
             var validation = sheet.DataValidations.AddListValidation("A1");
             // Alternatively:
@@ -107,7 +105,7 @@ namespace EPPlusSamples
             validation.Formula.ExcelFormula = "B2:B4";
 
             Console.WriteLine("Added sheet for list validation with formula");
-            
+
         }
 
         /// <summary>
@@ -192,7 +190,7 @@ namespace EPPlusSamples
             int row = 2;
             foreach (var otherSheet in package.Workbook.Worksheets)
             {
-                if(otherSheet == sheet)
+                if (otherSheet == sheet)
                 {
                     continue;
                 }
@@ -205,7 +203,7 @@ namespace EPPlusSamples
                         sheet.Cells["C" + row.ToString()].Value = ((IExcelDataValidationWithOperator)dataValidation).Operator.ToString();
                     }
                     // type casting is needed to get validationtype-specific values
-                    switch(dataValidation.ValidationType.Type)
+                    switch (dataValidation.ValidationType.Type)
                     {
                         case eDataValidationType.Whole:
                             PrintWholeValidationDetails(sheet, (IExcelDataValidationInt)dataValidation, row);
@@ -235,7 +233,7 @@ namespace EPPlusSamples
         {
             string value = string.Empty;
             // if formula is used - show it...
-            if(!string.IsNullOrEmpty(listValidation.Formula.ExcelFormula))
+            if (!string.IsNullOrEmpty(listValidation.Formula.ExcelFormula))
             {
                 value = listValidation.Formula.ExcelFormula;
             }
@@ -243,9 +241,9 @@ namespace EPPlusSamples
             {
                 // otherwise - show the values from the list collection
                 var sb = new StringBuilder();
-                foreach(var listValue in listValidation.Formula.Values)
+                foreach (var listValue in listValidation.Formula.Values)
                 {
-                    if(sb.Length > 0)
+                    if (sb.Length > 0)
                     {
                         sb.Append(",");
                     }
@@ -259,7 +257,7 @@ namespace EPPlusSamples
         private static void PrintTimeValidationDetails(ExcelWorksheet sheet, ExcelDataValidationTime validation, int row)
         {
             var value1 = string.Empty;
-            if(!string.IsNullOrEmpty(validation.Formula.ExcelFormula))
+            if (!string.IsNullOrEmpty(validation.Formula.ExcelFormula))
             {
                 value1 = validation.Formula.ExcelFormula;
             }

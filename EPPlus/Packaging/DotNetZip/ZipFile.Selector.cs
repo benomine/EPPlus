@@ -33,10 +33,10 @@
 
 
 using System;
-using System.IO;
 using System.Collections.Generic;
-using OfficeOpenXml.Packaging.Ionic.Zip;
 using System.Globalization;
+using System.IO;
+using OfficeOpenXml.Packaging.Ionic.Zip;
 
 namespace OfficeOpenXml.Packaging.Ionic.Zip
 {

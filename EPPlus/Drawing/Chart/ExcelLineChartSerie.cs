@@ -30,11 +30,9 @@
  * Jan Källman		License changed GPL-->LGPL 2011-12-16
  *******************************************************************************/
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 using System.Xml;
-using System.Drawing;
+using SkiaSharp;
 
 namespace OfficeOpenXml.Drawing.Chart
 {
@@ -108,8 +106,6 @@ namespace OfficeOpenXml.Drawing.Chart
             }
         }
 
-        //new properties for excel line charts: LineColor, MarkerSize, LineWidth and MarkerLineColor 
-        //implemented according to https://epplus.codeplex.com/discussions/287917
         string LINECOLOR_PATH = "c:spPr/a:ln/a:solidFill/a:srgbClr/@val";
         /// <summary>
         /// Line color.
@@ -118,23 +114,23 @@ namespace OfficeOpenXml.Drawing.Chart
         /// <value>
         /// The color of the line.
         /// </value>
-        public Color LineColor
+        public SKColor LineColor
         {
             get
             {
                 string color = GetXmlNodeString(LINECOLOR_PATH);
                 if (color == "")
                 {
-                    return Color.Black;
+                    return SKColors.Black;
                 }
                 else
                 {
-                    return Color.FromArgb(Convert.ToInt32(color, 16));
+                    return SKColor.Parse(color);
                 }
             }
             set
             {
-                SetXmlNodeString(LINECOLOR_PATH, value.ToArgb().ToString("X").Substring(2), true);
+                SetXmlNodeString(LINECOLOR_PATH, value.ToString().Substring(2), true);
             }
         }
         string MARKERSIZE_PATH = "c:marker/c:size/@val";
@@ -195,7 +191,7 @@ namespace OfficeOpenXml.Drawing.Chart
             }
             set
             {
-                SetXmlNodeString(LINEWIDTH_PATH, (( int )(12700 * value)).ToString(), true);
+                SetXmlNodeString(LINEWIDTH_PATH, ((int)(12700 * value)).ToString(), true);
             }
         }
         //marker line color
@@ -208,23 +204,23 @@ namespace OfficeOpenXml.Drawing.Chart
         /// <value>
         /// The color of the Marker line.
         /// </value>
-        public Color MarkerLineColor
+        public SKColor MarkerLineColor
         {
             get
             {
                 string color = GetXmlNodeString(MARKERLINECOLOR_PATH);
                 if (color == "")
                 {
-                    return Color.Black;
+                    return SKColors.Black;
                 }
                 else
                 {
-                    return Color.FromArgb(Convert.ToInt32(color, 16));
+                    return SKColor.Parse(color);
                 }
             }
             set
             {
-                SetXmlNodeString(MARKERLINECOLOR_PATH, value.ToArgb().ToString("X").Substring(2), true);
+                SetXmlNodeString(MARKERLINECOLOR_PATH, value.ToString().Substring(2), true);
             }
         }
 

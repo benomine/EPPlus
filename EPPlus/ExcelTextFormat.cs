@@ -29,10 +29,8 @@
  * Jan Källman		    Initial Release		        2011-01-01
  * Jan Källman		    License changed GPL-->LGPL 2011-12-27
  *******************************************************************************/
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Globalization;
+using System.Text;
 
 namespace OfficeOpenXml
 {
@@ -93,7 +91,7 @@ namespace OfficeOpenXml
             DataTypes=null;
             SkipLinesBeginning = 0;
             SkipLinesEnd = 0;
-            Encoding=Encoding.ASCII;
+            Encoding = Encoding.ASCII;
         }
         /// <summary>
         /// Delimiter character
@@ -102,7 +100,7 @@ namespace OfficeOpenXml
         /// <summary>
         /// Text qualifier character 
         /// </summary>
-        public char TextQualifier {get; set; }
+        public char TextQualifier { get; set; }
         /// <summary>
         /// End of line characters. Default CRLF
         /// </summary>
@@ -114,7 +112,7 @@ namespace OfficeOpenXml
         /// <summary>
         /// Culture used when parsing. Default CultureInfo.InvariantCulture
         /// </summary>
-        public CultureInfo Culture {get; set; }
+        public CultureInfo Culture { get; set; }
         /// <summary>
         /// Number of lines skiped in the begining of the file. Default 0.
         /// </summary>

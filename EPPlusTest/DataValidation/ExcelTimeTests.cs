@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeOpenXml.DataValidation;
 
@@ -12,7 +9,7 @@ namespace EPPlusTest.DataValidation
     {
         private ExcelTime _time;
         private readonly decimal SecondsPerHour = 3600;
-       // private readonly decimal HoursPerDay = 24;
+        // private readonly decimal HoursPerDay = 24;
         private readonly decimal SecondsPerDay = 3600 * 24;
 
         private decimal Round(decimal value)
@@ -79,7 +76,7 @@ namespace EPPlusTest.DataValidation
         {
             // Act
             _time.Hour = 1;
-            
+
             // Assert
             Assert.AreEqual(Round(SecondsPerHour/SecondsPerDay), _time.ToExcelTime());
         }

@@ -29,14 +29,10 @@
  * Mats Alm   		                Added       		        2011-01-08
  * Jan Källman		                License changed GPL-->LGPL  2011-12-27
  *******************************************************************************/
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using OfficeOpenXml.DataValidation.Formulas;
-using OfficeOpenXml.DataValidation.Formulas.Contracts;
 using System.Xml;
 using OfficeOpenXml.DataValidation.Contracts;
+using OfficeOpenXml.DataValidation.Formulas;
+using OfficeOpenXml.DataValidation.Formulas.Contracts;
 
 namespace OfficeOpenXml.DataValidation
 {
@@ -51,7 +47,7 @@ namespace OfficeOpenXml.DataValidation
         /// <param name="worksheet"></param>
         /// <param name="address"></param>
         /// <param name="validationType"></param>
-        internal ExcelDataValidationInt(ExcelWorksheet worksheet, string address, ExcelDataValidationType validationType)
+        public ExcelDataValidationInt(ExcelWorksheet worksheet, string address, ExcelDataValidationType validationType)
             : base(worksheet, address, validationType)
         {
             Formula = new ExcelDataValidationFormulaInt(worksheet.NameSpaceManager, TopNode, _formula1Path);
@@ -65,7 +61,7 @@ namespace OfficeOpenXml.DataValidation
         /// <param name="address"></param>
         /// <param name="validationType"></param>
         /// <param name="itemElementNode"></param>
-        internal ExcelDataValidationInt(ExcelWorksheet worksheet, string address, ExcelDataValidationType validationType, XmlNode itemElementNode)
+        public ExcelDataValidationInt(ExcelWorksheet worksheet, string address, ExcelDataValidationType validationType, XmlNode itemElementNode)
             : base(worksheet, address, validationType, itemElementNode)
         {
             Formula = new ExcelDataValidationFormulaInt(worksheet.NameSpaceManager, TopNode, _formula1Path);
@@ -80,7 +76,7 @@ namespace OfficeOpenXml.DataValidation
         /// <param name="validationType"></param>
         /// <param name="itemElementNode"></param>
         /// <param name="namespaceManager">For test purposes</param>
-        internal ExcelDataValidationInt(ExcelWorksheet worksheet, string address, ExcelDataValidationType validationType, XmlNode itemElementNode, XmlNamespaceManager namespaceManager)
+        public ExcelDataValidationInt(ExcelWorksheet worksheet, string address, ExcelDataValidationType validationType, XmlNode itemElementNode, XmlNamespaceManager namespaceManager)
             : base(worksheet, address, validationType, itemElementNode, namespaceManager)
         {
             Formula = new ExcelDataValidationFormulaInt(NameSpaceManager, TopNode, _formula1Path);

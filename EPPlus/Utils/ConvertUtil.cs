@@ -1,82 +1,78 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using OfficeOpenXml.FormulaParsing.ExpressionGraph;
-using System.IO;
 using OfficeOpenXml.Compatibility;
 
 namespace OfficeOpenXml.Utils
 {
-    internal static class ConvertUtil
+    public static class ConvertUtil
     {
-        internal static bool IsNumeric(object candidate)
+        public static bool IsNumeric(object candidate)
         {
             if (candidate == null) return false;
             return (TypeCompat.IsPrimitive(candidate) || candidate is double || candidate is decimal || candidate is DateTime || candidate is TimeSpan || candidate is long);
         }
-		/// <summary>
-		/// Tries to parse a double from the specified <paramref name="candidate"/> which is expected to be a string value.
-		/// </summary>
-		/// <param name="candidate">The string value.</param>
-		/// <param name="result">The double value parsed from the specified <paramref name="candidate"/>.</param>
-		/// <returns>True if <paramref name="candidate"/> could be parsed to a double; otherwise, false.</returns>
-		internal static bool TryParseNumericString(object candidate, out double result)
-		{
-			if (candidate != null)
-			{
-				// If a number is stored in a string, Excel will not convert it to the invariant format, so assume that it is in the current culture's number format.
-				// This may not always be true, but it is a better assumption than assuming it is always in the invariant culture, which will probably never be true
-				// for locales outside the United States.
-				var style = NumberStyles.Float | NumberStyles.AllowThousands;
-				return double.TryParse(candidate.ToString(), style, CultureInfo.CurrentCulture, out result);
-			}
-			result = 0;
-			return false;
-		}
-		/// <summary>
-		/// Tries to parse a boolean value from the specificed <paramref name="candidate"/>.
-		/// </summary>
-		/// <param name="candidate">The value to check for boolean-ness.</param>
-		/// <param name="result">The boolean value parsed from the specified <paramref name="candidate"/>.</param>
-		/// <returns>True if <paramref name="candidate"/> could be parsed </returns>
-		internal static bool TryParseBooleanString(object candidate, out bool result)
-		{
-			if (candidate != null)
-				return bool.TryParse(candidate.ToString(), out result);
-			result = false;
-			return false;
-		}
-		/// <summary>
-		/// Tries to parse a <see cref="DateTime"/> from the specified <paramref name="candidate"/> which is expected to be a string value.
-		/// </summary>
-		/// <param name="candidate">The string value.</param>
-		/// <param name="result">The double value parsed from the specified <paramref name="candidate"/>.</param>
-		/// <returns>True if <paramref name="candidate"/> could be parsed to a double; otherwise, false.</returns>
-		internal static bool TryParseDateString(object candidate, out DateTime result)
-		{
-			if (candidate != null)
-			{
-				var style = DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal;
-				// If a date is stored in a string, Excel will not convert it to the invariant format, so assume that it is in the current culture's date/time format.
-				// This may not always be true, but it is a better assumption than assuming it is always in the invariant culture, which will probably never be true
-				// for locales outside the United States.
-				return DateTime.TryParse(candidate.ToString(), CultureInfo.CurrentCulture, style, out result);
-			}
-			result = DateTime.MinValue;
-			return false;
-		}
-		/// <summary>
-		/// Convert an object value to a double 
-		/// </summary>
-		/// <param name="v"></param>
-		/// <param name="ignoreBool"></param>
+        /// <summary>
+        /// Tries to parse a double from the specified <paramref name="candidate"/> which is expected to be a string value.
+        /// </summary>
+        /// <param name="candidate">The string value.</param>
+        /// <param name="result">The double value parsed from the specified <paramref name="candidate"/>.</param>
+        /// <returns>True if <paramref name="candidate"/> could be parsed to a double; otherwise, false.</returns>
+        public static bool TryParseNumericString(object candidate, out double result)
+        {
+            if (candidate != null)
+            {
+                // If a number is stored in a string, Excel will not convert it to the invariant format, so assume that it is in the current culture's number format.
+                // This may not always be true, but it is a better assumption than assuming it is always in the invariant culture, which will probably never be true
+                // for locales outside the United States.
+                var style = NumberStyles.Float | NumberStyles.AllowThousands;
+                return double.TryParse(candidate.ToString(), style, CultureInfo.CurrentCulture, out result);
+            }
+            result = 0;
+            return false;
+        }
+        /// <summary>
+        /// Tries to parse a boolean value from the specificed <paramref name="candidate"/>.
+        /// </summary>
+        /// <param name="candidate">The value to check for boolean-ness.</param>
+        /// <param name="result">The boolean value parsed from the specified <paramref name="candidate"/>.</param>
+        /// <returns>True if <paramref name="candidate"/> could be parsed </returns>
+        public static bool TryParseBooleanString(object candidate, out bool result)
+        {
+            if (candidate != null)
+                return bool.TryParse(candidate.ToString(), out result);
+            result = false;
+            return false;
+        }
+        /// <summary>
+        /// Tries to parse a <see cref="DateTime"/> from the specified <paramref name="candidate"/> which is expected to be a string value.
+        /// </summary>
+        /// <param name="candidate">The string value.</param>
+        /// <param name="result">The double value parsed from the specified <paramref name="candidate"/>.</param>
+        /// <returns>True if <paramref name="candidate"/> could be parsed to a double; otherwise, false.</returns>
+        public static bool TryParseDateString(object candidate, out DateTime result)
+        {
+            if (candidate != null)
+            {
+                var style = DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal;
+                // If a date is stored in a string, Excel will not convert it to the invariant format, so assume that it is in the current culture's date/time format.
+                // This may not always be true, but it is a better assumption than assuming it is always in the invariant culture, which will probably never be true
+                // for locales outside the United States.
+                return DateTime.TryParse(candidate.ToString(), CultureInfo.CurrentCulture, style, out result);
+            }
+            result = DateTime.MinValue;
+            return false;
+        }
+        /// <summary>
+        /// Convert an object value to a double 
+        /// </summary>
+        /// <param name="v"></param>
+        /// <param name="ignoreBool"></param>
         /// <param name="retNaN">Return NaN if invalid double otherwise 0</param>
-		/// <returns></returns>
-		internal static double GetValueDouble(object v, bool ignoreBool = false, bool retNaN=false)
+        /// <returns></returns>
+        public static double GetValueDouble(object v, bool ignoreBool = false, bool retNaN = false)
         {
             double d;
             try
@@ -121,7 +117,7 @@ namespace OfficeOpenXml.Utils
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        internal static string ExcelEscapeString(string s)
+        public static string ExcelEscapeString(string s)
         {
             return s.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;");
         }
@@ -131,7 +127,7 @@ namespace OfficeOpenXml.Utils
         /// <param name="sw"></param>
         /// <param name="t"></param>
         /// <returns></returns>
-        internal static void ExcelEncodeString(StreamWriter sw, string t)
+        public static void ExcelEncodeString(StreamWriter sw, string t)
         {
             if (Regex.IsMatch(t, "(_x[0-9A-F]{4,4}_)"))
             {
@@ -164,7 +160,7 @@ namespace OfficeOpenXml.Utils
         /// <param name="t"></param>
         /// <param name="encodeTabCRLF"></param>
         /// <returns></returns>
-        internal static void ExcelEncodeString(StringBuilder sb, string t, bool encodeTabCRLF=false)
+        public static void ExcelEncodeString(StringBuilder sb, string t, bool encodeTabCRLF = false)
         {
             if (Regex.IsMatch(t, "(_x[0-9A-F]{4,4}_)"))
             {
@@ -195,14 +191,14 @@ namespace OfficeOpenXml.Utils
         /// </summary>
         /// <param name="t"></param>
         /// <returns></returns>
-        internal static string ExcelEncodeString(string t)
+        public static string ExcelEncodeString(string t)
         {
-            StringBuilder sb=new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             t=t.Replace("\r\n", "\n"); //For some reason can't table name have cr in them. Replace with nl
             ExcelEncodeString(sb, t, true);
             return sb.ToString();
         }
-        internal static string ExcelDecodeString(string t)
+        public static string ExcelDecodeString(string t)
         {
             var match = Regex.Match(t, "(_x005F|_x[0-9A-F]{4,4}_)");
             if (!match.Success) return t;
@@ -236,29 +232,7 @@ namespace OfficeOpenXml.Utils
             return ret.ToString();
         }
 
-        /// <summary>
-        ///     Convert cell value to desired type, including nullable structs.
-        ///     When converting blank string to nullable struct (e.g. ' ' to int?) null is returned.
-        ///     When attempted conversion fails exception is passed through.
-        /// </summary>
-        /// <typeparam name="T">
-        ///     The type to convert to.
-        /// </typeparam>
-        /// <returns>
-        ///     The <paramref name="value"/> converted to <typeparamref name="T"/>.
-        /// </returns>
-        /// <remarks>
-        ///     If input is string, parsing is performed for output types of DateTime and TimeSpan, which if fails throws <see cref="FormatException"/>.
-        ///     Another special case for output types of DateTime and TimeSpan is when input is double, in which case <see cref="DateTime.FromOADate"/>
-        ///     is used for conversion. This special case does not work through other types convertible to double (e.g. integer or string with number).
-        ///     In all other cases 'direct' conversion <see cref="Convert.ChangeType(object, Type)"/> is performed.
-        /// </remarks>
-        /// <exception cref="FormatException">
-        ///     <paramref name="value"/> is string and its format is invalid for conversion (parsing fails)
-        /// </exception>
-        /// <exception cref="InvalidCastException">
-        ///     <paramref name="value"/> is not string and direct conversion fails
-        /// </exception>
+
         public static T GetTypedCellValue<T>(object value)
         {
             if (value == null)

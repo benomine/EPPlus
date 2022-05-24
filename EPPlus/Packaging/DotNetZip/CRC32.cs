@@ -27,7 +27,6 @@
 
 
 using System;
-using Interop = System.Runtime.InteropServices;
 
 namespace OfficeOpenXml.Packaging.Ionic.Crc
 {
@@ -42,11 +41,11 @@ namespace OfficeOpenXml.Packaging.Ionic.Crc
     ///   archive files.
     /// </remarks>
 
-//    [Interop.GuidAttribute("ebc25cf6-9120-4283-b972-0e5520d0000C")]
-//    [Interop.ComVisible(true)]
-//#if !NETCF
-//    [Interop.ClassInterface(Interop.ClassInterfaceType.AutoDispatch)]
-//#endif
+    //    [Interop.GuidAttribute("ebc25cf6-9120-4283-b972-0e5520d0000C")]
+    //    [Interop.ComVisible(true)]
+    //#if !NETCF
+    //    [Interop.ClassInterface(Interop.ClassInterfaceType.AutoDispatch)]
+    //#endif
     internal class CRC32
     {
         /// <summary>
@@ -302,7 +301,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Crc
         private uint gf2_matrix_times(uint[] matrix, uint vec)
         {
             uint sum = 0;
-            int i=0;
+            int i = 0;
             while (vec != 0)
             {
                 if ((vec & 0x01)== 0x01)
@@ -340,8 +339,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Crc
             if (length == 0)
                 return;
 
-            uint crc1= ~_register;
-            uint crc2= (uint) crc;
+            uint crc1 = ~_register;
+            uint crc2 = (uint)crc;
 
             // put operator for one zero bit in odd
             odd[0] = this.dwPolynomial;  // the CRC-32 polynomial
@@ -358,11 +357,12 @@ namespace OfficeOpenXml.Packaging.Ionic.Crc
             // put operator for four zero bits in odd
             gf2_matrix_square(odd, even);
 
-            uint len2 = (uint) length;
+            uint len2 = (uint)length;
 
             // apply len2 zeros to crc1 (first square will put the operator for one
             // zero byte, eight zero bits, in even)
-            do {
+            do
+            {
                 // apply zeros operator for this bit of len2
                 gf2_matrix_square(even, odd);
 
@@ -416,7 +416,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Crc
         ///   </para>
         /// </remarks>
         public CRC32(bool reverseBits) :
-            this( unchecked((int)0xEDB88320), reverseBits)
+            this(unchecked((int)0xEDB88320), reverseBits)
         {
         }
 
@@ -449,7 +449,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Crc
         public CRC32(int polynomial, bool reverseBits)
         {
             this.reverseBits = reverseBits;
-            this.dwPolynomial = (uint) polynomial;
+            this.dwPolynomial = (uint)polynomial;
             this.GenerateLookupTable();
         }
 

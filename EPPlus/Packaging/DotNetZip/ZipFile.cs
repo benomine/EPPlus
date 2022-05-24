@@ -39,10 +39,8 @@
 
 
 using System;
-using System.IO;
 using System.Collections.Generic;
-using System.Reflection;
-using Interop = System.Runtime.InteropServices;
+using System.IO;
 using OfficeOpenXml.Packaging.Ionic.Zlib;
 namespace OfficeOpenXml.Packaging.Ionic.Zip
 {
@@ -122,11 +120,11 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
     /// </para>
     ///
     /// </remarks>
-//    [Interop.GuidAttribute("ebc25cf6-9120-4283-b972-0e5520d00005")]
-//    [Interop.ComVisible(true)]
-//#if !NETCF
-//    [Interop.ClassInterface(Interop.ClassInterfaceType.AutoDispatch)]
-//#endif
+    //    [Interop.GuidAttribute("ebc25cf6-9120-4283-b972-0e5520d00005")]
+    //    [Interop.ComVisible(true)]
+    //#if !NETCF
+    //    [Interop.ClassInterface(Interop.ClassInterfaceType.AutoDispatch)]
+    //#endif
     internal partial class ZipFile :
     System.Collections.IEnumerable,
     System.Collections.Generic.IEnumerable<ZipEntry>,
@@ -2384,9 +2382,9 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         }
 
 
-#endregion
+        #endregion
 
-#region Constructors
+        #region Constructors
 
         /// <summary>
         ///   Creates a new <c>ZipFile</c> instance, using the specified filename.
@@ -2858,11 +2856,11 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
             return;
         }
-#endregion
+        #endregion
 
 
 
-#region Indexers and Collections
+        #region Indexers and Collections
 
         private List<ZipEntry> ZipEntriesAsList
         {
@@ -3416,9 +3414,9 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         }
 
 
-#endregion
+        #endregion
 
-#region Destructors and Disposers
+        #region Destructors and Disposers
 
         //         /// <summary>
         //         /// This is the class Destructor, which gets called implicitly when the instance
@@ -3539,10 +3537,10 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                 this._disposed = true;
             }
         }
-#endregion
+        #endregion
 
 
-#region private properties
+        #region private properties
 
         internal Stream ReadStream
         {
@@ -3591,9 +3589,9 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                 _writestream = null;
             }
         }
-#endregion
+        #endregion
 
-#region private fields
+        #region private fields
         private TextWriter _StatusMessageTextWriter;
         private bool _CaseSensitiveRetrieval;
         private Stream _readstream;
@@ -3633,22 +3631,17 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         private Int64 _OffsetOfCentralDirectory64;
         private Nullable<bool> _OutputUsesZip64;
         internal bool _inExtractAll;
-#if (Core)
-        private System.Text.Encoding _alternateEncoding = System.Text.Encoding.GetEncoding("UTF-8"); 
-#else
-        private System.Text.Encoding _alternateEncoding = System.Text.Encoding.GetEncoding("IBM437"); 
-#endif
+
+        private System.Text.Encoding _alternateEncoding = System.Text.Encoding.GetEncoding("UTF-8");
+
         private ZipOption _alternateEncodingUsage = ZipOption.Never;
-#if (Core)
+
         private static System.Text.Encoding _defaultEncoding = System.Text.Encoding.GetEncoding("UTF-8");
-#else
-        private static System.Text.Encoding _defaultEncoding = System.Text.Encoding.GetEncoding("IBM437");
-#endif
 
         private int _BufferSize = BufferSizeDefault;
 
 #if !NETCF
-        internal Ionic.Zlib.ParallelDeflateOutputStream ParallelDeflater;
+        internal ParallelDeflateOutputStream ParallelDeflater;
         private long _ParallelDeflateThreshold;
         private int _maxBufferPairs = 16;
 #endif
@@ -3663,7 +3656,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// </summary>
         public static readonly int BufferSizeDefault = 32768;
 
-#endregion
+        #endregion
     }
 
     /// <summary>
@@ -3731,7 +3724,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
     /// </para>
     ///
     /// </remarks>
-    internal enum Zip64Option
+    public enum Zip64Option
     {
         /// <summary>
         /// The default behavior, which is "Never".
@@ -3764,7 +3757,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
     ///  specify whether to employ a particular text encoding, or to use
     ///  ZIP64 extensions, or some other option.
     /// </summary>
-    internal enum ZipOption
+    public enum ZipOption
     {
         /// <summary>
         /// The default behavior. This is the same as "Never".

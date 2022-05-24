@@ -30,22 +30,19 @@
  *******************************************************************************/
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Collections;
-using OfficeOpenXml;
-using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
 
-    internal class IndexBase : IComparable<IndexBase>
-    {        
+namespace OfficeOpenXml
+{
+    public class IndexBase : IComparable<IndexBase>
+    {
         internal short Index;
         public int CompareTo(IndexBase other)
         {
-            //return Index < other.Index ? -1 : Index > other.Index ? 1 : 0;
             return Index - other.Index;
         }
     }
-    // to compress memory size, use struct
+
     internal struct IndexItem : IComparable<IndexItem>
     {
         internal int IndexPointer
@@ -61,21 +58,21 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
     }
     internal class ColumnIndex : IndexBase, IDisposable
     {
-        internal IndexBase _searchIx=new IndexBase();
-        public ColumnIndex ()
-	    {
+        internal IndexBase _searchIx = new IndexBase();
+        public ColumnIndex()
+        {
             _pages=new PageIndex[CellStore<int>.PagesPerColumnMin];
             PageCount=0;
-	    }
+        }
         ~ColumnIndex()
-	    {
-            _pages=null;            
-	    }
+        {
+            _pages=null;
+        }
         internal int GetPosition(int Row)
         {
             var page = (short)(Row >> CellStore<int>.pageBits);
             int res;
-            if(page>=0 && page < PageCount && _pages[page].Index==page)
+            if (page>=0 && page < PageCount && _pages[page].Index==page)
             {
                 res = page;
             }
@@ -93,7 +90,7 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
             else
             {
                 var p = ~res;
-                
+
                 if (GetPage(Row, ref p))
                 {
                     return p;
@@ -136,7 +133,6 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
         }
         internal int GetNextRow(int row)
         {
-            //var page = (int)((ulong)row >> CellStore<int>.pageBits);
             var p = GetPosition(row);
             if (p < 0)
             {
@@ -218,32 +214,32 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
     {
         internal IndexItem _searchIx = new IndexItem();
         public PageIndex()
-	    {
+        {
             Rows = new IndexItem[CellStore<int>.PageSizeMin];
             RowCount = 0;
-	    }
+        }
         public PageIndex(IndexItem[] rows, int count)
         {
             Rows = rows;
             RowCount = count;
         }
         public PageIndex(PageIndex pageItem, int start, int size)
-            :this(pageItem, start, size, pageItem.Index, pageItem.Offset)
+            : this(pageItem, start, size, pageItem.Index, pageItem.Offset)
         {
 
         }
         public PageIndex(PageIndex pageItem, int start, int size, short index, int offset)
         {
             Rows = new IndexItem[CellStore<int>.GetSize(size)];
-            Array.Copy(pageItem.Rows, start, Rows,0,size);
+            Array.Copy(pageItem.Rows, start, Rows, 0, size);
             RowCount = size;
             Index = index;
             Offset = offset;
         }
         ~PageIndex()
-	    {
+        {
             Rows=null;
-	    }
+        }
         internal int Offset = 0;
         internal int IndexOffset
         {
@@ -270,7 +266,7 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
         internal int GetNextRow(int row)
         {
             int offset = row - IndexOffset;
-            var o= GetPosition(offset);
+            var o = GetPosition(offset);
             if (o < 0)
             {
                 o = ~o;
@@ -323,17 +319,13 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
             Rows = null;
         }
     }
-    /// <summary>
-    /// This is the store for all Rows, Columns and Cells.
-    /// It is a Dictionary implementation that allows you to change the Key (the RowID, ColumnID or CellID )
-    /// </summary>
-    internal class CellStore<T> : IDisposable// : IEnumerable<ulong>, IEnumerator<ulong>
+
+    public partial class CellStore<T> : IDisposable
     {
-        /**** Size constants ****/
-        internal const int pageBits = 10;   //13bits=8192  Note: Maximum is 13 bits since short is used (PageMax=16K)
+        internal const int pageBits = 10;
         internal const int PageSize = 1 << pageBits;
         internal const int PageSizeMin = 1<<10;
-        internal const int PageSizeMax = PageSize << 1; //Double page size
+        internal const int PageSizeMax = PageSize << 1;
         internal const int ColSizeMin = 32;
         internal const int PagesPerColumnMin = 32;
 
@@ -342,22 +334,23 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
         internal IndexBase _searchIx = new IndexBase();
         internal IndexItem _searchItem = new IndexItem();
         internal int ColumnCount;
-        public CellStore ()
-	    {
+        public CellStore()
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             _columnIndex = new ColumnIndex[ColSizeMin];
-	    }
+        }
         ~CellStore()
-	    {
+        {
             if (_values != null)
             {
                 _values.Clear();
                 _values = null;
             }
             _columnIndex=null;
-	    }
+        }
         internal int GetPosition(int Column)
         {
-            if(Column < ColumnCount && _columnIndex[Column].Index==Column)      //Check if th column is lesser than
+            if (Column < ColumnCount && _columnIndex[Column].Index==Column)      //Check if th column is lesser than
             {
                 return Column;
             }
@@ -370,11 +363,11 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
         internal CellStore<T> Clone()
         {
             int row, col;
-            var ret=new CellStore<T>();
+            var ret = new CellStore<T>();
             for (int c = 0; c < ColumnCount; c++)
             {
                 col = _columnIndex[c].Index;
-                for (int p = 0;p < _columnIndex[c].PageCount; p++)
+                for (int p = 0; p < _columnIndex[c].PageCount; p++)
                 {
                     for (int r = 0; r < _columnIndex[c]._pages[p].RowCount; r++)
                     {
@@ -389,7 +382,7 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
         {
             get
             {
-                int count=0;
+                int count = 0;
                 for (int c = 0; c < ColumnCount; c++)
                 {
                     for (int p = 0; p < _columnIndex[c].PageCount; p++)
@@ -416,7 +409,7 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
                     fromCol = _columnIndex[1].Index;
                     fromIndex = 1;
                 }
-                else if(ColumnCount == 1 && fromCol <= 0)
+                else if (ColumnCount == 1 && fromCol <= 0)
                 {
                     fromRow = fromCol = toRow = toCol = 0;
                     return false;
@@ -434,21 +427,21 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
                 if (toCol == 0)
                 {
                     fromRow = fromCol = toRow = toCol = 0;
-                    return false;                    
+                    return false;
                 }
                 fromRow = toRow= 0;
 
                 for (int c = fromIndex; c < ColumnCount; c++)
-                {                    
+                {
                     int first, last;
-                    if (_columnIndex[c].PageCount == 0) continue;                    
+                    if (_columnIndex[c].PageCount == 0) continue;
                     if (_columnIndex[c]._pages[0].RowCount > 0 && _columnIndex[c]._pages[0].Rows[0].Index > 0)
                     {
                         first = _columnIndex[c]._pages[0].IndexOffset + _columnIndex[c]._pages[0].Rows[0].Index;
                     }
                     else
                     {
-                        if(_columnIndex[c]._pages[0].RowCount>1)
+                        if (_columnIndex[c]._pages[0].RowCount>1)
                         {
                             first = _columnIndex[c]._pages[0].IndexOffset + _columnIndex[c]._pages[0].Rows[1].Index;
                         }
@@ -462,7 +455,7 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
                         }
                     }
                     var lp = _columnIndex[c].PageCount - 1;
-                    while(_columnIndex[c]._pages[lp].RowCount==0 && lp!=0)
+                    while (_columnIndex[c]._pages[lp].RowCount==0 && lp!=0)
                     {
                         lp--;
                     }
@@ -513,48 +506,10 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
             }
             else
             {
-                return default(T);                
+                return default(T);
             }
-            //var col = GetPosition(Column);
-            //if (col >= 0)  
-            //{
-            //    var pos = _columnIndex[col].GetPosition(Row);
-            //    if (pos >= 0) 
-            //    {
-            //        var pageItem = _columnIndex[col].Pages[pos];
-            //        if (pageItem.MinIndex > Row)
-            //        {
-            //            pos--;
-            //            if (pos < 0)
-            //            {
-            //                return default(T);
-            //            }
-            //            else
-            //            {
-            //                pageItem = _columnIndex[col].Pages[pos];
-            //            }
-            //        }
-            //        short ix = (short)(Row - pageItem.IndexOffset);
-            //        var cellPos = Array.BinarySearch(pageItem.Rows, 0, pageItem.RowCount, new IndexBase() { Index = ix });
-            //        if (cellPos >= 0) 
-            //        {
-            //            return _values[pageItem.Rows[cellPos].IndexPointer];
-            //        }
-            //        else //Cell does not exist
-            //        {
-            //            return default(T);
-            //        }
-            //    }
-            //    else //Page does not exist
-            //    {
-            //        return default(T);
-            //    }
-            //}
-            //else //Column does not exist
-            //{
-            //    return default(T);
-            //}
         }
+
         int GetPointer(int Row, int Column)
         {
             var col = GetPosition(Column);
@@ -598,26 +553,26 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
                 return -1;
             }
         }
-        internal bool Exists(int Row,int Column)
+        internal bool Exists(int Row, int Column)
         {
             return GetPointer(Row, Column)>=0;
         }
         internal bool Exists(int Row, int Column, ref T value)
         {
-            var p=GetPointer(Row, Column);
+            var p = GetPointer(Row, Column);
             if (p >= 0)
             {
                 value = _values[p];
                 return true;
             }
             else
-            {                
+            {
                 return false;
             }
         }
         internal void SetValue(int Row, int Column, T Value)
         {
-            lock(_columnIndex)
+            lock (_columnIndex)
             {
                 var col = GetPosition(Column);          //Array.BinarySearch(_columnIndex, 0, ColumnCount, new IndexBase() { Index = (short)(Column) });
                 var page = (short)(Row >> pageBits);
@@ -702,8 +657,8 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
 
                 for (int colIx = fromColumn; colIx <= toColumn; colIx++)
                 {
-                //var col = Array.BinarySearch(_columnIndex, 0, ColumnCount, new IndexBase() { Index = (short)(colIx) });
-                    var col=GetPosition(colIx);
+                    //var col = Array.BinarySearch(_columnIndex, 0, ColumnCount, new IndexBase() { Index = (short)(colIx) });
+                    var col = GetPosition(colIx);
 
                     foreach (var pair in pages)
                     {
@@ -756,7 +711,7 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
                                     Updater(_values, pageItem.Rows[cellPos].IndexPointer, rowIx, colIx, Value);
                                 }
                             }
-                            else //Column does not exist
+                            else
                             {
                                 col = ~col;
                                 AddColumn(col, colIx);
@@ -772,17 +727,15 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
         }
 
         internal delegate void SetValueDelegate(List<T> list, int index, object value);
-        // Set object's property atomically
+
         internal void SetValueSpecial(int Row, int Column, SetValueDelegate Updater, object Value)
         {
             lock (_columnIndex)
             {
-                //var col = Array.BinarySearch(_columnIndex, 0, ColumnCount, new IndexBase() { Index = (short)(Column) });
                 var col = GetPosition(Column);
                 var page = (short)(Row >> pageBits);
                 if (col >= 0)
                 {
-                    //var pos = Array.BinarySearch(_columnIndex[col].Pages, 0, _columnIndex[col].Count, new IndexBase() { Index = page });
                     var pos = _columnIndex[col].GetPosition(Row);
                     if (pos < 0)
                     {
@@ -910,12 +863,12 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
             }
         }
 
-    private static bool IsWithinPage(int row, ColumnIndex column, int pagePos)
-    {
-        return (row >= column._pages[pagePos].MinIndex && row <= column._pages[pagePos].MaxIndex);
-    }
+        private static bool IsWithinPage(int row, ColumnIndex column, int pagePos)
+        {
+            return (row >= column._pages[pagePos].MinIndex && row <= column._pages[pagePos].MaxIndex);
+        }
 
-    internal void Clear(int fromRow, int fromCol, int rows, int columns)
+        internal void Clear(int fromRow, int fromCol, int rows, int columns)
         {
             Delete(fromRow, fromCol, rows, columns, false);
         }
@@ -948,7 +901,7 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
                                 var page = column._pages[pagePos];
                                 if (shift && page.RowCount > 0 && page.MinIndex > fromRow && page.MaxIndex >= fromRow + rows)
                                 {
-                                    var o=page.MinIndex - fromRow;
+                                    var o = page.MinIndex - fromRow;
                                     if (o < rows)
                                     {
                                         rows -= o;
@@ -971,7 +924,6 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
                                     {
                                         pagePos = (delEndRow == fromRow ? pagePos : pagePos + 1);
                                         var rowsLeft = DeletePage(shift ? fromRow : delEndRow, endRow - delEndRow, column, pagePos, shift);
-                                        //if (shift) UpdatePageOffset(column, pagePos, endRow - fromRow - rowsLeft);
                                         if (rowsLeft > 0)
                                         {
                                             var fr = shift ? fromRow : endRow - rowsLeft;
@@ -1002,8 +954,6 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
         }
         private void UpdatePageOffset(ColumnIndex column, int pagePos, int rows)
         {
-            //Update Pageoffset
-            
             if (++pagePos < column.PageCount)
             {
                 for (int p = pagePos; p < column.PageCount; p++)
@@ -1020,28 +970,9 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
                 }
 
                 if (Math.Abs(column._pages[pagePos].Offset) > PageSize ||
-                    Math.Abs(column._pages[pagePos].Rows[column._pages[pagePos].RowCount-1].Index) > PageSizeMax) //Split or Merge???
+                    Math.Abs(column._pages[pagePos].Rows[column._pages[pagePos].RowCount-1].Index) > PageSizeMax)
                 {
                     rows=ResetPageOffset(column, pagePos, rows);
-                    ////MergePages
-                    //if (column.Pages[pagePos - 1].Index + 1 == column.Pages[pagePos].Index)
-                    //{
-                    //    if (column.Pages[pagePos].IndexOffset + column.Pages[pagePos].Rows[column.Pages[pagePos].RowCount - 1].Index + rows -
-                    //        column.Pages[pagePos - 1].IndexOffset + column.Pages[pagePos - 1].Rows[0].Index <= PageSize)
-                    //    {
-                    //        //Merge
-                    //        MergePage(column, pagePos - 1, -rows);
-                    //    }
-                    //    else
-                    //    {
-                    //        //Split
-                    //    }
-                    //}
-                    //rows -= PageSize;
-                    //for (int p = pagePos; p < column.PageCount; p++)
-                    //{                            
-                    //    column.Pages[p].Index -= 1;
-                    //}
                     return;
                 }
             }
@@ -1049,7 +980,7 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
 
         private int ResetPageOffset(ColumnIndex column, int pagePos, int rows)
         {
-            PageIndex fromPage=column._pages[pagePos];
+            PageIndex fromPage = column._pages[pagePos];
             PageIndex toPage;
             short pageAdd = 0;
             if (fromPage.Offset < -PageSize)
@@ -1070,7 +1001,7 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
                         //{
                         //    newPage.Rows[r].Index += (short)(fromPage.IndexOffset - toPage.IndexOffset);
                         //}
-                        
+
                     }
                 }
                 else //No page after 
@@ -1103,7 +1034,7 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
             while (page != null && page.MinIndex >= fromRow && ((shift && page.MaxIndex < fromRow + rows) || (!shift && page.MaxIndex < fromRow + startRows)))
             {
                 //Delete entire page.
-                var delSize=page.MaxIndex - page.MinIndex+1;
+                var delSize = page.MaxIndex - page.MinIndex+1;
                 rows -= delSize;
                 var prevOffset = page.Offset;
                 Array.Copy(column._pages, pagePos + 1, column._pages, pagePos, column.PageCount - pagePos - 1);
@@ -1112,7 +1043,7 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
                 {
                     return 0;
                 }
-                if(shift)
+                if (shift)
                 {
                     for (int i = pagePos; i < column.PageCount; i++)
                     {
@@ -1123,22 +1054,20 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
                             column._pages[i].Offset += PageSize;
                         }
                     }
-                }                
+                }
                 if (column.PageCount > pagePos)
                 {
                     page = column._pages[pagePos];
-                    //page.Offset = pagePos == 0 ? 1 : prevOffset;  //First page can only reference to rows starting from Index == 1
                 }
                 else
                 {
-                    //No more pages, return 0
                     return 0;
                 }
             }
             return rows;
         }
-        ///
-        private int DeleteCells(PageIndex page,  int fromRow, int toRow, bool shift)
+
+        private int DeleteCells(PageIndex page, int fromRow, int toRow, bool shift)
         {
             var fromPos = page.GetPosition(fromRow - (page.IndexOffset));
             if (fromPos < 0)
@@ -1163,21 +1092,21 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
                         return fromRow;
                     }
                     var r = page.MaxIndex;
-                    var deletedRow = page.RowCount - fromPos; 
+                    var deletedRow = page.RowCount - fromPos;
                     page.RowCount -= deletedRow;
                     return r+1;
                 }
                 else
                 {
                     var rows = toRow - fromRow;
-                    if(shift) UpdateRowIndex(page, toPos, rows);
+                    if (shift) UpdateRowIndex(page, toPos, rows);
                     Array.Copy(page.Rows, toPos, page.Rows, fromPos, page.RowCount - toPos);
                     page.RowCount -= toPos-fromPos;
 
                     return toRow;
                 }
             }
-            else if(shift)
+            else if (shift)
             {
                 UpdateRowIndex(page, toPos, toRow - fromRow);
             }
@@ -1188,7 +1117,7 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
         {
             for (int r = toPos; r < page.RowCount; r++)
             {
-                page.Rows[r].Index -= (short) rows;
+                page.Rows[r].Index -= (short)rows;
             }
         }
 
@@ -1218,11 +1147,11 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
             {
                 //if (_columnIndex[fPos].Index < ColumnCount)
                 //{
-                    if (tPos < ColumnCount)
-                    {
-                        Array.Copy(_columnIndex, tPos, _columnIndex, fPos, ColumnCount - tPos);
-                    }
-                    ColumnCount -= (tPos - fPos);
+                if (tPos < ColumnCount)
+                {
+                    Array.Copy(_columnIndex, tPos, _columnIndex, fPos, ColumnCount - tPos);
+                }
+                ColumnCount -= (tPos - fPos);
                 //}
             }
             if (shift)
@@ -1254,7 +1183,7 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
                         column._pages[p].Index += addPages;
                         column._pages[p].Offset += offset;
                     }
-                    
+
                 }
 
                 var size = page.RowCount - rowPos;
@@ -1278,33 +1207,28 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
                     {
                         if (column._pages[pagePos + 1].RowCount + size > PageSizeMax) //Split Page
                         {
-                            SplitPageInsert(column,pagePos, rowPos, rows, size, addPages);
+                            SplitPageInsert(column, pagePos, rowPos, rows, size, addPages);
                         }
                         else //Copy Page.
                         {
-                            CopyMergePage(page, rowPos, rows, size, column._pages[pagePos + 1]);                            
+                            CopyMergePage(page, rowPos, rows, size, column._pages[pagePos + 1]);
                         }
                     }
                 }
             }
             else
             {
-                //Add to Pages.
                 for (int r = rowPos; r < page.RowCount; r++)
                 {
                     page.Rows[r].Index += (short)rows;
                 }
-                if (page.Offset + page.Rows[page.RowCount-1].Index >= PageSizeMax)   //Can not be larger than the max size of the page.
+                if (page.Offset + page.Rows[page.RowCount-1].Index >= PageSizeMax)
                 {
                     AdjustIndex(column, pagePos);
                     if (page.Offset + page.Rows[page.RowCount - 1].Index >= PageSizeMax)
                     {
                         pagePos=SplitPage(column, pagePos);
                     }
-                    //IndexItem[] newRows = new IndexItem[GetSize(page.RowCount - page.Rows[r].Index)];
-                    //var newPage = new PageIndex(newRows, r);
-                    //newPage.Index = (short)(pagePos + 1);
-                    //TODO: MoveRows to next page.
                 }
 
                 for (int p = pagePos + 1; p < column.PageCount; p++)
@@ -1322,12 +1246,12 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
             }
         }
 
-        private void SplitPageInsert(ColumnIndex column,int pagePos, int rowPos, int rows, int size, int addPages)
+        private void SplitPageInsert(ColumnIndex column, int pagePos, int rowPos, int rows, int size, int addPages)
         {
             var newRows = new IndexItem[GetSize(size)];
-            var page=column._pages[pagePos];
+            var page = column._pages[pagePos];
 
-            var rStart=-1;
+            var rStart = -1;
             for (int r = rowPos; r < page.RowCount; r++)
             {
                 if (page.IndexExpanded - (page.Rows[r].Index + rows) > PageSize)
@@ -1342,11 +1266,10 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
             }
             var rc = page.RowCount - rStart;
             page.RowCount=rStart;
-            if(rc>0)
+            if (rc>0)
             {
-                //Copy to a new page
                 var row = page.IndexOffset;
-                var newPage=CopyNew(page,rStart,rc);
+                var newPage = CopyNew(page, rStart, rc);
                 var ix = (short)(page.Index + addPages);
                 var offset = page.IndexOffset + rows - (ix * PageSize);
                 if (offset > PageSize)
@@ -1358,8 +1281,6 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
                 newPage.Offset = offset;
                 AddPage(column, pagePos + 1, newPage);
             }
-
-            //Copy from next Row
         }
 
         private void CopyMergePage(PageIndex page, int rowPos, int rows, int size, PageIndex ToPage)
@@ -1379,7 +1300,7 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
         }
         private void MergePage(ColumnIndex column, int pagePos)
         {
-            PageIndex Page1=column._pages[pagePos];
+            PageIndex Page1 = column._pages[pagePos];
             PageIndex Page2 = column._pages[pagePos + 1];
 
             var newPage = new PageIndex(Page1, 0, Page1.RowCount + Page2.RowCount);
@@ -1396,7 +1317,7 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
 
             if (column.PageCount > (pagePos + 1))
             {
-                Array.Copy(column._pages, pagePos+2, column._pages,pagePos+1,column.PageCount-(pagePos+1));
+                Array.Copy(column._pages, pagePos+2, column._pages, pagePos+1, column.PageCount-(pagePos+1));
                 for (int p = pagePos + 1; p < column.PageCount; p++)
                 {
                     column._pages[p].Index--;
@@ -1414,7 +1335,7 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
 
         internal static int GetSize(int size)
         {
-            var newSize=256;
+            var newSize = 256;
             while (newSize < size)
             {
                 newSize <<= 1;
@@ -1426,12 +1347,12 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
             PageIndex pageItem = columnIndex._pages[pagePos];
             if (pageItem.RowCount == pageItem.Rows.Length)
             {
-                if (pageItem.RowCount == PageSizeMax) //Max size-->Split
+                if (pageItem.RowCount == PageSizeMax)
                 {
                     pagePos=SplitPage(columnIndex, pagePos);
                     if (columnIndex._pages[pagePos - 1].RowCount > pos)
                     {
-                        pagePos--;                        
+                        pagePos--;
                     }
                     else
                     {
@@ -1439,7 +1360,7 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
                     }
                     pageItem = columnIndex._pages[pagePos];
                 }
-                else //Expand to double size.
+                else
                 {
                     var rowsTmp = new IndexItem[pageItem.Rows.Length << 1];
                     Array.Copy(pageItem.Rows, 0, rowsTmp, 0, pageItem.RowCount);
@@ -1450,7 +1371,7 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
             {
                 Array.Copy(pageItem.Rows, pos, pageItem.Rows, pos + 1, pageItem.RowCount - pos);
             }
-            pageItem.Rows[pos] = new IndexItem() { Index = ix,IndexPointer=_values.Count };
+            pageItem.Rows[pos] = new IndexItem() { Index = ix, IndexPointer=_values.Count };
             _values.Add(value);
             pageItem.RowCount++;
         }
@@ -1467,8 +1388,7 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
                     page.Rows[r].Index -= (short)offset;
                 }
             }
-            //Find Split pos
-            int splitPos=0;            
+            int splitPos = 0;
             for (int r = 0; r < page.RowCount; r++)
             {
                 if (page.Rows[r].Index > PageSize)
@@ -1484,7 +1404,7 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
             {
                 nextPage.Rows[r].Index = (short)(nextPage.Rows[r].Index - PageSize);
             }
-            
+
             columnIndex._pages[pagePos] = newPage;
             if (columnIndex.PageCount + 1 > columnIndex._pages.Length)
             {
@@ -1495,7 +1415,6 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
             Array.Copy(columnIndex._pages, pagePos + 1, columnIndex._pages, pagePos + 2, columnIndex.PageCount - pagePos - 1);
             columnIndex._pages[pagePos + 1] = nextPage;
             page = nextPage;
-            //pos -= PageSize;
             columnIndex.PageCount++;
             return pagePos+1;
         }
@@ -1503,7 +1422,6 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
         private PageIndex AdjustIndex(ColumnIndex columnIndex, int pagePos)
         {
             PageIndex page = columnIndex._pages[pagePos];
-            //First Adjust indexes
             if (page.Offset + page.Rows[0].Index >= PageSize ||
                 page.Offset >= PageSize ||
                 page.Rows[0].Index >= PageSize)
@@ -1511,23 +1429,13 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
                 page.Index++;
                 page.Offset -= PageSize;
             }
-            else if (page.Offset + page.Rows[0].Index  <= -PageSize || 
+            else if (page.Offset + page.Rows[0].Index  <= -PageSize ||
                      page.Offset <= -PageSize ||
                      page.Rows[0].Index <= -PageSize)
             {
                 page.Index--;
                 page.Offset += PageSize;
             }
-            //else if (page.Rows[0].Index >= PageSize) //Delete
-            //{
-            //    page.Index++;
-            //    AddPageRowOffset(page, -PageSize);
-            //}
-            //else if (page.Rows[0].Index <= -PageSize)   //Delete
-            //{
-            //    page.Index--;
-            //    AddPageRowOffset(page, PageSize);
-            //}
             return page;
         }
 
@@ -1544,8 +1452,8 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
             column._pages[pos] = new PageIndex() { Index = index };
             if (pos > 0)
             {
-                var pp=column._pages[pos-1];
-                if(pp.RowCount>0 && pp.Rows[pp.RowCount-1].Index > PageSize)
+                var pp = column._pages[pos-1];
+                if (pp.RowCount>0 && pp.Rows[pp.RowCount-1].Index > PageSize)
                 {
                     column._pages[pos].Offset = pp.Rows[pp.RowCount-1].Index-PageSize;
                 }
@@ -1560,7 +1468,7 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
         private void AddPage(ColumnIndex column, int pos, PageIndex page)
         {
             AddPage(column, pos);
-            column._pages[pos] = page ;
+            column._pages[pos] = page;
         }
         /// <summary>
         /// Add a new page to the collection
@@ -1595,7 +1503,7 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
             }
             _columnIndex[pos] = new ColumnIndex() { Index = (short)(Column) };
             ColumnCount++;
-        }        
+        }
         int _colPos = -1, _row;
         public ulong Current
         {
@@ -1607,8 +1515,8 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
 
         public void Dispose()
         {
-            if(_values!=null) _values.Clear();
-            for(var c=0;c<ColumnCount;c++)
+            if (_values!=null) _values.Clear();
+            for (var c = 0; c<ColumnCount; c++)
             {
                 if (_columnIndex[c] != null)
                 {
@@ -1619,24 +1527,18 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
             _columnIndex = null;
         }
 
-        //object IEnumerator.Current
-        //{
-        //    get 
-        //    {
-        //        return GetValue(_row+1, _columnIndex[_colPos].Index);
-        //    }
-        //}
+
         public bool MoveNext()
         {
             return GetNextCell(ref _row, ref _colPos, 0, ExcelPackage.MaxRows, ExcelPackage.MaxColumns);
         }
         internal bool NextCell(ref int row, ref int col)
         {
-            
-            return NextCell(ref row, ref col, 0,0, ExcelPackage.MaxRows, ExcelPackage.MaxColumns);
+
+            return NextCell(ref row, ref col, 0, 0, ExcelPackage.MaxRows, ExcelPackage.MaxColumns);
         }
-        internal bool NextCell(ref int row, ref int col, int minRow, int minColPos,int maxRow, int maxColPos)
-        {            
+        internal bool NextCell(ref int row, ref int col, int minRow, int minColPos, int maxRow, int maxColPos)
+        {
             if (minColPos >= ColumnCount)
             {
                 return false;
@@ -1645,8 +1547,8 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
             {
                 maxColPos = ColumnCount-1;
             }
-            var c=GetPosition(col);
-            if(c>=0)
+            var c = GetPosition(col);
+            if (c>=0)
             {
                 if (c > maxColPos)
                 {
@@ -1659,7 +1561,7 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
                 }
                 else
                 {
-                    var r=GetNextCell(ref row, ref c, minColPos, maxRow, maxColPos);
+                    var r = GetNextCell(ref row, ref c, minColPos, maxRow, maxColPos);
                     col = _columnIndex[c].Index;
                     return r;
                 }
@@ -1678,8 +1580,8 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
                     return NextCell(ref row, ref col, minRow, minColPos, maxRow, maxColPos);
                 }
                 else
-                {                    
-                    var r=GetNextCell(ref row, ref c, minColPos, maxRow, maxColPos);
+                {
+                    var r = GetNextCell(ref row, ref c, minColPos, maxRow, maxColPos);
                     col = _columnIndex[c].Index;
                     return r;
                 }
@@ -1789,7 +1691,7 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
 
             if (pagePos[colPos] < 0)
             {
-                if(pagePos[colPos]==-1)
+                if (pagePos[colPos]==-1)
                 {
                     pagePos[colPos] = _columnIndex[colPos].GetPosition(row);
                 }
@@ -1803,7 +1705,7 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
                     pagePos[colPos]=-2;
                 }
             }
-            
+
             var r = _columnIndex[colPos]._pages[pagePos[colPos]].IndexOffset + _columnIndex[colPos]._pages[pagePos[colPos]].Rows[cellPos[colPos]].Index;
             if (r == row)
             {
@@ -1829,7 +1731,7 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
                 maxColPos = ColumnCount - 1;
             }
             var c = GetPosition(col);
-            if(c>=0)
+            if (c>=0)
             {
                 if (c == 0)
                 {
@@ -1842,12 +1744,12 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
                         return false;
                     }
                     row--;
-                    col = maxColPos;                    
+                    col = maxColPos;
                     return PrevCell(ref row, ref col, minRow, minColPos, maxRow, maxColPos);
                 }
                 else
                 {
-                    var ret=GetPrevCell(ref row, ref c, minRow, minColPos, maxColPos);
+                    var ret = GetPrevCell(ref row, ref c, minRow, minColPos, maxColPos);
                     if (ret)
                     {
                         col = _columnIndex[c].Index;
@@ -1888,10 +1790,9 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
             else
             {
                 if (--colPos >= startColPos)
-//                if (++colPos < ColumnCount && colPos <= endColPos)
                 {
                     var r = _columnIndex[colPos].GetNextRow(row);
-                    if (r == row) //Exists next Row
+                    if (r == row)
                     {
                         return true;
                     }
@@ -1915,7 +1816,7 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
                             while (c >= startColPos)
                             {
                                 r = _columnIndex[c].GetNextRow(row);
-                                if (r == row) //Exists next Row
+                                if (r == row)
                                 {
                                     colPos = c;
                                     return true;
@@ -1978,181 +1879,8 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
         }
         public void Reset()
         {
-            _colPos = -1;            
+            _colPos = -1;
             _row= 0;
         }
-    //public IEnumerator<ulong> GetEnumerator()
-    //{
-    //    this.Reset();
-    //    return this;
-    //}
-
-    //IEnumerator IEnumerable.GetEnumerator()
-    //{
-    //    this.Reset();
-    //    return this;
-    //}
-
+    }
 }
-    internal class CellsStoreEnumerator<T> : IEnumerable<T>, IEnumerator<T>
-    {
-        CellStore<T> _cellStore;
-        int row, colPos;
-        int[] pagePos, cellPos;
-        int _startRow, _startCol, _endRow, _endCol;
-        int minRow, minColPos, maxRow, maxColPos;
-        public CellsStoreEnumerator(CellStore<T> cellStore) :
-            this(cellStore, 0,0,ExcelPackage.MaxRows, ExcelPackage.MaxColumns)        
-        {
-        }
-        public CellsStoreEnumerator(CellStore<T> cellStore, int StartRow, int StartCol, int EndRow, int EndCol)
-        {
-            _cellStore = cellStore;
-            
-            _startRow=StartRow;
-            _startCol=StartCol;
-            _endRow=EndRow;
-            _endCol=EndCol;
-
-            Init();
-
-        }
-
-        internal void Init()
-        {
-            minRow = _startRow;
-            maxRow = _endRow;
-
-            minColPos = _cellStore.GetPosition(_startCol);
-            if (minColPos < 0) minColPos = ~minColPos;
-            maxColPos = _cellStore.GetPosition(_endCol);
-            if (maxColPos < 0) maxColPos = ~maxColPos-1;
-            row = minRow;
-            colPos = minColPos - 1;
-
-            var cols = maxColPos - minColPos + 1;
-            pagePos = new int[cols];
-            cellPos = new int[cols];
-            for (int i = 0; i < cols; i++)
-            {
-                pagePos[i] = -1;
-                cellPos[i] = -1;
-            }
-        }
-        internal int Row 
-        {
-            get
-            {
-                return row;
-            }
-        }
-        internal int Column
-        {
-            get
-            {
-                if (colPos == -1) MoveNext();
-                if (colPos == -1) return 0;
-                return _cellStore._columnIndex[colPos].Index;
-            }
-        }
-        internal T Value
-        {
-            get
-            {
-                lock (_cellStore)
-                {
-                    return _cellStore.GetValue(row, Column);
-                }
-            }
-            set
-            {
-                lock (_cellStore)
-                {
-                    _cellStore.SetValue(row, Column, value);
-                }
-            }
-        }
-        internal bool Next()
-        {
-            //return _cellStore.GetNextCell(ref row, ref colPos, minColPos, maxRow, maxColPos);
-            return _cellStore.GetNextCell(ref row, ref colPos, minColPos, maxRow, maxColPos);
-        }
-        internal bool Previous()
-        {
-            lock (_cellStore)
-            {
-                return _cellStore.GetPrevCell(ref row, ref colPos, minRow, minColPos, maxColPos);
-            }
-        }
-
-        public string CellAddress 
-        {
-            get
-            {
-                return ExcelAddressBase.GetAddress(Row, Column);
-            }
-        }
-
-        public IEnumerator<T> GetEnumerator()
-        {
-            Reset();
-            return this;
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            Reset();
-            return this;
-        }
-
-        public T Current
-        {
-            get
-            {
-                return Value;
-            }
-        }
-
-        public void Dispose()
-        {
-            //_cellStore=null;
-        }
-
-        object IEnumerator.Current
-        {
-            get 
-            {
-                Reset();
-                return this;
-            }
-        }
-
-        public bool MoveNext()
-        {
-            return Next();
-        }
-
-        public void Reset()
-        {
-            Init();
-        }
-    }
-    internal class FlagCellStore : CellStore<byte>
-    {
-        internal void SetFlagValue(int Row, int Col, bool value, CellFlags cellFlags)
-        {
-            CellFlags currentValue = (CellFlags) GetValue(Row, Col);
-            if (value)
-            {
-                SetValue(Row, Col, (byte)(currentValue | cellFlags)); // add the CellFlag bit
-            }
-            else
-            {
-                SetValue(Row, Col, (byte)(currentValue & ~cellFlags)); // remove the CellFlag bit
-            }
-        }
-        internal bool GetFlagValue(int Row, int Col, CellFlags cellFlags)
-        {
-            return !(((byte)cellFlags & GetValue(Row, Col)) == 0);
-        }
-    }

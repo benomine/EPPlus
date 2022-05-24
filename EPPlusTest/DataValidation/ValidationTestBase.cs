@@ -1,13 +1,8 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OfficeOpenXml;
+﻿using System.Globalization;
 using System.IO;
-using OfficeOpenXml.DataValidation;
+using System.Text;
 using System.Xml;
-using System.Globalization;
+using OfficeOpenXml;
 
 namespace EPPlusTest.DataValidation
 {
@@ -34,16 +29,7 @@ namespace EPPlusTest.DataValidation
             _namespaceManager = null;
         }
 
-        protected string GetTestOutputPath(string fileName)
-        {
-            return Path.Combine(
-#if (Core)
-            Path.GetTempPath()      //In Net.Core Output to TempPath 
-#else
-            Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
-#endif
-                , fileName);
-        }
+        protected string GetTestOutputPath(string fileName) => Path.Combine(Path.GetTempPath(), fileName);
 
         protected void SaveTestOutput(string fileName)
         {

@@ -48,13 +48,13 @@
 
 
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
-using System.Text;
 using System.Reflection;
-using System.ComponentModel;
+using System.Text;
 using System.Text.RegularExpressions;
-using System.Collections.Generic;
 #if SILVERLIGHT
 using System.Linq;
 #endif
@@ -103,7 +103,7 @@ namespace OfficeOpenXml.Packaging.Ionic
     {
         internal virtual bool Verbose
         {
-            get;set;
+            get; set;
         }
         internal abstract bool Evaluate(string filename);
 
@@ -960,7 +960,7 @@ namespace OfficeOpenXml.Packaging.Ionic
 
             string interim = source;
 
-            for (int i=0; i < prPairs.Length; i++)
+            for (int i = 0; i < prPairs.Length; i++)
             {
                 //char caseIdx = (char)('A' + i);
                 string pattern = RegexAssertions.PrecededByEvenNumberOfSingleQuotes +
@@ -1199,16 +1199,16 @@ namespace OfficeOpenXml.Packaging.Ionic
                                     };
 #else
                             current = (tok1 == "type")
-                                ? (SelectionCriterion) new TypeCriterion
-                                    {
-                                        AttributeString = tokens[i + 2],
-                                        Operator = c
-                                    }
-                                : (SelectionCriterion) new AttributesCriterion
-                                    {
-                                        AttributeString = tokens[i + 2],
-                                        Operator = c
-                                    };
+                                ? (SelectionCriterion)new TypeCriterion
+                                {
+                                    AttributeString = tokens[i + 2],
+                                    Operator = c
+                                }
+                                : (SelectionCriterion)new AttributesCriterion
+                                {
+                                    AttributeString = tokens[i + 2],
+                                    Operator = c
+                                };
 #endif
                             i += 2;
                             stateStack.Push(ParseState.CriterionDone);

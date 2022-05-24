@@ -28,13 +28,12 @@
  *******************************************************************************/
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using OfficeOpenXml;
 using System.Data;
-using OfficeOpenXml.Table;
+using System.IO;
+using System.Linq;
 using System.Reflection;
+using OfficeOpenXml;
+using OfficeOpenXml.Table;
 namespace EPPlusSamples
 {
     /// <summary>

@@ -1,23 +1,23 @@
 ﻿using System;
-using System.Drawing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
+using SkiaSharp;
 
 namespace EPPlusTest
 {
     [TestClass]
     public class CellStoreTest : TestBase
     {
-        
+
         [TestMethod]
         public void Insert1()
         {
-            var ws=_pck.Workbook.Worksheets.Add("Insert1");
+            var ws = _pck.Workbook.Worksheets.Add("Insert1");
             LoadData(ws);
 
             ws.InsertRow(2, 1000);
-            Assert.AreEqual(ws.GetValue(1002,1),"1,0");
+            Assert.AreEqual(ws.GetValue(1002, 1), "1,0");
             ws.InsertRow(1003, 1000);
             Assert.AreEqual(ws.GetValue(2003, 1), "2,0");
             ws.InsertRow(2004, 1000);
@@ -34,7 +34,7 @@ namespace EPPlusTest
             ws.InsertRow(1, 15);
             Assert.AreEqual(ws.GetValue(4020, 1), "3,0");
             Assert.AreEqual(ws.GetValue(5016, 1), "499,0");
-   
+
         }
         [TestMethod]
         public void Insert2()
@@ -46,7 +46,7 @@ namespace EPPlusTest
             {
                 ws.InsertRow(1, 1);
             }
-            Assert.AreEqual(ws.GetValue(33,1),"0,0");
+            Assert.AreEqual(ws.GetValue(33, 1), "0,0");
 
             ws = _pck.Workbook.Worksheets.Add("Insert2-2");
             LoadData(ws);
@@ -74,7 +74,7 @@ namespace EPPlusTest
         public void InsertRandomTest()
         {
             var ws = _pck.Workbook.Worksheets.Add("Insert4-1");
-            
+
             LoadData(ws, 5000);
 
             for (int i = 5000; i > 0; i-=2)
@@ -89,7 +89,7 @@ namespace EPPlusTest
 
             LoadData(ws, 5000);
 
-            var o = new CellsStoreEnumerator<ExcelCoreValue>(ws._values, 2, 1, 5, 3);
+            var o = new CellsStoreEnumerator<ExcelCoreValue>(ws.Values, 2, 1, 5, 3);
             foreach (var i in o)
             {
                 Console.WriteLine(i);
@@ -102,7 +102,7 @@ namespace EPPlusTest
             LoadData(ws, 5000);
 
             ws.DeleteRow(2, 2);
-            Assert.AreEqual("3,0",ws.GetValue(2,1));
+            Assert.AreEqual("3,0", ws.GetValue(2, 1));
             ws.DeleteRow(10, 10);
             Assert.AreEqual("21,0", ws.GetValue(10, 1));
             ws.DeleteRow(50, 40);
@@ -121,7 +121,7 @@ namespace EPPlusTest
             ws.DeleteRow(32, 30);
             for (int i = 1; i < 50; i++)
             {
-                ws.DeleteRow(1,1);
+                ws.DeleteRow(1, 1);
             }
         }
         [TestMethod]
@@ -135,14 +135,14 @@ namespace EPPlusTest
 
             for (int i = 0; i < 33; i++)
             {
-                ws.SetValue(i + 2,1, i + 2);
+                ws.SetValue(i + 2, 1, i + 2);
             }
         }
         private void LoadData(ExcelWorksheet ws)
         {
             LoadData(ws, 1000);
         }
-        private void LoadData(ExcelWorksheet ws, int rows, int cols=1, bool isNumeric = false)
+        private void LoadData(ExcelWorksheet ws, int rows, int cols = 1, bool isNumeric = false)
         {
             for (int r = 0; r < rows; r++)
             {
@@ -162,11 +162,11 @@ namespace EPPlusTest
 
             LoadData(ws, 500);
 
-            var r=1;
-            for(int i=1;i<=500;i++)
+            var r = 1;
+            for (int i = 1; i<=500; i++)
             {
-                ws.InsertRow(r,i);
-                Assert.AreEqual((i-1).ToString()+",0", ws.GetValue(r+i,1).ToString());
+                ws.InsertRow(r, i);
+                Assert.AreEqual((i-1).ToString()+",0", ws.GetValue(r+i, 1).ToString());
                 r+=i+1;
             }
         }
@@ -199,7 +199,7 @@ namespace EPPlusTest
                 worksheet.Cells[1026, 2].Value = "B";
                 var range = worksheet.Row(1026);
                 range.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                range.Style.Fill.BackgroundColor.SetColor(Color.FromArgb(255, 255, 0));
+                range.Style.Fill.BackgroundColor.SetColor(new SKColor(255, 255, 0));
 
                 // Act - This should shift the whole row 1026 down 1
                 worksheet.InsertRow(1024, 1);

@@ -29,13 +29,13 @@
  * Jan Källman		                Initial Release		        2009-10-01
  * Jan Källman		License changed GPL-->LGPL 2011-12-16
  *******************************************************************************/
-using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Xml;
-using System.Drawing;
-using System.Globalization;
+using SkiaSharp;
 
 namespace OfficeOpenXml.Style
 {
@@ -45,7 +45,7 @@ namespace OfficeOpenXml.Style
     public class ExcelRichTextCollection : XmlHelper, IEnumerable<ExcelRichText>
     {
         List<ExcelRichText> _list = new List<ExcelRichText>();
-        ExcelRangeBase _cells=null;
+        ExcelRangeBase _cells = null;
         internal ExcelRichTextCollection(XmlNamespaceManager ns, XmlNode topNode) :
             base(ns, topNode)
         {
@@ -54,7 +54,7 @@ namespace OfficeOpenXml.Style
             {
                 foreach (XmlNode n in nl)
                 {
-                    _list.Add(new ExcelRichText(ns, n,this));
+                    _list.Add(new ExcelRichText(ns, n, this));
                 }
             }
         }
@@ -62,7 +62,7 @@ namespace OfficeOpenXml.Style
             this(ns, topNode)
         {
             _cells = cells;
-        }        
+        }
         /// <summary>
         /// Collection containing the richtext objects
         /// </summary>
@@ -72,8 +72,8 @@ namespace OfficeOpenXml.Style
         {
             get
             {
-                var item=_list[Index];
-                if(_cells!=null) item.SetCallback(UpdateCells);
+                var item = _list[Index];
+                if (_cells!=null) item.SetCallback(UpdateCells);
                 return item;
             }
         }
@@ -130,9 +130,9 @@ namespace OfficeOpenXml.Style
                 ExcelRichText prevItem = _list[index < _list.Count ? index : _list.Count - 1];
                 rt.FontName = prevItem.FontName;
                 rt.Size = prevItem.Size;
-                if (prevItem.Color.IsEmpty)
+                if (prevItem.Color == SKColors.Empty)
                 {
-                    rt.Color = Color.Black;
+                    rt.Color = SKColors.Black;
                 }
                 else
                 {
@@ -188,7 +188,7 @@ namespace OfficeOpenXml.Style
                 int hex;
                 if (fnt.Color.Rgb != "" && int.TryParse(fnt.Color.Rgb, NumberStyles.HexNumber, null, out hex))
                 {
-                    this[0].Color = Color.FromArgb(hex);
+                    this[0].Color = new SKColor((uint)hex);
                 }
             }
         }
@@ -230,7 +230,7 @@ namespace OfficeOpenXml.Style
         //{
         //    _list.Insert(index, item);
         //}
-        
+
         /// <summary>
         /// The text
         /// </summary>
@@ -238,7 +238,7 @@ namespace OfficeOpenXml.Style
         {
             get
             {
-                StringBuilder sb=new StringBuilder();
+                StringBuilder sb = new StringBuilder();
                 foreach (var item in _list)
                 {
                     sb.Append(item.Text);
@@ -272,7 +272,7 @@ namespace OfficeOpenXml.Style
 
         #region IEnumerable Members
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return _list.Select(x => { x.SetCallback(UpdateCells); return x; }).GetEnumerator();
         }

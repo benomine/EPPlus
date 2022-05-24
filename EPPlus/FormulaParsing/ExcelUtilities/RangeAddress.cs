@@ -28,11 +28,6 @@
  * ******************************************************************************
  * Mats Alm   		                Added       		        2013-03-01 (Prior file history on https://github.com/swmal/ExcelFormulaParser)
  *******************************************************************************/
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using OfficeOpenXml.FormulaParsing.Utilities;
 
 namespace OfficeOpenXml.FormulaParsing.ExcelUtilities
 {
@@ -45,15 +40,15 @@ namespace OfficeOpenXml.FormulaParsing.ExcelUtilities
 
         internal string Address { get; set; }
 
-        public string Worksheet { get; internal set; }
+        public string Worksheet { get; set; }
 
-        public int FromCol { get; internal set; }
+        public int FromCol { get; set; }
 
-        public int ToCol { get; internal set; }
+        public int ToCol { get; set; }
 
-        public int FromRow { get; internal set; }
+        public int FromRow { get; set; }
 
-        public int ToRow { get; internal set; }
+        public int ToRow { get; set; }
 
         public override string ToString()
         {

@@ -1,10 +1,5 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeOpenXml;
-using OfficeOpenXml.Style;
 using OfficeOpenXml.FormulaParsing.ExcelUtilities;
 namespace EPPlusTest
 {
@@ -38,28 +33,6 @@ namespace EPPlusTest
                 testContextInstance = value;
             }
         }
-
-        #region Additional test attributes
-        //
-        // You can use the following additional attributes as you write your tests:
-        //
-        // Use ClassInitialize to run code before running the first test in the class
-        // [ClassInitialize()]
-        // public static void MyClassInitialize(TestContext testContext) { }
-        //
-        // Use ClassCleanup to run code after all tests in a class have run
-        // [ClassCleanup()]
-        // public static void MyClassCleanup() { }
-        //
-        // Use TestInitialize to run code before running each test 
-        // [TestInitialize()]
-        // public void MyTestInitialize() { }
-        //
-        // Use TestCleanup to run code after each test has run
-        // [TestCleanup()]
-        // public void MyTestCleanup() { }
-        //
-        #endregion
 
         [TestMethod]
         public void InsertDeleteTest()
@@ -109,30 +82,30 @@ namespace EPPlusTest
         [TestMethod]
         public void IsValidCellAdress()
         {
-          Assert.IsTrue(ExcelCellBase.IsValidCellAddress("A1"));
-          Assert.IsTrue(ExcelCellBase.IsValidCellAddress("A1048576"));
-          Assert.IsTrue(ExcelCellBase.IsValidCellAddress("XFD1"));
-          Assert.IsTrue(ExcelCellBase.IsValidCellAddress("XFD1048576"));
-          Assert.IsTrue(ExcelCellBase.IsValidCellAddress("Table1!A1"));
-          Assert.IsTrue(ExcelCellBase.IsValidCellAddress("Table1!A1048576"));
-          Assert.IsTrue(ExcelCellBase.IsValidCellAddress("Table1!XFD1"));
-          Assert.IsTrue(ExcelCellBase.IsValidCellAddress("Table1!XFD1048576"));
-          Assert.IsFalse(ExcelCellBase.IsValidCellAddress("A"));
-          Assert.IsFalse(ExcelCellBase.IsValidCellAddress("A"));
-          Assert.IsFalse(ExcelCellBase.IsValidCellAddress("XFD"));
-          Assert.IsFalse(ExcelCellBase.IsValidCellAddress("XFD"));
-          Assert.IsFalse(ExcelCellBase.IsValidCellAddress("1"));
-          Assert.IsFalse(ExcelCellBase.IsValidCellAddress("1048576"));
-          Assert.IsFalse(ExcelCellBase.IsValidCellAddress("1"));
-          Assert.IsFalse(ExcelCellBase.IsValidCellAddress("1048576"));
-          Assert.IsFalse(ExcelCellBase.IsValidCellAddress("A1:A1048576"));
-          Assert.IsFalse(ExcelCellBase.IsValidCellAddress("A1:XFD1"));
-          Assert.IsFalse(ExcelCellBase.IsValidCellAddress("A1048576:XFD1048576"));
-          Assert.IsFalse(ExcelCellBase.IsValidCellAddress("XFD1:XFD1048576"));
-          Assert.IsFalse(ExcelCellBase.IsValidCellAddress("Table1!A1:A1048576"));
-          Assert.IsFalse(ExcelCellBase.IsValidCellAddress("Table1!A1:XFD1"));
-          Assert.IsFalse(ExcelCellBase.IsValidCellAddress("Table1!A1048576:XFD1048576"));
-          Assert.IsFalse(ExcelCellBase.IsValidCellAddress("Table1!XFD1:XFD1048576"));
+            Assert.IsTrue(ExcelCellBase.IsValidCellAddress("A1"));
+            Assert.IsTrue(ExcelCellBase.IsValidCellAddress("A1048576"));
+            Assert.IsTrue(ExcelCellBase.IsValidCellAddress("XFD1"));
+            Assert.IsTrue(ExcelCellBase.IsValidCellAddress("XFD1048576"));
+            Assert.IsTrue(ExcelCellBase.IsValidCellAddress("Table1!A1"));
+            Assert.IsTrue(ExcelCellBase.IsValidCellAddress("Table1!A1048576"));
+            Assert.IsTrue(ExcelCellBase.IsValidCellAddress("Table1!XFD1"));
+            Assert.IsTrue(ExcelCellBase.IsValidCellAddress("Table1!XFD1048576"));
+            Assert.IsFalse(ExcelCellBase.IsValidCellAddress("A"));
+            Assert.IsFalse(ExcelCellBase.IsValidCellAddress("A"));
+            Assert.IsFalse(ExcelCellBase.IsValidCellAddress("XFD"));
+            Assert.IsFalse(ExcelCellBase.IsValidCellAddress("XFD"));
+            Assert.IsFalse(ExcelCellBase.IsValidCellAddress("1"));
+            Assert.IsFalse(ExcelCellBase.IsValidCellAddress("1048576"));
+            Assert.IsFalse(ExcelCellBase.IsValidCellAddress("1"));
+            Assert.IsFalse(ExcelCellBase.IsValidCellAddress("1048576"));
+            Assert.IsFalse(ExcelCellBase.IsValidCellAddress("A1:A1048576"));
+            Assert.IsFalse(ExcelCellBase.IsValidCellAddress("A1:XFD1"));
+            Assert.IsFalse(ExcelCellBase.IsValidCellAddress("A1048576:XFD1048576"));
+            Assert.IsFalse(ExcelCellBase.IsValidCellAddress("XFD1:XFD1048576"));
+            Assert.IsFalse(ExcelCellBase.IsValidCellAddress("Table1!A1:A1048576"));
+            Assert.IsFalse(ExcelCellBase.IsValidCellAddress("Table1!A1:XFD1"));
+            Assert.IsFalse(ExcelCellBase.IsValidCellAddress("Table1!A1048576:XFD1048576"));
+            Assert.IsFalse(ExcelCellBase.IsValidCellAddress("Table1!XFD1:XFD1048576"));
         }
         [TestMethod]
         public void IsValidName()
@@ -285,7 +258,7 @@ namespace EPPlusTest
                 Assert.AreEqual("B2:C3", namedRange.Address);
             }
         }
-        
+
 
         [TestMethod]
         public void ShouldHandleWorksheetSpec()

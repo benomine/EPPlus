@@ -1,6 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeOpenXml;
-using System.Xml;
 
 namespace EPPlusTest
 {
@@ -17,10 +16,9 @@ namespace EPPlusTest
                 cell.Style.QuotePrefix = true;
                 Assert.IsTrue(cell.Style.QuotePrefix);
 
-                p.Workbook.Styles.UpdateXml();                
+                p.Workbook.Styles.UpdateXml();
                 var nodes = p.Workbook.StylesXml.SelectNodes("//d:cellXfs/d:xf", p.Workbook.NameSpaceManager);
-                // Since the quotePrefix attribute is not part of the default style,
-                // a new one should be created and referenced.
+
                 Assert.AreNotEqual(0, cell.StyleID);
                 Assert.IsNull(nodes[0].Attributes["quotePrefix"]);
                 Assert.AreEqual("1", nodes[cell.StyleID].Attributes["quotePrefix"].Value);

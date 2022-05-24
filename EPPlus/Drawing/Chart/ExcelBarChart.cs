@@ -30,11 +30,9 @@
  * Jan Källman		License changed GPL-->LGPL 2011-12-16
  *******************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Globalization;
 using System.Xml;
 using OfficeOpenXml.Table.PivotTable;
-using System.Globalization;
 
 namespace OfficeOpenXml.Drawing.Chart
 {
@@ -44,18 +42,7 @@ namespace OfficeOpenXml.Drawing.Chart
     public sealed class ExcelBarChart : ExcelChart
     {
         #region "Constructors"
-        //internal ExcelBarChart(ExcelDrawings drawings, XmlNode node) :
-        //    base(drawings, node/*, 1*/)
-        //{
-        //    SetChartNodeText("");
-        //}
-        //internal ExcelBarChart(ExcelDrawings drawings, XmlNode node, eChartType type) :
-        //    base(drawings, node, type)
-        //{
-        //    SetChartNodeText("");
 
-        //    SetTypeProperties(drawings, type);
-        //}
         internal ExcelBarChart(ExcelDrawings drawings, XmlNode node, eChartType type, ExcelChart topChart, ExcelPivotTable PivotTableSource) :
             base(drawings, node, type, topChart, PivotTableSource)
         {
@@ -70,27 +57,22 @@ namespace OfficeOpenXml.Drawing.Chart
             SetChartNodeText(chartNode.Name);
         }
 
-        internal ExcelBarChart(ExcelChart topChart, XmlNode chartNode) : 
+        internal ExcelBarChart(ExcelChart topChart, XmlNode chartNode) :
             base(topChart, chartNode)
         {
             SetChartNodeText(chartNode.Name);
         }
         #endregion
         #region "Private functions"
-        //string _chartTopPath="c:chartSpace/c:chart/c:plotArea/{0}";
         private void SetChartNodeText(string chartNodeText)
         {
-            if(string.IsNullOrEmpty(chartNodeText))
+            if (string.IsNullOrEmpty(chartNodeText))
             {
                 chartNodeText = GetChartNodeText();
             }
-            //_chartTopPath = string.Format(_chartTopPath, chartNodeText);
-            //_directionPath = string.Format(_directionPath, _chartTopPath);
-            //_shapePath = string.Format(_shapePath, _chartTopPath);
         }
         private void SetTypeProperties(ExcelDrawings drawings, eChartType type)
         {
-            /******* Bar direction *******/
             if (type == eChartType.BarClustered ||
                 type == eChartType.BarStacked ||
                 type == eChartType.BarStacked100 ||
@@ -133,17 +115,11 @@ namespace OfficeOpenXml.Drawing.Chart
                 Direction = eDirection.Column;
             }
 
-            /****** Shape ******/
-            if (/*type == eChartType.ColumnClustered ||
-                type == eChartType.ColumnStacked ||
-                type == eChartType.ColumnStacked100 ||*/
+            if (
                 type == eChartType.Column3D ||
                 type == eChartType.ColumnClustered3D ||
                 type == eChartType.ColumnStacked3D ||
                 type == eChartType.ColumnStacked1003D ||
-                /*type == eChartType.BarClustered ||
-                type == eChartType.BarStacked ||
-                type == eChartType.BarStacked100 ||*/
                 type == eChartType.BarClustered3D ||
                 type == eChartType.BarStacked3D ||
                 type == eChartType.BarStacked1003D)

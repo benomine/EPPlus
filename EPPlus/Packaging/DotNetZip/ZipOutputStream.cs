@@ -43,9 +43,9 @@
 //
 
 using System;
-using System.Threading;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using Ionic.Zip;
 using OfficeOpenXml.Packaging.Ionic.Zlib;
 
@@ -139,7 +139,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
     ///   compression to be used, always.
     /// </para>
     /// </remarks>
-    internal class ZipOutputStream : Stream
+    public class ZipOutputStream : Stream
     {
         /// <summary>
         ///   Create a ZipOutputStream, wrapping an existing stream.
@@ -369,7 +369,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// <returns>a string representation of the instance.</returns>
         public override String ToString()
         {
-            return String.Format ("ZipOutputStream::{0}(leaveOpen({1})))", _name, _leaveUnderlyingStreamOpen);
+            return String.Format("ZipOutputStream::{0}(leaveOpen({1})))", _name, _leaveUnderlyingStreamOpen);
         }
 
 
@@ -723,15 +723,15 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// </remarks>
         public bool IgnoreCase
         {
-          get
-          {
-              return !_DontIgnoreCase;
-          }
+            get
+            {
+                return !_DontIgnoreCase;
+            }
 
-          set
-          {
-              _DontIgnoreCase = !value;
-          }
+            set
+            {
+                _DontIgnoreCase = !value;
+            }
 
         }
 
@@ -1020,14 +1020,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// <seealso cref="Ionic.Zip.ZipFile.ProvisionalAlternateEncoding"/>
         public static System.Text.Encoding DefaultEncoding
         {
-            get
-            {
-                #if Core
-                    return System.Text.Encoding.GetEncoding("utf-8");     
-                #else
-                                return System.Text.Encoding.GetEncoding("IBM437");
-                #endif
-            }
+            get => System.Text.Encoding.GetEncoding("utf-8");
         }
 
 
@@ -1396,7 +1389,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
             _currentEntry.AlternateEncoding = this.AlternateEncoding;
             _currentEntry.AlternateEncodingUsage = this.AlternateEncodingUsage;
 
-            if (entryName.EndsWith("/"))  _currentEntry.MarkAsDirectory();
+            if (entryName.EndsWith("/")) _currentEntry.MarkAsDirectory();
 
             _currentEntry.EmitTimesInWindowsFormatWhenSaving = ((_timestamp & ZipEntryTimestamp.Windows) != 0);
             _currentEntry.EmitTimesInUnixFormatWhenSaving = ((_timestamp & ZipEntryTimestamp.Unix) != 0);
@@ -1416,7 +1409,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
             // _InitiateCurrentEntry(bool) from within Write().)  If finishing==true,
             // the entry could be either a zero-byte file or a directory.
 
-            _entriesWritten.Add(_currentEntry.FileName,_currentEntry);
+            _entriesWritten.Add(_currentEntry.FileName, _currentEntry);
             _entryCount++; // could use _entriesWritten.Count, but I don't want to incur
             // the cost.
 
@@ -1619,13 +1612,9 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         private Dictionary<String, ZipEntry> _entriesWritten;
         private int _entryCount;
         private ZipOption _alternateEncodingUsage = ZipOption.Never;
-#if (Core)
+
         private System.Text.Encoding _alternateEncoding
             = System.Text.Encoding.GetEncoding("utf-8"); // 
-#else
-        private System.Text.Encoding _alternateEncoding
-            = System.Text.Encoding.GetEncoding("IBM437"); // default = IBM437
-#endif
 
         private bool _leaveUnderlyingStreamOpen;
         private bool _disposed;

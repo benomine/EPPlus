@@ -28,8 +28,8 @@
  * ******************************************************************************
  * Mats Alm   		                Added       		        2015-12-28
  *******************************************************************************/
-using OfficeOpenXml.FormulaParsing.LexicalAnalysis.TokenSeparatorHandlers;
 using System.Text.RegularExpressions;
+using OfficeOpenXml.FormulaParsing.LexicalAnalysis.TokenSeparatorHandlers;
 
 namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
 {
@@ -70,7 +70,7 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
                 {
                     return;
                 }
-                                              
+
                 if (_context.CurrentTokenHasValue)
                 {
                     if (Regex.IsMatch(_context.CurrentToken, "^\"*$"))
@@ -111,7 +111,7 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
             return result;
         }
 
-        
+
 
         private static bool TokenIsNegator(TokenizerContext context)
         {

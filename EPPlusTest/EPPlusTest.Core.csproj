@@ -1,23 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>    
-    <TargetFramework>netcoreapp2.0</TargetFramework>    
+    <TargetFramework>net6.0</TargetFramework>    
     <RootNamespace>EPPlusTest</RootNamespace>    
     <AssemblyName>EPPlusTest</AssemblyName>    
-    <SignAssembly>True</SignAssembly>    
-    <AssemblyOriginatorKeyFile>EPPlusTest.snk</AssemblyOriginatorKeyFile>    
-    <AssemblyVersion>4.5.0.0</AssemblyVersion>    
-    <FileVersion>4.5.0.0</FileVersion>    
-    <Version>4.5.0.0</Version>    
-    <Description>Package Description</Description>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;DEBUG;Core;NETCOREAPP1_1</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>TRACE;RELEASE;NETCOREAPP2_0;Core</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,29 +11,53 @@
     <None Remove="Resources\Test1.jpg" />
     <None Remove="Resources\Vector Drawing.wmf" />
     <None Remove="Resources\Vector Drawing2.wmf" />
+    <None Remove="Workbooks\FormulaTest.xlsx" />
+    <None Remove="Workbooks\MultiColorConditionalFormatting.xlsx" />
+    <None Remove="Workbooks\VBADecompressBug.xlsm" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resources\BitmapImage.gif" />
-    <EmbeddedResource Include="Resources\Test1.jpg" />
-    <EmbeddedResource Include="Resources\Vector Drawing.wmf" />
-    <EmbeddedResource Include="Resources\Vector Drawing2.wmf" />
+    <Content Include="Workbooks\FormulaTest.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Workbooks\MultiColorConditionalFormatting.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Workbooks\VBADecompressBug.xlsm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+	<Content Include="Resources\BitmapImage.gif">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</Content>
+    <Content Include="Resources\Test1.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Vector Drawing.wmf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Vector Drawing2.wmf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FakeItEasy" Version="6.0.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="1.1.11" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.1.11" />
+	<Resource Include="Workbooks\FormulaTest.xlsx" />
+	<Resource Include="Workbooks\MultiColorConditionalFormatting.xlsx" />
+	<Resource Include="Workbooks\VBADecompressBug.xlsm" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Bogus" Version="34.0.2" />
+    <PackageReference Include="FakeItEasy" Version="7.3.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.2.10" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.2.10" />
     <PackageReference Include="System.Xml.XPath.XmlDocument" Version="4.3.0" />
+	<PackageReference Include="System.Resources.Extensions" Version="6.0.0" />
+	<PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\EPPlus\EPPlus.MultiTarget.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
-  </ItemGroup>
-
 </Project>

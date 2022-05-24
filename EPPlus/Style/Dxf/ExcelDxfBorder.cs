@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml;
-
-namespace OfficeOpenXml.Style.Dxf
+﻿namespace OfficeOpenXml.Style.Dxf
 {
     public class ExcelDxfBorderBase : DxfStyleBase<ExcelDxfBorderBase>
     {
@@ -90,7 +84,7 @@ namespace OfficeOpenXml.Style.Dxf
         }
         protected internal override bool HasValue
         {
-            get 
+            get
             {
                 return Left.HasValue ||
                     Right.HasValue ||

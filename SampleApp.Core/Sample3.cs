@@ -47,27 +47,25 @@
  * The author accepts no liability for any damage or loss of business that this product may cause.
  */
 using System;
-using System.IO;
-using System.Xml;
-using OfficeOpenXml;
 using System.Data.SqlClient;
-using System.Drawing;
+using OfficeOpenXml;
 using OfficeOpenXml.Style;
+using SkiaSharp;
 
 namespace EPPlusSamples
 {
-	class Sample3
-	{
-		/// <summary>
-		/// Sample 3 - creates a workbook and populates using data from the AdventureWorks database
-		/// This sample requires the AdventureWorks database.  
+    class Sample3
+    {
+        /// <summary>
+        /// Sample 3 - creates a workbook and populates using data from the AdventureWorks database
+        /// This sample requires the AdventureWorks database.  
         /// This one is from the orginal Excelpackage sample project, but without the template
-		/// </summary>
-		/// <param name="outputDir">The output directory</param>
-		/// <param name="templateDir">The location of the sample template</param>
-		/// <param name="connectionString">The connection string to your copy of the AdventureWorks database</param>
-		public static string RunSample3(string connectionString)
-		{
+        /// </summary>
+        /// <param name="outputDir">The output directory</param>
+        /// <param name="templateDir">The location of the sample template</param>
+        /// <param name="connectionString">The connection string to your copy of the AdventureWorks database</param>
+        public static string RunSample3(string connectionString)
+        {
             var file = Utils.GetFileInfo("Sample3.xlsx");
             // ok, we can run the real code of the sample now
             using (ExcelPackage xlPackage = new ExcelPackage(file))
@@ -76,7 +74,7 @@ namespace EPPlusSamples
                 ExcelWorksheet worksheet = xlPackage.Workbook.Worksheets.Add("Sales");
                 var namedStyle = xlPackage.Workbook.Styles.CreateNamedStyle("HyperLink");   //This one is language dependent
                 namedStyle.Style.Font.UnderLine = true;
-                namedStyle.Style.Font.Color.SetColor(Color.Blue);
+                namedStyle.Style.Font.Color.SetColor(SKColors.Blue);
                 if (worksheet != null)
                 {
                     const int startRow = 5;
@@ -86,21 +84,21 @@ namespace EPPlusSamples
                     using (ExcelRange r = worksheet.Cells["A1:G1"])
                     {
                         r.Merge = true;
-                        r.Style.Font.SetFromFont(new Font("Britannic Bold", 22, FontStyle.Italic));
-                        r.Style.Font.Color.SetColor(Color.White);
-                        r.Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.CenterContinuous;
-                        r.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                        r.Style.Fill.BackgroundColor.SetColor(Color.FromArgb(23, 55, 93));
+                        r.Style.Font.SetFromFont(new SKFont(SKTypeface.FromFamilyName("Britannic Bold", SKFontStyle.Italic), 22));
+                        r.Style.Font.Color.SetColor(SKColors.White);
+                        r.Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
+                        r.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        r.Style.Fill.BackgroundColor.SetColor(new SKColor(23, 55, 93));
                     }
                     worksheet.Cells["A2"].Value = "Year-End Sales Report";
                     using (ExcelRange r = worksheet.Cells["A2:G2"])
                     {
                         r.Merge = true;
-                        r.Style.Font.SetFromFont(new Font("Britannic Bold", 18, FontStyle.Italic));
-                        r.Style.Font.Color.SetColor(Color.Black);
+                        r.Style.Font.SetFromFont(new SKFont(SKTypeface.FromFamilyName("Britannic Bold", SKFontStyle.Italic), 18));
+                        r.Style.Font.Color.SetColor(SKColors.Black);
                         r.Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
                         r.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                        r.Style.Fill.BackgroundColor.SetColor(Color.FromArgb(184, 204, 228));
+                        r.Style.Fill.BackgroundColor.SetColor(new SKColor(184, 204, 228));
                     }
 
                     worksheet.Cells["A4"].Value = "Name";
@@ -111,7 +109,7 @@ namespace EPPlusSamples
                     worksheet.Cells["F4"].Value = "Sales YTD";
                     worksheet.Cells["G4"].Value = "Quota %";
                     worksheet.Cells["A4:G4"].Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    worksheet.Cells["A4:G4"].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(184, 204, 228));
+                    worksheet.Cells["A4:G4"].Style.Fill.BackgroundColor.SetColor(new SKColor(184, 204, 228));
                     worksheet.Cells["A4:G4"].Style.Font.Bold = true;
 
 
@@ -202,7 +200,7 @@ namespace EPPlusSamples
                 xlPackage.Save();
             }
 
-			return file.FullName;
-		}
-	}
+            return file.FullName;
+        }
+    }
 }

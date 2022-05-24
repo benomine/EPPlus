@@ -39,10 +39,10 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
     [Interop.GuidAttribute("ebc25cf6-9120-4283-b972-0e5520d00004")]
     [Interop.ComVisible(true)]
-//#if !NETCF
-//    [Interop.ClassInterface(Interop.ClassInterfaceType.AutoDispatch)]  // AutoDual
-//#endif
-    internal partial class ZipEntry
+    //#if !NETCF
+    //    [Interop.ClassInterface(Interop.ClassInterfaceType.AutoDispatch)]  // AutoDual
+    //#endif
+    public partial class ZipEntry
     {
         /// <summary>
         /// Default constructor.
@@ -53,15 +53,13 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// </remarks>
         public ZipEntry()
         {
-            _CompressionMethod = (Int16)CompressionMethod.Deflate;
-            _CompressionLevel = Ionic.Zlib.CompressionLevel.Default;
+            _CompressionMethod = (short)CompressionMethod.Deflate;
+            _CompressionLevel = Zlib.CompressionLevel.Default;
             _Encryption = EncryptionAlgorithm.None;
             _Source = ZipEntrySource.None;
-#if (Core)
+
             AlternateEncoding = System.Text.Encoding.GetEncoding("UTF-8");
-#else
-            AlternateEncoding = System.Text.Encoding.GetEncoding("IBM437");
-#endif
+
             AlternateEncodingUsage = ZipOption.Never;
         }
 
@@ -1455,7 +1453,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
             {
                 if (_CompressionMethod != (short)CompressionMethod.Deflate &&
                     _CompressionMethod != (short)CompressionMethod.None)
-                    return ; // no effect
+                    return; // no effect
 
                 if (value == OfficeOpenXml.Packaging.Ionic.Zlib.CompressionLevel.Default &&
                     _CompressionMethod == (short)CompressionMethod.Deflate) return; // nothing to do
@@ -2721,11 +2719,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         private bool _skippedDuringSave;
         private UInt32 _diskNumber;
 
-#if (Core)
         private static System.Text.Encoding ibm437 = System.Text.Encoding.GetEncoding("UTF-8");
-#else
-        private static System.Text.Encoding ibm437 = System.Text.Encoding.GetEncoding("IBM437");
-#endif
+
         private System.Text.Encoding _actualEncoding;
 
         internal ZipContainer _container;
@@ -2822,7 +2817,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
     ///
     /// </remarks>
     [Flags]
-    internal enum ZipEntryTimestamp
+    public enum ZipEntryTimestamp
     {
         /// <summary>
         /// Default value.
@@ -2864,7 +2859,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
     ///   cmopression methods that can be used within a zip
     ///   file. DotNetZip supports a subset of them.
     /// </remarks>
-    internal enum CompressionMethod
+    public enum CompressionMethod
     {
         /// <summary>
         /// No compression at all. For COM environments, the value is 0 (zero).

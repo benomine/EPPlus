@@ -32,9 +32,8 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 using System.Xml;
-using System.Drawing;
+using SkiaSharp;
 
 namespace OfficeOpenXml.Drawing.Chart
 {
@@ -120,12 +119,6 @@ namespace OfficeOpenXml.Drawing.Chart
             }
             set
             {
-                /* setting MarkerStyle seems to be working, so no need to throw an exception in this case
-                 if (_chartSeries.Chart.ChartType == eChartType.XYScatterLinesNoMarkers ||
-                    _chartSeries.Chart.ChartType == eChartType.XYScatterSmoothNoMarkers)
-                {
-                    throw (new InvalidOperationException("Can't set marker style for this charttype."));
-                }*/
                 SetXmlNodeString(markerPath, value.ToString().ToLower(CultureInfo.InvariantCulture));
             }
         }
@@ -140,29 +133,29 @@ namespace OfficeOpenXml.Drawing.Chart
         /// <value>
         /// The color of the line.
         /// </value>
-        public Color LineColor
+        public SKColor LineColor
         {
             get
             {
                 string color = GetXmlNodeString(LINECOLOR_PATH);
                 if (color == "")
                 {
-                    return Color.Black;
+                    return SKColors.Black;
                 }
                 else
                 {
-                    Color c = Color.FromArgb(Convert.ToInt32(color, 16));
+                    var c = SKColor.Parse(color);
                     int a = getAlphaChannel(LINECOLOR_PATH);
                     if (a != 255)
                     {
-                        c = Color.FromArgb(a, c);
+                        c = new SKColor(c.Red, c.Green, c.Blue, (byte)a);
                     }
                     return c;
                 }
             }
             set
             {
-                SetXmlNodeString(LINECOLOR_PATH, value.ToArgb().ToString("X8").Substring(2), true);
+                SetXmlNodeString(LINECOLOR_PATH, value.ToString().Substring(2), true);
                 setAlphaChannel(value, LINECOLOR_PATH);
             }
         }
@@ -208,29 +201,29 @@ namespace OfficeOpenXml.Drawing.Chart
         /// <value>
         /// The color of the Marker.
         /// </value>
-        public Color MarkerColor
+        public SKColor MarkerColor
         {
             get
             {
                 string color = GetXmlNodeString(MARKERCOLOR_PATH);
                 if (color == "")
                 {
-                    return Color.Black;
+                    return SKColors.Black;
                 }
                 else
                 {
-                    Color c = Color.FromArgb(Convert.ToInt32(color, 16));
+                    var c = SKColor.Parse(color);
                     int a = getAlphaChannel(MARKERCOLOR_PATH);
                     if (a != 255)
                     {
-                        c = Color.FromArgb(a, c);
+                        c = new SKColor(c.Red, c.Green, c.Blue, (byte)a);
                     }
                     return c;
                 }
             }
             set
             {
-                SetXmlNodeString(MARKERCOLOR_PATH, value.ToArgb().ToString("X8").Substring(2), true); //.Substring(2) => cut alpha value
+                SetXmlNodeString(MARKERCOLOR_PATH, value.ToString().Substring(2), true);
                 setAlphaChannel(value, MARKERCOLOR_PATH);
             }
         }
@@ -259,7 +252,7 @@ namespace OfficeOpenXml.Drawing.Chart
             }
             set
             {
-                SetXmlNodeString(LINEWIDTH_PATH, (( int )(12700 * value)).ToString(), true);
+                SetXmlNodeString(LINEWIDTH_PATH, ((int)(12700 * value)).ToString(), true);
             }
         }
         //marker line color
@@ -272,29 +265,29 @@ namespace OfficeOpenXml.Drawing.Chart
         /// <value>
         /// The color of the Marker line.
         /// </value>
-        public Color MarkerLineColor
+        public SKColor MarkerLineColor
         {
             get
             {
                 string color = GetXmlNodeString(MARKERLINECOLOR_PATH);
                 if (color == "")
                 {
-                    return Color.Black;
+                    return SKColors.Black;
                 }
                 else
                 {
-                    Color c = Color.FromArgb(Convert.ToInt32(color, 16));
+                    var c = SKColor.Parse(color);
                     int a = getAlphaChannel(MARKERLINECOLOR_PATH);
                     if (a != 255)
                     {
-                        c = Color.FromArgb(a, c);
+                        c = new SKColor(c.Red, c.Green, c.Blue, (byte)a);
                     }
                     return c;
                 }
             }
             set
             {
-                SetXmlNodeString(MARKERLINECOLOR_PATH, value.ToArgb().ToString("X8").Substring(2), true);
+                SetXmlNodeString(MARKERLINECOLOR_PATH, value.ToString().Substring(2), true);
                 setAlphaChannel(value, MARKERLINECOLOR_PATH);
             }
         }
@@ -310,16 +303,14 @@ namespace OfficeOpenXml.Drawing.Chart
         /// eg: a:prstClr (preset), a:hslClr (hsl), a:schemeClr (schema), a:sysClr (system), a:scrgbClr (rgb percent) or a:srgbClr (rgb hex)
         ///     .../a:prstClr/a:alpha/@val
         /// </remarks>
-        private void setAlphaChannel(Color c, string xPath)
+        private void setAlphaChannel(SKColor c, string xPath)
         {
-            //check 4 Alpha-values
-            if (c.A != 255)
-            { //opaque color => alpha == 255 //source: https://msdn.microsoft.com/en-us/library/1hstcth9%28v=vs.110%29.aspx
-                //check path
+            if (c.Alpha != 255)
+            {
                 string s = xPath4Alpha(xPath);
                 if (s.Length > 0)
                 {
-                    string alpha = ((c.A == 0) ? 0 : (100 - c.A) * 1000).ToString(); //note: excel writes 100% transparency (alpha=0) as "0" and not as "100000"
+                    string alpha = ((c.Alpha == 0) ? 0 : (100 - c.Alpha) * 1000).ToString(); //note: excel writes 100% transparency (alpha=0) as "0" and not as "100000"
                     SetXmlNodeString(s, alpha, true);
                 }
             }
@@ -336,7 +327,7 @@ namespace OfficeOpenXml.Drawing.Chart
             if (s.Length > 0)
             {
                 int i = 0;
-                if (int.TryParse(GetXmlNodeString(s), System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out i))
+                if (int.TryParse(GetXmlNodeString(s), NumberStyles.Any, CultureInfo.InvariantCulture, out i))
                 {
                     r = (i == 0) ? 0 : 100 - (i / 1000);
                 }
@@ -357,10 +348,9 @@ namespace OfficeOpenXml.Drawing.Chart
                 xPath = xPath.Substring(0, xPath.IndexOf("@val"));
             }
             if (xPath.EndsWith("/"))
-            { //cut tailing slash
+            {
                 xPath = xPath.Substring(0, xPath.Length - 1);
             }
-            //parent node must be a color node/definition
             List<string> colorDefs = new List<string>() { "a:prstClr", "a:hslClr", "a:schemeClr", "a:sysClr", "a:scrgbClr", "a:srgbClr" };
             if (colorDefs.Find(cd => xPath.EndsWith(cd, StringComparison.Ordinal)) != null)
             {
@@ -373,7 +363,5 @@ namespace OfficeOpenXml.Drawing.Chart
             }
             return s;
         }
-
-
     }
 }

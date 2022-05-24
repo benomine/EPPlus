@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Text;
-using System.Collections.Generic;
 //using System.Diagnostics.Design;
-using System.Globalization;
-using System.Linq;
-using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeOpenXml.FormulaParsing.ExcelUtilities;
 
@@ -68,25 +63,19 @@ namespace EPPlusTest
         [TestMethod]
         public void EvaluateShouldHandleDateArg()
         {
-            #if (!Core)
-                Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-            #endif
-            var result = _evaluator.Evaluate(new DateTime(2016,6,28), "2016-06-28");
+            var result = _evaluator.Evaluate(new DateTime(2016, 6, 28), "2016-06-28");
             Assert.IsTrue(result);
         }
 
         [TestMethod]
         public void EvaluateShouldHandleDateArgWithOperator()
         {
-#if (!Core)
-            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-#endif
             var result = _evaluator.Evaluate(new DateTime(2016, 6, 28), ">2016-06-27");
             Assert.IsTrue(result);
         }
-#endregion
+        #endregion
 
-#region Blank Expression Tests
+        #region Blank Expression Tests
         [TestMethod]
         public void EvaluateBlankExpressionEqualsNull()
         {
@@ -107,9 +96,9 @@ namespace EPPlusTest
             var result = _evaluator.Evaluate(0d, "");
             Assert.IsFalse(result);
         }
-#endregion
+        #endregion
 
-#region Quotes Expression Tests
+        #region Quotes Expression Tests
         [TestMethod]
         public void EvaluateQuotesExpressionEqualsNull()
         {
@@ -130,9 +119,9 @@ namespace EPPlusTest
             var result = _evaluator.Evaluate("a", "\"\"");
             Assert.IsFalse(result);
         }
-#endregion
+        #endregion
 
-#region NotEqualToZero Expression Tests
+        #region NotEqualToZero Expression Tests
         [TestMethod]
         public void EvaluateNotEqualToZeroExpressionEqualsNull()
         {
@@ -167,9 +156,9 @@ namespace EPPlusTest
             var result = _evaluator.Evaluate(0d, "<>0");
             Assert.IsFalse(result);
         }
-#endregion
+        #endregion
 
-#region NotEqualToBlank Expression Tests
+        #region NotEqualToBlank Expression Tests
         [TestMethod]
         public void EvaluateNotEqualToBlankExpressionEqualsNull()
         {
@@ -204,9 +193,9 @@ namespace EPPlusTest
             var result = _evaluator.Evaluate(0d, "<>");
             Assert.IsTrue(result);
         }
-#endregion
+        #endregion
 
-#region Character Expression Tests
+        #region Character Expression Tests
         [TestMethod]
         public void EvaluateCharacterExpressionEqualNull()
         {
@@ -241,9 +230,9 @@ namespace EPPlusTest
             var result = _evaluator.Evaluate("b", "a");
             Assert.IsFalse(result);
         }
-#endregion
+        #endregion
 
-#region CharacterWithOperator Expression Tests
+        #region CharacterWithOperator Expression Tests
         [TestMethod]
         public void EvaluateCharacterWithOperatorExpressionEqualNull()
         {
@@ -292,6 +281,6 @@ namespace EPPlusTest
             result = _evaluator.Evaluate("b", "<a");
             Assert.IsFalse(result);
         }
-#endregion
+        #endregion
     }
 }

@@ -26,8 +26,8 @@
 
 
 using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 
 namespace OfficeOpenXml.Packaging.Ionic.Zip
 {
@@ -53,7 +53,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         {
             bool done = false;
             int nRetries = 3;
-            for (int i=0; i < nRetries && !done; i++)
+            for (int i = 0; i < nRetries && !done; i++)
             {
                 try
                 {
@@ -332,7 +332,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
         private static void NotifyEntriesSaveComplete(ICollection<ZipEntry> c)
         {
-            foreach (ZipEntry e in  c)
+            foreach (ZipEntry e in c)
             {
                 e.NotifySaveComplete();
             }
@@ -711,7 +711,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                 // The assumption is the central directory is never split across
                 // segment boundaries.
 
-                UInt16 thisSegment = (UInt16) zss.ComputeSegment(a2.Length);
+                UInt16 thisSegment = (UInt16)zss.ComputeSegment(a2.Length);
                 int i = 4;
                 // number of this disk
                 Array.Copy(BitConverter.GetBytes(thisSegment), 0, a2, i, 2);
@@ -747,7 +747,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
             if (t == null) return e;
 
             var bytes = e.GetBytes(t);
-            var t2 = e.GetString(bytes,0,bytes.Length);
+            var t2 = e.GetString(bytes, 0, bytes.Length);
             if (t2.Equals(t)) return e;
             return container.AlternateEncoding;
         }
@@ -927,7 +927,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
             // offset 60
             // number of the disk with the start of the zip64 eocd
             // (this will change later)  (it will?)
-            uint x2 = (numSegments==0)?0:(uint)(numSegments-1);
+            uint x2 = (numSegments==0) ? 0 : (uint)(numSegments-1);
             Array.Copy(BitConverter.GetBytes(x2), 0, bytes, i, 4);
             i+=4;
 

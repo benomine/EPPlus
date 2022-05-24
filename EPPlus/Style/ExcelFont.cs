@@ -30,9 +30,7 @@
  * Jan Källman		License changed GPL-->LGPL 2011-12-16
  *******************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Drawing;
+using SkiaSharp;
 
 namespace OfficeOpenXml.Style
 {
@@ -41,7 +39,7 @@ namespace OfficeOpenXml.Style
     /// </summary>
     public sealed class ExcelFont : StyleBase
     {
-        internal ExcelFont(ExcelStyles styles, OfficeOpenXml.XmlHelper.ChangedEventHandler ChangedEvent, int PositionID, string address, int index) :
+        internal ExcelFont(ExcelStyles styles, XmlHelper.ChangedEventHandler ChangedEvent, int PositionID, string address, int index) :
             base(styles, ChangedEvent, PositionID, address)
 
         {
@@ -213,23 +211,19 @@ namespace OfficeOpenXml.Style
         /// Set the font from a Font object
         /// </summary>
         /// <param name="Font"></param>
-        public void SetFromFont(Font Font)
+        public void SetFromFont(SKFont Font)
         {
-            Name = Font.Name;
-            //Family=fnt.FontFamily.;
+            Name = Font.Typeface.FamilyName;
             Size = (int)Font.Size;
-            Strike = Font.Strikeout;
-            Bold = Font.Bold;
-            UnderLine = Font.Underline;
-            Italic = Font.Italic;
+            //Strike = Font.Strikeout;
+            Bold = Font.Typeface.IsBold;
+            //UnderLine = Font.Underline;
+            Italic = Font.Typeface.IsItalic;
         }
 
         internal override string Id
         {
-            get 
-            {
-                return Name + Size.ToString() + Family.ToString() + Scheme.ToString() + Bold.ToString()[0] + Italic.ToString()[0] + Strike.ToString()[0] + UnderLine.ToString()[0] + VerticalAlign;
-            }
+            get => Name + Size.ToString() + Family.ToString() + Scheme.ToString() + Bold.ToString()[0] + Italic.ToString()[0] + Strike.ToString()[0] + UnderLine.ToString()[0] + VerticalAlign;
         }
     }
 }
