@@ -347,12 +347,12 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
             // workitem 9307
             _outputStream = stream.CanRead ? stream : new CountingStream(stream);
             CompressionLevel = OfficeOpenXml.Packaging.Ionic.Zlib.CompressionLevel.Default;
-            CompressionMethod = OfficeOpenXml.Packaging.Ionic.Zip.CompressionMethod.Deflate;
+            CompressionMethod = CompressionMethod.Deflate;
             _encryption = EncryptionAlgorithm.None;
             _entriesWritten = new Dictionary<String, ZipEntry>(StringComparer.Ordinal);
             _zip64 = Zip64Option.Never;
             _leaveUnderlyingStreamOpen = leaveOpen;
-            Strategy = Ionic.Zlib.CompressionStrategy.Default;
+            Strategy = CompressionStrategy.Default;
             _name = name ?? "(stream)";
 #if !NETCF
             ParallelDeflateThreshold = -1L;
@@ -428,7 +428,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                 if (_disposed)
                 {
                     _exceptionPending = true;
-                    throw new System.InvalidOperationException("The stream has been closed.");
+                    throw new InvalidOperationException("The stream has been closed.");
                 }
 
                 _password = value;
@@ -467,16 +467,13 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// <seealso cref="ZipEntry.Encryption">ZipEntry.Encryption</seealso>
         public EncryptionAlgorithm Encryption
         {
-            get
-            {
-                return _encryption;
-            }
+            get => _encryption;
             set
             {
                 if (_disposed)
                 {
                     _exceptionPending = true;
-                    throw new System.InvalidOperationException("The stream has been closed.");
+                    throw new InvalidOperationException("The stream has been closed.");
                 }
                 if (value == EncryptionAlgorithm.Unsupported)
                 {
@@ -534,16 +531,13 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// </remarks>
         public ZipEntryTimestamp Timestamp
         {
-            get
-            {
-                return _timestamp;
-            }
+            get => _timestamp;
             set
             {
                 if (_disposed)
                 {
                     _exceptionPending = true;
-                    throw new System.InvalidOperationException("The stream has been closed.");
+                    throw new InvalidOperationException("The stream has been closed.");
                 }
                 _timestamp = value;
             }
@@ -637,13 +631,13 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// </remarks>
         public string Comment
         {
-            get { return _comment; }
+            get => _comment;
             set
             {
                 if (_disposed)
                 {
                     _exceptionPending = true;
-                    throw new System.InvalidOperationException("The stream has been closed.");
+                    throw new InvalidOperationException("The stream has been closed.");
                 }
                 _comment = value;
             }
@@ -670,16 +664,13 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// </remarks>
         public Zip64Option EnableZip64
         {
-            get
-            {
-                return _zip64;
-            }
+            get => _zip64;
             set
             {
                 if (_disposed)
                 {
                     _exceptionPending = true;
-                    throw new System.InvalidOperationException("The stream has been closed.");
+                    throw new InvalidOperationException("The stream has been closed.");
                 }
                 _zip64 = value;
             }
@@ -693,13 +684,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// <remarks>
         ///   The value is defined only after the <c>ZipOutputStream</c> has been closed.
         /// </remarks>
-        public bool OutputUsedZip64
-        {
-            get
-            {
-                return _anyEntriesUsedZip64 || _directoryNeededZip64;
-            }
-        }
+        public bool OutputUsedZip64 => _anyEntriesUsedZip64 || _directoryNeededZip64;
 
 
         /// <summary>
@@ -723,16 +708,9 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// </remarks>
         public bool IgnoreCase
         {
-            get
-            {
-                return !_DontIgnoreCase;
-            }
+            get => !_DontIgnoreCase;
 
-            set
-            {
-                _DontIgnoreCase = !value;
-            }
-
+            set => _DontIgnoreCase = !value;
         }
 
 
@@ -855,11 +833,9 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         [Obsolete("Beginning with v1.9.1.6 of DotNetZip, this property is obsolete. It will be removed in a future version of the library. Use AlternateEncoding and AlternateEncodingUsage instead.")]
         public bool UseUnicodeAsNecessary
         {
-            get
-            {
-                return (_alternateEncoding == System.Text.Encoding.UTF8) &&
-                    (AlternateEncodingUsage == ZipOption.AsNecessary);
-            }
+            get =>
+                _alternateEncoding == System.Text.Encoding.UTF8 &&
+                AlternateEncodingUsage == ZipOption.AsNecessary;
             set
             {
                 if (value)
@@ -870,7 +846,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                 }
                 else
                 {
-                    _alternateEncoding = Ionic.Zip.ZipOutputStream.DefaultEncoding;
+                    _alternateEncoding = DefaultEncoding;
                     _alternateEncodingUsage = ZipOption.Never;
                 }
             }
@@ -986,14 +962,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// </remarks>
         public System.Text.Encoding AlternateEncoding
         {
-            get
-            {
-                return _alternateEncoding;
-            }
-            set
-            {
-                _alternateEncoding = value;
-            }
+            get => _alternateEncoding;
+            set => _alternateEncoding = value;
         }
 
         /// <summary>
@@ -1003,14 +973,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// </summary>
         public ZipOption AlternateEncodingUsage
         {
-            get
-            {
-                return _alternateEncodingUsage;
-            }
-            set
-            {
-                _alternateEncodingUsage = value;
-            }
+            get => _alternateEncodingUsage;
+            set => _alternateEncodingUsage = value;
         }
 
         /// <summary>
@@ -1018,10 +982,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// known as IBM437.
         /// </summary>
         /// <seealso cref="Ionic.Zip.ZipFile.ProvisionalAlternateEncoding"/>
-        public static System.Text.Encoding DefaultEncoding
-        {
-            get => System.Text.Encoding.GetEncoding("utf-8");
-        }
+        public static System.Text.Encoding DefaultEncoding => System.Text.Encoding.GetEncoding("utf-8");
 
 
 #if !NETCF
@@ -1087,14 +1048,11 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         {
             set
             {
-                if ((value != 0) && (value != -1) && (value < 64 * 1024))
+                if (value != 0 && value != -1 && value < 64 * 1024)
                     throw new ArgumentOutOfRangeException("value must be greater than 64k, or 0, or -1");
                 _ParallelDeflateThreshold = value;
             }
-            get
-            {
-                return _ParallelDeflateThreshold;
-            }
+            get => _ParallelDeflateThreshold;
         }
 
 
@@ -1177,10 +1135,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         ///
         public int ParallelDeflateMaxBufferPairs
         {
-            get
-            {
-                return _maxBufferPairs;
-            }
+            get => _maxBufferPairs;
             set
             {
                 if (value < 4)
@@ -1202,21 +1157,9 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         }
 
 
-        internal Stream OutputStream
-        {
-            get
-            {
-                return _outputStream;
-            }
-        }
+        internal Stream OutputStream => _outputStream;
 
-        internal String Name
-        {
-            get
-            {
-                return _name;
-            }
-        }
+        internal String Name => _name;
 
         /// <summary>
         ///   Returns true if an entry by the given name has already been written
@@ -1255,25 +1198,25 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
             if (_disposed)
             {
                 _exceptionPending = true;
-                throw new System.InvalidOperationException("The stream has been closed.");
+                throw new InvalidOperationException("The stream has been closed.");
             }
 
             if (buffer==null)
             {
                 _exceptionPending = true;
-                throw new System.ArgumentNullException("buffer");
+                throw new ArgumentNullException("buffer");
             }
 
             if (_currentEntry == null)
             {
                 _exceptionPending = true;
-                throw new System.InvalidOperationException("You must call PutNextEntry() before calling Write().");
+                throw new InvalidOperationException("You must call PutNextEntry() before calling Write().");
             }
 
             if (_currentEntry.IsDirectory)
             {
                 _exceptionPending = true;
-                throw new System.InvalidOperationException("You cannot Write() data for an entry that is a directory.");
+                throw new InvalidOperationException("You cannot Write() data for an entry that is a directory.");
             }
 
             if (_needToWriteEntryHeader)
@@ -1373,7 +1316,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
             if (_disposed)
             {
                 _exceptionPending = true;
-                throw new System.InvalidOperationException("The stream has been closed.");
+                throw new InvalidOperationException("The stream has been closed.");
             }
 
             _FinishCurrentEntry();
@@ -1381,18 +1324,18 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
             _currentEntry._container = new ZipContainer(this);
             _currentEntry._BitField |= 0x0008;  // workitem 8932
             _currentEntry.SetEntryTimes(DateTime.Now, DateTime.Now, DateTime.Now);
-            _currentEntry.CompressionLevel = this.CompressionLevel;
-            _currentEntry.CompressionMethod = this.CompressionMethod;
+            _currentEntry.CompressionLevel = CompressionLevel;
+            _currentEntry.CompressionMethod = CompressionMethod;
             _currentEntry.Password = _password; // workitem 13909
-            _currentEntry.Encryption = this.Encryption;
+            _currentEntry.Encryption = Encryption;
             // workitem 12634
-            _currentEntry.AlternateEncoding = this.AlternateEncoding;
-            _currentEntry.AlternateEncodingUsage = this.AlternateEncodingUsage;
+            _currentEntry.AlternateEncoding = AlternateEncoding;
+            _currentEntry.AlternateEncodingUsage = AlternateEncodingUsage;
 
             if (entryName.EndsWith("/")) _currentEntry.MarkAsDirectory();
 
-            _currentEntry.EmitTimesInWindowsFormatWhenSaving = ((_timestamp & ZipEntryTimestamp.Windows) != 0);
-            _currentEntry.EmitTimesInUnixFormatWhenSaving = ((_timestamp & ZipEntryTimestamp.Unix) != 0);
+            _currentEntry.EmitTimesInWindowsFormatWhenSaving = (_timestamp & ZipEntryTimestamp.Windows) != 0;
+            _currentEntry.EmitTimesInUnixFormatWhenSaving = (_timestamp & ZipEntryTimestamp.Unix) != 0;
             InsureUniqueEntry(_currentEntry);
             _needToWriteEntryHeader = true;
 
@@ -1416,7 +1359,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
             if (_entryCount > 65534 && _zip64 == Zip64Option.Never)
             {
                 _exceptionPending = true;
-                throw new System.InvalidOperationException("Too many entries. Consider setting ZipOutputStream.EnableZip64.");
+                throw new InvalidOperationException("Too many entries. Consider setting ZipOutputStream.EnableZip64.");
             }
 
             // Write out the header.
@@ -1503,7 +1446,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                                                                                      Comment,
                                                                                      new ZipContainer(this));
                     Stream wrappedStream = null;
-                    CountingStream cs = _outputStream as CountingStream;
+                    var cs = _outputStream as CountingStream;
                     if (cs != null)
                     {
                         wrappedStream = cs.WrappedStream;
@@ -1537,22 +1480,22 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// <summary>
         /// Always returns false.
         /// </summary>
-        public override bool CanRead { get { return false; } }
+        public override bool CanRead => false;
 
         /// <summary>
         /// Always returns false.
         /// </summary>
-        public override bool CanSeek { get { return false; } }
+        public override bool CanSeek => false;
 
         /// <summary>
         /// Always returns true.
         /// </summary>
-        public override bool CanWrite { get { return true; } }
+        public override bool CanWrite => true;
 
         /// <summary>
         /// Always returns a NotSupportedException.
         /// </summary>
-        public override long Length { get { throw new NotSupportedException(); } }
+        public override long Length => throw new NotSupportedException();
 
         /// <summary>
         /// Setting this property always returns a NotSupportedException. Getting it
@@ -1560,8 +1503,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// </summary>
         public override long Position
         {
-            get { return _outputStream.Position; }
-            set { throw new NotSupportedException(); }
+            get => _outputStream.Position;
+            set => throw new NotSupportedException();
         }
 
         /// <summary>
@@ -1623,7 +1566,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         private CountingStream _outputCounter;
         private Stream _encryptor;
         private Stream _deflater;
-        private Ionic.Crc.CrcCalculatorStream _entryOutputStream;
+        private Crc.CrcCalculatorStream _entryOutputStream;
         private bool _needToWriteEntryHeader;
         private string _name;
         private bool _DontIgnoreCase;
@@ -1658,20 +1601,14 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
         public ZipContainer(Object o)
         {
-            _zf = (o as ZipFile);
-            _zos = (o as ZipOutputStream);
-            _zis = (o as ZipInputStream);
+            _zf = o as ZipFile;
+            _zos = o as ZipOutputStream;
+            _zis = o as ZipInputStream;
         }
 
-        public ZipFile ZipFile
-        {
-            get { return _zf; }
-        }
+        public ZipFile ZipFile => _zf;
 
-        public ZipOutputStream ZipOutputStream
-        {
-            get { return _zos; }
-        }
+        public ZipOutputStream ZipOutputStream => _zos;
 
         public string Name
         {
@@ -1714,7 +1651,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         }
 
 #if !NETCF
-        public Ionic.Zlib.ParallelDeflateOutputStream ParallelDeflater
+        public ParallelDeflateOutputStream ParallelDeflater
         {
             get
             {
@@ -1757,7 +1694,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
             }
         }
 
-        public Ionic.Zlib.CompressionStrategy Strategy
+        public CompressionStrategy Strategy
         {
             get
             {

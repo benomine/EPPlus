@@ -26,10 +26,7 @@ namespace OfficeOpenXml.FormulaParsing
 
         }
 
-        public static INameValueProvider Empty
-        {
-            get { return new NameValueProvider(); }
-        }
+        public static INameValueProvider Empty => new NameValueProvider();
 
         public bool IsNamedValue(string key, string worksheet)
         {

@@ -62,8 +62,8 @@ namespace OfficeOpenXml.VBA
     /// </summary>
     public class ExcelVBAModule
     {
-        string _name = "";
-        ModuleNameChange _nameChangeCallback = null;
+        private string _name = "";
+        private readonly ModuleNameChange _nameChangeCallback = null;
         internal ExcelVBAModule()
         {
             Attributes = new ExcelVbaModuleAttributesCollection();
@@ -78,25 +78,18 @@ namespace OfficeOpenXml.VBA
         /// </summary>
         public string Name
         {
-            get
-            {
-                return _name;
-            }
+            get => _name;
             set
             {
                 if (value.Any(c => c > 255))
                 {
-                    throw (new InvalidOperationException("Vba module names can't contain unicode characters"));
+                    throw new InvalidOperationException("Vba module names can't contain unicode characters");
                 }
-                if (value != _name)
-                {
-                    _name = value;
-                    streamName = value;
-                    if (_nameChangeCallback != null)
-                    {
-                        _nameChangeCallback(value);
-                    }
-                }
+
+                if (value == _name) return;
+                _name = value;
+                StreamName = value;
+                _nameChangeCallback?.Invoke(value);
             }
         }
         /// <summary>
@@ -110,15 +103,12 @@ namespace OfficeOpenXml.VBA
         /// </summary>
         public string Code
         {
-            get
-            {
-                return _code;
-            }
+            get => _code;
             set
             {
                 if (value.StartsWith("Attribute", StringComparison.OrdinalIgnoreCase) || value.StartsWith("VERSION", StringComparison.OrdinalIgnoreCase))
                 {
-                    throw (new InvalidOperationException("Code can't start with an Attribute or VERSION keyword. Attributes can be accessed through the Attributes collection."));
+                    throw new InvalidOperationException("Code can't start with an Attribute or VERSION keyword. Attributes can be accessed through the Attributes collection.");
                 }
                 _code = value;
             }
@@ -143,10 +133,10 @@ namespace OfficeOpenXml.VBA
         /// If the module is private
         /// </summary>
         public bool Private { get; set; }
-        internal string streamName { get; set; }
+        internal string StreamName { get; set; }
         internal ushort Cookie { get; set; }
         internal uint ModuleOffset { get; set; }
-        internal string ClassID { get; set; }
+        internal string ClassId { get; set; }
         public override string ToString()
         {
             return Name;

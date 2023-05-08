@@ -168,13 +168,13 @@ namespace OfficeOpenXml.VBA
         {
             foreach (var modul in Modules)
             {
-                var stream = Document.Storage.SubStorage["VBA"].DataStreams[modul.streamName];
+                var stream = Document.Storage.SubStorage["VBA"].DataStreams[modul.StreamName];
                 var byCode = VBACompression.DecompressPart(stream, (int)modul.ModuleOffset);
-                string code = Encoding.GetEncoding(CodePage).GetString(byCode);
-                int pos = 0;
+                var code = Encoding.GetEncoding(CodePage).GetString(byCode);
+                var pos = 0;
                 while (pos+9<code.Length && code.Substring(pos, 9)=="Attribute")
                 {
-                    int linePos = code.IndexOf("\r\n", pos);
+                    var linePos = code.IndexOf("\r\n", pos);
                     string[] lineSplit;
                     if (linePos>0)
                     {
@@ -194,7 +194,7 @@ namespace OfficeOpenXml.VBA
                                 DataType = lineSplit[1].StartsWith("\"") ? eAttributeDataType.String : eAttributeDataType.NonString,
                                 Value = lineSplit[1].StartsWith("\"") ? lineSplit[1].Substring(1, lineSplit[1].Length - 2) : lineSplit[1]
                             };
-                        modul.Attributes._list.Add(attr);
+                        modul.Attributes.List.Add(attr);
                     }
                     pos = linePos + 2;
                 }
@@ -205,9 +205,9 @@ namespace OfficeOpenXml.VBA
         private void ReadProjectProperties()
         {
             _protection = new ExcelVbaProtection(this);
-            string prevPackage = "";
+            var prevPackage = "";
             var lines = Regex.Split(ProjectStreamText, "\r\n");
-            foreach (string line in lines)
+            foreach (var line in lines)
             {
                 if (line.StartsWith("["))
                 {
@@ -226,7 +226,7 @@ namespace OfficeOpenXml.VBA
                             ProjectID = split[1];
                             break;
                         case "Document":
-                            string mn = split[1].Substring(0, split[1].IndexOf("/&H"));
+                            var mn = split[1].Substring(0, split[1].IndexOf("/&H"));
                             Modules[mn].Type = eModuleType.Document;
                             break;
                         case "Package":
@@ -234,7 +234,7 @@ namespace OfficeOpenXml.VBA
                             break;
                         case "BaseClass":
                             Modules[split[1]].Type = eModuleType.Designer;
-                            Modules[split[1]].ClassID = prevPackage;
+                            Modules[split[1]].ClassId = prevPackage;
                             break;
                         case "Module":
                             Modules[split[1]].Type = eModuleType.Module;
@@ -250,16 +250,16 @@ namespace OfficeOpenXml.VBA
                             break;
                         //393222000"
                         case "CMG":
-                            byte[] cmg = Decrypt(split[1]);
+                            var cmg = Decrypt(split[1]);
                             _protection.UserProtected = (cmg[0] & 1) != 0;
                             _protection.HostProtected = (cmg[0] & 2) != 0;
                             _protection.VbeProtected = (cmg[0] & 4) != 0;
                             break;
                         case "DPB":
-                            byte[] dpb = Decrypt(split[1]);
+                            var dpb = Decrypt(split[1]);
                             if (dpb.Length >= 28)
                             {
-                                byte reserved = dpb[0];
+                                var reserved = dpb[0];
                                 var flags = new byte[3];
                                 Array.Copy(dpb, 1, flags, 0, 3);
                                 var keyNoNulls = new byte[4];
@@ -269,9 +269,9 @@ namespace OfficeOpenXml.VBA
                                 _protection.PasswordHash = new byte[20];
                                 Array.Copy(dpb, 8, hashNoNulls, 0, 20);
                                 //Handle 0x00 bitwise 2.4.4.3 
-                                for (int i = 0; i < 24; i++)
+                                for (var i = 0; i < 24; i++)
                                 {
-                                    int bit = 128 >> (int)((i % 8));
+                                    var bit = 128 >> (int)(i % 8);
                                     if (i < 4)
                                     {
                                         if ((int)(flags[0] & bit) == 0)
@@ -285,7 +285,7 @@ namespace OfficeOpenXml.VBA
                                     }
                                     else
                                     {
-                                        int flagIndex = (i - i % 8) / 8;
+                                        var flagIndex = (i - i % 8) / 8;
                                         if ((int)(flags[flagIndex] & bit) == 0)
                                         {
                                             _protection.PasswordHash[i - 4] = 0;
@@ -314,20 +314,20 @@ namespace OfficeOpenXml.VBA
         /// <returns>The decrypted value</returns>
         private byte[] Decrypt(string value)
         {
-            byte[] enc = GetByte(value);
-            byte[] dec = new byte[(value.Length - 1)];
+            var enc = GetByte(value);
+            var dec = new byte[value.Length - 1];
             byte seed, version, projKey, ignoredLength;
             seed = enc[0];
             dec[0] = (byte)(enc[1] ^ seed);
             dec[1] = (byte)(enc[2] ^ seed);
-            for (int i = 2; i < enc.Length - 1; i++)
+            for (var i = 2; i < enc.Length - 1; i++)
             {
                 dec[i] = (byte)(enc[i + 1] ^ (enc[i - 1] + dec[i - 1]));
             }
             version = dec[0];
             projKey = dec[1];
             ignoredLength = (byte)((seed & 6) / 2);
-            int datalength = BitConverter.ToInt32(dec, ignoredLength + 2);
+            var datalength = BitConverter.ToInt32(dec, ignoredLength + 2);
             var data = new byte[datalength];
             Array.Copy(dec, 6 + ignoredLength, data, 0, datalength);
             return data;
@@ -339,11 +339,11 @@ namespace OfficeOpenXml.VBA
         /// <returns>Byte hex string</returns>
         private string Encrypt(byte[] value)
         {
-            byte[] seed = new byte[1];
+            var seed = new byte[1];
             var rn = RandomNumberGenerator.Create();
             rn.GetBytes(seed);
-            BinaryWriter br = new BinaryWriter(new MemoryStream());
-            byte[] enc = new byte[value.Length + 10];
+            var br = new BinaryWriter(new MemoryStream());
+            var enc = new byte[value.Length + 10];
             enc[0] = seed[0];
             enc[1] = (byte)(2 ^ seed[0]);
 
@@ -355,15 +355,15 @@ namespace OfficeOpenXml.VBA
             }
             enc[2] = (byte)(projKey ^ seed[0]);
             var ignoredLength = (seed[0] & 6) / 2;
-            for (int i = 0; i < ignoredLength; i++)
+            for (var i = 0; i < ignoredLength; i++)
             {
                 br.Write(seed[0]);
             }
             br.Write(value.Length);
             br.Write(value);
 
-            int pos = 3;
-            byte pb = projKey;
+            var pos = 3;
+            var pb = projKey;
             foreach (var b in ((MemoryStream)br.BaseStream).ToArray())
             {
                 enc[pos] = (byte)(b ^ (enc[pos - 2] + pb));
@@ -375,8 +375,8 @@ namespace OfficeOpenXml.VBA
         }
         private string GetString(byte[] value, int max)
         {
-            string ret = "";
-            for (int i = 0; i <= max; i++)
+            var ret = "";
+            for (var i = 0; i <= max; i++)
             {
                 if (value[i] < 16)
                 {
@@ -391,8 +391,8 @@ namespace OfficeOpenXml.VBA
         }
         private byte[] GetByte(string value)
         {
-            byte[] ret = new byte[value.Length / 2];
-            for (int i = 0; i < ret.Length; i++)
+            var ret = new byte[value.Length / 2];
+            for (var i = 0; i < ret.Length; i++)
             {
                 ret[i] = byte.Parse(value.Substring(i * 2, 2), System.Globalization.NumberStyles.AllowHexSpecifier);
             }
@@ -400,17 +400,17 @@ namespace OfficeOpenXml.VBA
         }
         private void ReadDirStream()
         {
-            byte[] dir = VBACompression.DecompressPart(Document.Storage.SubStorage["VBA"].DataStreams["dir"]);
-            MemoryStream ms = new MemoryStream(dir);
-            BinaryReader br = new BinaryReader(ms);
+            var dir = VBACompression.DecompressPart(Document.Storage.SubStorage["VBA"].DataStreams["dir"]);
+            var ms = new MemoryStream(dir);
+            var br = new BinaryReader(ms);
             ExcelVbaReference currentRef = null;
-            string referenceName = "";
+            var referenceName = "";
             ExcelVBAModule currentModule = null;
-            bool terminate = false;
+            var terminate = false;
             while (br.BaseStream.Position < br.BaseStream.Length && terminate == false)
             {
-                ushort id = br.ReadUInt16();
-                uint size = br.ReadUInt32();
+                var id = br.ReadUInt16();
+                var size = br.ReadUInt32();
                 switch (id)
                 {
                     case 0x01:
@@ -448,13 +448,13 @@ namespace OfficeOpenXml.VBA
                         Constants = GetUnicodeString(br, size);
                         break;
                     case 0x0D:
-                        uint sizeLibID = br.ReadUInt32();
+                        var sizeLibID = br.ReadUInt32();
                         var regRef = new ExcelVbaReference();
                         regRef.Name = referenceName;
                         regRef.ReferenceRecordID = id;
                         regRef.Libid = GetString(br, sizeLibID);
-                        uint reserved1 = br.ReadUInt32();
-                        ushort reserved2 = br.ReadUInt16();
+                        var reserved1 = br.ReadUInt32();
+                        var reserved2 = br.ReadUInt16();
                         References.Add(regRef);
                         break;
                     case 0x0E:
@@ -470,10 +470,10 @@ namespace OfficeOpenXml.VBA
                         References.Add(projRef);
                         break;
                     case 0x0F:
-                        ushort modualCount = br.ReadUInt16();
+                        var modualCount = br.ReadUInt16();
                         break;
                     case 0x13:
-                        ushort cookie = br.ReadUInt16();
+                        var cookie = br.ReadUInt16();
                         break;
                     case 0x14:
                         LcidInvoke = (int)br.ReadUInt32();
@@ -487,7 +487,7 @@ namespace OfficeOpenXml.VBA
                         Modules.Add(currentModule);
                         break;
                     case 0x1A:
-                        currentModule.streamName = GetUnicodeString(br, size);
+                        currentModule.StreamName = GetUnicodeString(br, size);
                         break;
                     case 0x1C:
                         currentModule.Description = GetUnicodeString(br, size);
@@ -514,8 +514,8 @@ namespace OfficeOpenXml.VBA
                         var sizeExt = br.ReadUInt32();
                         extRef.LibIdExternal = GetString(br, sizeExt);
 
-                        uint reserved4 = br.ReadUInt32();
-                        ushort reserved5 = br.ReadUInt16();
+                        var reserved4 = br.ReadUInt32();
+                        var reserved5 = br.ReadUInt16();
                         extRef.OriginalTypeLib = new Guid(br.ReadBytes(16));
                         extRef.Cookie = br.ReadUInt32();
                         break;
@@ -554,7 +554,7 @@ namespace OfficeOpenXml.VBA
         {
             if (Validate())
             {
-                CompoundDocument doc = new CompoundDocument();
+                var doc = new CompoundDocument();
                 doc.Storage = new CompoundDocument.StoragePart();
                 var store = new CompoundDocument.StoragePart();
                 doc.Storage.SubStorage.Add("VBA", store);
@@ -617,7 +617,7 @@ namespace OfficeOpenXml.VBA
         /// <returns></returns>
         private byte[] CreateVBAProjectStream()
         {
-            BinaryWriter bw = new BinaryWriter(new MemoryStream());
+            var bw = new BinaryWriter(new MemoryStream());
             bw.Write((ushort)0x61CC); //Reserved1
             bw.Write((ushort)0xFFFF); //Version
             bw.Write((byte)0x0); //Reserved3
@@ -630,7 +630,7 @@ namespace OfficeOpenXml.VBA
         /// <returns></returns>
         private byte[] CreateDirStream()
         {
-            BinaryWriter bw = new BinaryWriter(new MemoryStream());
+            var bw = new BinaryWriter(new MemoryStream());
 
             /****** PROJECTINFORMATION Record ******/
             bw.Write((ushort)1);        //ID
@@ -855,7 +855,7 @@ namespace OfficeOpenXml.VBA
 
         private byte[] CreateProjectwmStream()
         {
-            BinaryWriter bw = new BinaryWriter(new MemoryStream());
+            var bw = new BinaryWriter(new MemoryStream());
 
             foreach (var module in Modules)
             {
@@ -869,7 +869,7 @@ namespace OfficeOpenXml.VBA
         }
         private byte[] CreateProjectStream()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.AppendFormat("ID=\"{0}\"\r\n", ProjectID);
             foreach (var module in Modules)
             {
@@ -888,7 +888,7 @@ namespace OfficeOpenXml.VBA
                 else
                 {
                     //Designer
-                    sb.AppendFormat("Package={0}\r\n", module.ClassID);
+                    sb.AppendFormat("Package={0}\r\n", module.ClassId);
                     sb.AppendFormat("BaseClass={0}\r\n", module.Name);
                 }
             }
@@ -917,68 +917,66 @@ namespace OfficeOpenXml.VBA
             {
                 sb.AppendFormat("{0}=0, 0, 0, 0, C \r\n", module.Name);
             }
-            string s = sb.ToString();
+            var s = sb.ToString();
             return Encoding.GetEncoding(CodePage).GetBytes(s);
         }
         private string WriteProtectionStat()
         {
-            int stat = (_protection.UserProtected ? 1 : 0) |
-                     (_protection.HostProtected ? 2 : 0) |
-                     (_protection.VbeProtected ? 4 : 0);
+            var stat = (_protection.UserProtected ? 1 : 0) |
+                       (_protection.HostProtected ? 2 : 0) |
+                       (_protection.VbeProtected ? 4 : 0);
 
             return Encrypt(BitConverter.GetBytes(stat));
         }
         private string WritePassword()
         {
-            byte[] nullBits = new byte[3];
-            byte[] nullKey = new byte[4];
-            byte[] nullHash = new byte[20];
+            var nullBits = new byte[3];
+            var nullKey = new byte[4];
+            var nullHash = new byte[20];
             if (Protection.PasswordKey == null)
             {
                 return Encrypt(new byte[] { 0 });
             }
-            else
-            {
-                Array.Copy(Protection.PasswordKey, nullKey, 4);
-                Array.Copy(Protection.PasswordHash, nullHash, 20);
 
-                //Set Null bits
-                for (int i = 0; i < 24; i++)
+            Array.Copy(Protection.PasswordKey, nullKey, 4);
+            Array.Copy(Protection.PasswordHash, nullHash, 20);
+
+            //Set Null bits
+            for (var i = 0; i < 24; i++)
+            {
+                var bit = (byte)(128 >> (int)(i % 8));
+                if (i < 4)
                 {
-                    byte bit = (byte)(128 >> (int)((i % 8)));
-                    if (i < 4)
+                    if (nullKey[i] == 0)
                     {
-                        if (nullKey[i] == 0)
-                        {
-                            nullKey[i] = 1;
-                        }
-                        else
-                        {
-                            nullBits[0] |= bit;
-                        }
+                        nullKey[i] = 1;
                     }
                     else
                     {
-                        if (nullHash[i - 4] == 0)
-                        {
-                            nullHash[i - 4] = 1;
-                        }
-                        else
-                        {
-                            int byteIndex = (i - i % 8) / 8;
-                            nullBits[byteIndex] |= bit;
-                        }
+                        nullBits[0] |= bit;
                     }
                 }
-                //Write the Password Hash Data Structure (2.4.4.1)
-                BinaryWriter bw = new BinaryWriter(new MemoryStream());
-                bw.Write((byte)0xFF);
-                bw.Write(nullBits);
-                bw.Write(nullKey);
-                bw.Write(nullHash);
-                bw.Write((byte)0);
-                return Encrypt(((MemoryStream)bw.BaseStream).ToArray());
+                else
+                {
+                    if (nullHash[i - 4] == 0)
+                    {
+                        nullHash[i - 4] = 1;
+                    }
+                    else
+                    {
+                        var byteIndex = (i - i % 8) / 8;
+                        nullBits[byteIndex] |= bit;
+                    }
+                }
             }
+            //Write the Password Hash Data Structure (2.4.4.1)
+            var bw = new BinaryWriter(new MemoryStream());
+            bw.Write((byte)0xFF);
+            bw.Write(nullBits);
+            bw.Write(nullKey);
+            bw.Write(nullHash);
+            bw.Write((byte)0);
+            return Encrypt(((MemoryStream)bw.BaseStream).ToArray());
         }
         private string WriteVisibilityState()
         {
@@ -987,27 +985,25 @@ namespace OfficeOpenXml.VBA
         #endregion
         private string GetString(BinaryReader br, uint size)
         {
-            return GetString(br, size, System.Text.Encoding.GetEncoding(CodePage));
+            return GetString(br, size, Encoding.GetEncoding(CodePage));
         }
         private string GetString(BinaryReader br, uint size, Encoding enc)
         {
             if (size > 0)
             {
-                byte[] byteTemp = new byte[size];
+                var byteTemp = new byte[size];
                 byteTemp = br.ReadBytes((int)size);
                 return enc.GetString(byteTemp);
             }
-            else
-            {
-                return "";
-            }
+
+            return "";
         }
         private string GetUnicodeString(BinaryReader br, uint size)
         {
-            string s = GetString(br, size);
+            var s = GetString(br, size);
             int reserved = br.ReadUInt16();
-            uint sizeUC = br.ReadUInt32();
-            string sUC = GetString(br, sizeUC, System.Text.Encoding.Unicode);
+            var sizeUC = br.ReadUInt32();
+            var sUC = GetString(br, sizeUC, Encoding.Unicode);
             return sUC.Length == 0 ? s : sUC;
         }
         internal CompoundDocument Document { get; set; }
@@ -1020,7 +1016,7 @@ namespace OfficeOpenXml.VBA
         {
             if (Lcid>0)
             {
-                throw (new InvalidOperationException("Package already contains a VBAProject"));
+                throw new InvalidOperationException("Package already contains a VBAProject");
             }
             ProjectID = "{5DD90D76-4904-47A2-AF0D-D69B4673604E}";
             Name = "VBAProject";
@@ -1047,11 +1043,11 @@ namespace OfficeOpenXml.VBA
         {
             var name = sheet.Name;
             name = name.Substring(0, name.Length < 31 ? name.Length : 31);  //Maximum 31 charachters
-            if (this.Modules[name] != null || !Regex.IsMatch(name, "^[a-zA-Z][a-zA-Z0-9_ ]*$")) //Check for valid chars, if not valid, set to sheetX.
+            if (Modules[name] != null || !Regex.IsMatch(name, "^[a-zA-Z][a-zA-Z0-9_ ]*$")) //Check for valid chars, if not valid, set to sheetX.
             {
-                int i = sheet.PositionID;
+                var i = sheet.PositionID;
                 name = "Sheet" + i.ToString();
-                while (this.Modules[name] != null)
+                while (Modules[name] != null)
                 {
                     name = "Sheet" + (++i).ToString(); ;
                 }
@@ -1061,14 +1057,14 @@ namespace OfficeOpenXml.VBA
         internal ExcelVbaModuleAttributesCollection GetDocumentAttributes(string name, string clsid)
         {
             var attr = new ExcelVbaModuleAttributesCollection();
-            attr._list.Add(new ExcelVbaModuleAttribute() { Name = "VB_Name", Value = name, DataType = eAttributeDataType.String });
-            attr._list.Add(new ExcelVbaModuleAttribute() { Name = "VB_Base", Value = clsid, DataType = eAttributeDataType.String });
-            attr._list.Add(new ExcelVbaModuleAttribute() { Name = "VB_GlobalNameSpace", Value = "False", DataType = eAttributeDataType.NonString });
-            attr._list.Add(new ExcelVbaModuleAttribute() { Name = "VB_Creatable", Value = "False", DataType = eAttributeDataType.NonString });
-            attr._list.Add(new ExcelVbaModuleAttribute() { Name = "VB_PredeclaredId", Value = "True", DataType = eAttributeDataType.NonString });
-            attr._list.Add(new ExcelVbaModuleAttribute() { Name = "VB_Exposed", Value = "False", DataType = eAttributeDataType.NonString });
-            attr._list.Add(new ExcelVbaModuleAttribute() { Name = "VB_TemplateDerived", Value = "False", DataType = eAttributeDataType.NonString });
-            attr._list.Add(new ExcelVbaModuleAttribute() { Name = "VB_Customizable", Value = "True", DataType = eAttributeDataType.NonString });
+            attr.List.Add(new ExcelVbaModuleAttribute() { Name = "VB_Name", Value = name, DataType = eAttributeDataType.String });
+            attr.List.Add(new ExcelVbaModuleAttribute() { Name = "VB_Base", Value = clsid, DataType = eAttributeDataType.String });
+            attr.List.Add(new ExcelVbaModuleAttribute() { Name = "VB_GlobalNameSpace", Value = "False", DataType = eAttributeDataType.NonString });
+            attr.List.Add(new ExcelVbaModuleAttribute() { Name = "VB_Creatable", Value = "False", DataType = eAttributeDataType.NonString });
+            attr.List.Add(new ExcelVbaModuleAttribute() { Name = "VB_PredeclaredId", Value = "True", DataType = eAttributeDataType.NonString });
+            attr.List.Add(new ExcelVbaModuleAttribute() { Name = "VB_Exposed", Value = "False", DataType = eAttributeDataType.NonString });
+            attr.List.Add(new ExcelVbaModuleAttribute() { Name = "VB_TemplateDerived", Value = "False", DataType = eAttributeDataType.NonString });
+            attr.List.Add(new ExcelVbaModuleAttribute() { Name = "VB_Customizable", Value = "True", DataType = eAttributeDataType.NonString });
 
             return attr;
         }

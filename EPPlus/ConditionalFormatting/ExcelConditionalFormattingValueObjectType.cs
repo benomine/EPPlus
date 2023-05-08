@@ -125,7 +125,7 @@ namespace OfficeOpenXml.ConditionalFormatting
                     // {0}
                     ExcelConditionalFormattingConstants.Paths.Cfvo,
                     // {1}
-                    ExcelConditionalFormattingValueObjectType.GetOrderByPosition(position, ruleType)),
+                    GetOrderByPosition(position, ruleType)),
                 nameSpaceManager);
 
             if (node == null)

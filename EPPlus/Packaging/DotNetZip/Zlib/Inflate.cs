@@ -111,12 +111,12 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         internal int end;                                 // one byte after sliding window
         internal int readAt;                              // window read pointer
         internal int writeAt;                             // window write pointer
-        internal System.Object checkfn;                   // check function
+        internal Object checkfn;                   // check function
         internal uint check;                              // check on output
 
         internal InfTree inftree = new InfTree();
 
-        internal InflateBlocks(ZlibCodec codec, System.Object checkfn, int w)
+        internal InflateBlocks(ZlibCodec codec, Object checkfn, int w)
         {
             _codec = codec;
             hufts = new int[MANY * 3];
@@ -129,7 +129,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
         internal uint Reset()
         {
-            uint oldCheck = check;
+            var oldCheck = check;
             mode = InflateBlockMode.TYPE;
             bitk = 0;
             bitb = 0;
@@ -169,7 +169,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                 {
                     case InflateBlockMode.TYPE:
 
-                        while (k < (3))
+                        while (k < 3)
                         {
                             if (n != 0)
                             {
@@ -195,17 +195,17 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                         switch ((uint)t >> 1)
                         {
                             case 0:  // stored
-                                b >>= 3; k -= (3);
+                                b >>= 3; k -= 3;
                                 t = k & 7; // go to byte boundary
                                 b >>= t; k -= t;
                                 mode = InflateBlockMode.LENS; // get length of stored block
                                 break;
 
                             case 1:  // fixed
-                                int[] bl = new int[1];
-                                int[] bd = new int[1];
-                                int[][] tl = new int[1][];
-                                int[][] td = new int[1][];
+                                var bl = new int[1];
+                                var bd = new int[1];
+                                var tl = new int[1][];
+                                var td = new int[1][];
                                 InfTree.inflate_trees_fixed(bl, bd, tl, td, _codec);
                                 codes.Init(bl[0], bd[0], tl[0], 0, td[0], 0);
                                 b >>= 3; k -= 3;
@@ -233,7 +233,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
                     case InflateBlockMode.LENS:
 
-                        while (k < (32))
+                        while (k < 32)
                         {
                             if (n != 0)
                             {
@@ -254,7 +254,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                             k += 8;
                         }
 
-                        if ((((~b)>>16) & 0xffff) != (b & 0xffff))
+                        if (((~b>>16) & 0xffff) != (b & 0xffff))
                         {
                             mode = InflateBlockMode.BAD;
                             _codec.Message = "invalid stored block lengths";
@@ -267,9 +267,9 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                             writeAt = q;
                             return Flush(r);
                         }
-                        left = (b & 0xffff);
+                        left = b & 0xffff;
                         b = k = 0; // dump bits
-                        mode = left != 0 ? InflateBlockMode.STORED : (last != 0 ? InflateBlockMode.DRY : InflateBlockMode.TYPE);
+                        mode = left != 0 ? InflateBlockMode.STORED : last != 0 ? InflateBlockMode.DRY : InflateBlockMode.TYPE;
                         break;
 
                     case InflateBlockMode.STORED:
@@ -326,7 +326,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
                     case InflateBlockMode.TABLE:
 
-                        while (k < (14))
+                        while (k < 14)
                         {
                             if (n != 0)
                             {
@@ -347,7 +347,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                             k += 8;
                         }
 
-                        table = t = (b & 0x3fff);
+                        table = t = b & 0x3fff;
                         if ((t & 0x1f) > 29 || ((t >> 5) & 0x1f) > 29)
                         {
                             mode = InflateBlockMode.BAD;
@@ -386,7 +386,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                     case InflateBlockMode.BTREE:
                         while (index < 4 + (table >> 10))
                         {
-                            while (k < (3))
+                            while (k < 3)
                             {
                                 if (n != 0)
                                 {
@@ -488,7 +488,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                                 i = c == 18 ? 7 : c - 14;
                                 j = c == 18 ? 11 : 3;
 
-                                while (k < (t + i))
+                                while (k < t + i)
                                 {
                                     if (n != 0)
                                     {
@@ -511,7 +511,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
                                 b >>= t; k -= t;
 
-                                j += (b & InternalInflateConstants.InflateMask[i]);
+                                j += b & InternalInflateConstants.InflateMask[i];
 
                                 b >>= i; k -= i;
 
@@ -532,7 +532,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                                     return Flush(r);
                                 }
 
-                                c = (c == 16) ? blens[i-1] : 0;
+                                c = c == 16 ? blens[i-1] : 0;
                                 do
                                 {
                                     blens[i++] = c;
@@ -544,10 +544,10 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
                         tb[0] = -1;
                         {
-                            int[] bl = new int[] { 9 };  // must be <= 9 for lookahead assumptions
-                            int[] bd = new int[] { 6 }; // must be <= 9 for lookahead assumptions
-                            int[] tl = new int[1];
-                            int[] td = new int[1];
+                            var bl = new int[] { 9 };  // must be <= 9 for lookahead assumptions
+                            var bd = new int[] { 6 }; // must be <= 9 for lookahead assumptions
+                            var tl = new int[1];
+                            var td = new int[1];
 
                             t = table;
                             t = inftree.inflate_trees_dynamic(257 + (t & 0x1f), 1 + ((t >> 5) & 0x1f), blens, bl, bd, tl, td, hufts, _codec);
@@ -678,7 +678,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         {
             int nBytes;
 
-            for (int pass = 0; pass < 2; pass++)
+            for (var pass = 0; pass < 2; pass++)
             {
                 if (pass==0)
                 {
@@ -805,15 +805,15 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
             int j;      // temporary storage
             int tindex; // temporary pointer
             int e;      // extra bits or operation
-            int b = 0;  // bit buffer
-            int k = 0;  // bits in bit buffer
-            int p = 0;  // input data pointer
+            var b = 0;  // bit buffer
+            var k = 0;  // bits in bit buffer
+            var p = 0;  // input data pointer
             int n;      // bytes available there
             int q;      // output window write pointer
             int m;      // bytes to end of window or read pointer
             int f;      // pointer to copy strings from
 
-            ZlibCodec z = blocks._codec;
+            var z = blocks._codec;
 
             // copy input/output information to locals (UPDATE macro restores)
             p = z.NextIn;
@@ -846,7 +846,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
                             if (r != ZlibConstants.Z_OK)
                             {
-                                mode = (r == ZlibConstants.Z_STREAM_END) ? WASH : BADCODE;
+                                mode = r == ZlibConstants.Z_STREAM_END ? WASH : BADCODE;
                                 break;
                             }
                         }
@@ -880,8 +880,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
                         tindex = (tree_index + (b & InternalInflateConstants.InflateMask[j])) * 3;
 
-                        b >>= (tree[tindex + 1]);
-                        k -= (tree[tindex + 1]);
+                        b >>= tree[tindex + 1];
+                        k -= tree[tindex + 1];
 
                         e = tree[tindex];
 
@@ -943,7 +943,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                             k += 8;
                         }
 
-                        len += (b & InternalInflateConstants.InflateMask[j]);
+                        len += b & InternalInflateConstants.InflateMask[j];
 
                         b >>= j;
                         k -= j;
@@ -977,7 +977,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                         b >>= tree[tindex + 1];
                         k -= tree[tindex + 1];
 
-                        e = (tree[tindex]);
+                        e = tree[tindex];
                         if ((e & 0x10) != 0)
                         {
                             // distance
@@ -1021,7 +1021,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                             k += 8;
                         }
 
-                        dist += (b & InternalInflateConstants.InflateMask[j]);
+                        dist += b & InternalInflateConstants.InflateMask[j];
 
                         b >>= j;
                         k -= j;
@@ -1195,7 +1195,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
             {
                 // assume called with m >= 258 && n >= 10
                 // get literal/length code
-                while (k < (20))
+                while (k < 20)
                 {
                     // max bits for literal/length code
                     n--;
@@ -1208,7 +1208,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                 tp_index_t_3 = (tp_index + t) * 3;
                 if ((e = tp[tp_index_t_3]) == 0)
                 {
-                    b >>= (tp[tp_index_t_3 + 1]); k -= (tp[tp_index_t_3 + 1]);
+                    b >>= tp[tp_index_t_3 + 1]; k -= tp[tp_index_t_3 + 1];
 
                     s.window[q++] = (byte)tp[tp_index_t_3 + 2];
                     m--;
@@ -1217,7 +1217,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                 do
                 {
 
-                    b >>= (tp[tp_index_t_3 + 1]); k -= (tp[tp_index_t_3 + 1]);
+                    b >>= tp[tp_index_t_3 + 1]; k -= tp[tp_index_t_3 + 1];
 
                     if ((e & 16) != 0)
                     {
@@ -1243,7 +1243,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                         do
                         {
 
-                            b >>= (tp[tp_index_t_3 + 1]); k -= (tp[tp_index_t_3 + 1]);
+                            b >>= tp[tp_index_t_3 + 1]; k -= tp[tp_index_t_3 + 1];
 
                             if ((e & 16) != 0)
                             {
@@ -1267,7 +1267,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                                     // offset before dest
                                     //  just copy
                                     r = q - d;
-                                    if (q - r > 0 && 2 > (q - r))
+                                    if (q - r > 0 && 2 > q - r)
                                     {
                                         s.window[q++] = s.window[r++]; // minimum count is three,
                                         s.window[q++] = s.window[r++]; // so unroll loop a little
@@ -1293,7 +1293,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                                     {
                                         // if source crosses,
                                         c -= e; // wrapped copy
-                                        if (q - r > 0 && e > (q - r))
+                                        if (q - r > 0 && e > q - r)
                                         {
                                             do
                                             {
@@ -1311,7 +1311,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                                 }
 
                                 // copy all or what's left
-                                if (q - r > 0 && c > (q - r))
+                                if (q - r > 0 && c > q - r)
                                 {
                                     do
                                     {
@@ -1326,10 +1326,11 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                                 }
                                 break;
                             }
-                            else if ((e & 64) == 0)
+
+                            if ((e & 64) == 0)
                             {
                                 t += tp[tp_index_t_3 + 2];
-                                t += (b & InternalInflateConstants.InflateMask[e]);
+                                t += b & InternalInflateConstants.InflateMask[e];
                                 tp_index_t_3 = (tp_index + t) * 3;
                                 e = tp[tp_index_t_3];
                             }
@@ -1337,7 +1338,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                             {
                                 z.Message = "invalid distance code";
 
-                                c = z.AvailableBytesIn - n; c = (k >> 3) < c ? k >> 3 : c; n += c; p -= c; k -= (c << 3);
+                                c = z.AvailableBytesIn - n; c = k >> 3 < c ? k >> 3 : c; n += c; p -= c; k -= c << 3;
 
                                 s.bitb = b; s.bitk = k;
                                 z.AvailableBytesIn = n; z.TotalBytesIn += p - z.NextIn; z.NextIn = p;
@@ -1353,11 +1354,11 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                     if ((e & 64) == 0)
                     {
                         t += tp[tp_index_t_3 + 2];
-                        t += (b & InternalInflateConstants.InflateMask[e]);
+                        t += b & InternalInflateConstants.InflateMask[e];
                         tp_index_t_3 = (tp_index + t) * 3;
                         if ((e = tp[tp_index_t_3]) == 0)
                         {
-                            b >>= (tp[tp_index_t_3 + 1]); k -= (tp[tp_index_t_3 + 1]);
+                            b >>= tp[tp_index_t_3 + 1]; k -= tp[tp_index_t_3 + 1];
                             s.window[q++] = (byte)tp[tp_index_t_3 + 2];
                             m--;
                             break;
@@ -1365,7 +1366,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                     }
                     else if ((e & 32) != 0)
                     {
-                        c = z.AvailableBytesIn - n; c = (k >> 3) < c ? k >> 3 : c; n += c; p -= c; k -= (c << 3);
+                        c = z.AvailableBytesIn - n; c = k >> 3 < c ? k >> 3 : c; n += c; p -= c; k -= c << 3;
 
                         s.bitb = b; s.bitk = k;
                         z.AvailableBytesIn = n; z.TotalBytesIn += p - z.NextIn; z.NextIn = p;
@@ -1377,7 +1378,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                     {
                         z.Message = "invalid literal/length code";
 
-                        c = z.AvailableBytesIn - n; c = (k >> 3) < c ? k >> 3 : c; n += c; p -= c; k -= (c << 3);
+                        c = z.AvailableBytesIn - n; c = k >> 3 < c ? k >> 3 : c; n += c; p -= c; k -= c << 3;
 
                         s.bitb = b; s.bitk = k;
                         z.AvailableBytesIn = n; z.TotalBytesIn += p - z.NextIn; z.NextIn = p;
@@ -1391,7 +1392,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
             while (m >= 258 && n >= 10);
 
             // not enough input or output--restore pointers and return
-            c = z.AvailableBytesIn - n; c = (k >> 3) < c ? k >> 3 : c; n += c; p -= c; k -= (c << 3);
+            c = z.AvailableBytesIn - n; c = k >> 3 < c ? k >> 3 : c; n += c; p -= c; k -= c << 3;
 
             s.bitb = b; s.bitk = k;
             z.AvailableBytesIn = n; z.TotalBytesIn += p - z.NextIn; z.NextIn = p;
@@ -1445,8 +1446,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         private bool _handleRfc1950HeaderBytes = true;
         internal bool HandleRfc1950HeaderBytes
         {
-            get { return _handleRfc1950HeaderBytes; }
-            set { _handleRfc1950HeaderBytes = value; }
+            get => _handleRfc1950HeaderBytes;
+            set => _handleRfc1950HeaderBytes = value;
         }
         internal int wbits; // log2(window size)  (8..15, defaults to 15)
 
@@ -1522,8 +1523,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
             //                 : ZlibConstants.Z_OK;
 
             // workitem 8870
-            int f = ZlibConstants.Z_OK;
-            int r = ZlibConstants.Z_BUF_ERROR;
+            var f = ZlibConstants.Z_OK;
+            var r = ZlibConstants.Z_BUF_ERROR;
 
             while (true)
             {
@@ -1557,9 +1558,9 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                         r = f;
                         _codec.AvailableBytesIn--;
                         _codec.TotalBytesIn++;
-                        b = (_codec.InputBuffer[_codec.NextIn++]) & 0xff;
+                        b = _codec.InputBuffer[_codec.NextIn++] & 0xff;
 
-                        if ((((method << 8) + b) % 31) != 0)
+                        if (((method << 8) + b) % 31 != 0)
                         {
                             mode = InflateManagerMode.BAD;
                             _codec.Message = "incorrect header check";
@@ -1567,7 +1568,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                             break;
                         }
 
-                        mode = ((b & PRESET_DICT) == 0)
+                        mode = (b & PRESET_DICT) == 0
                             ? InflateManagerMode.BLOCKS
                             : InflateManagerMode.DICT4;
                         break;
@@ -1700,8 +1701,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
         internal int SetDictionary(byte[] dictionary)
         {
-            int index = 0;
-            int length = dictionary.Length;
+            var index = 0;
+            var length = dictionary.Length;
             if (mode != InflateManagerMode.DICT0)
                 throw new ZlibException("Stream error.");
 
@@ -1712,7 +1713,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
             _codec._Adler32 = Adler.Adler32(0, null, 0, 0);
 
-            if (length >= (1 << wbits))
+            if (length >= 1 << wbits)
             {
                 length = (1 << wbits) - 1;
                 index = dictionary.Length - length;

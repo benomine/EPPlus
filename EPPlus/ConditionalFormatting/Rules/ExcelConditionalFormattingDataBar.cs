@@ -73,7 +73,7 @@ namespace OfficeOpenXml.ConditionalFormatting
               priority,
               worksheet,
               itemElementNode,
-              (namespaceManager == null) ? worksheet.NameSpaceManager : namespaceManager)
+              namespaceManager == null ? worksheet.NameSpaceManager : namespaceManager)
         {
             var s = SchemaNodeOrder;
             Array.Resize(ref s, s.Length+2);    //Fixes issue 15429. Append node order instead om overwriting it.
@@ -84,7 +84,7 @@ namespace OfficeOpenXml.ConditionalFormatting
             //Create the <dataBar> node inside the <cfRule> node
             if (itemElementNode!=null && itemElementNode.HasChildNodes)
             {
-                bool high = false;
+                var high = false;
                 foreach (XmlNode node in itemElementNode.SelectNodes("d:dataBar/d:cfvo", NameSpaceManager))
                 {
                     if (high == false)
@@ -190,14 +190,8 @@ namespace OfficeOpenXml.ConditionalFormatting
         private const string _showValuePath = "d:dataBar/@showValue";
         public bool ShowValue
         {
-            get
-            {
-                return GetXmlNodeBool(_showValuePath, true);
-            }
-            set
-            {
-                SetXmlNodeBool(_showValuePath, value);
-            }
+            get => GetXmlNodeBool(_showValuePath, true);
+            set => SetXmlNodeBool(_showValuePath, value);
         }
 
 
@@ -225,10 +219,7 @@ namespace OfficeOpenXml.ConditionalFormatting
                 }
                 return SKColors.White;
             }
-            set
-            {
-                SetXmlNodeString(_colorPath, value.ToString());
-            }
+            set => SetXmlNodeString(_colorPath, value.ToString());
         }
     }
 }

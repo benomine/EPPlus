@@ -57,14 +57,8 @@ namespace OfficeOpenXml
     {
         public string Name
         {
-            get
-            {
-                return GetXmlNodeString("@name");
-            }
-            set
-            {
-                SetXmlNodeString("@name", value);
-            }
+            get => GetXmlNodeString("@name");
+            set => SetXmlNodeString("@name", value);
         }
         ExcelAddress _address = null;
         public ExcelAddress Address
@@ -126,47 +120,24 @@ namespace OfficeOpenXml
         }
         public string SecurityDescriptor
         {
-            get
-            {
-                return GetXmlNodeString("@securityDescriptor");
-            }
-            set
-            {
-                SetXmlNodeString("@securityDescriptor", value);
-            }
+            get => GetXmlNodeString("@securityDescriptor");
+            set => SetXmlNodeString("@securityDescriptor", value);
         }
-        internal int SpinCount
+
+        private int SpinCount
         {
-            get
-            {
-                return GetXmlNodeInt("@spinCount");
-            }
-            set
-            {
-                SetXmlNodeString("@spinCount", value.ToString(CultureInfo.InvariantCulture));
-            }
+            get => GetXmlNodeInt("@spinCount");
+            set => SetXmlNodeString("@spinCount", value.ToString(CultureInfo.InvariantCulture));
         }
         internal string Salt
         {
-            get
-            {
-                return GetXmlNodeString("@saltValue");
-            }
-            set
-            {
-                SetXmlNodeString("@saltValue", value);
-            }
+            get => GetXmlNodeString("@saltValue");
+            set => SetXmlNodeString("@saltValue", value);
         }
         internal string Hash
         {
-            get
-            {
-                return GetXmlNodeString("@hashValue");
-            }
-            set
-            {
-                SetXmlNodeString("@hashValue", value);
-            }
+            get => GetXmlNodeString("@hashValue");
+            set => SetXmlNodeString("@hashValue", value);
         }
         internal eProtectedRangeAlgorithm Algorithm
         {

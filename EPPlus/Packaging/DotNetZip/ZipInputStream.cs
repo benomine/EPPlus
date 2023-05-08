@@ -419,14 +419,8 @@ namespace Ionic.Zip
         /// </remarks>
         public System.Text.Encoding ProvisionalAlternateEncoding
         {
-            get
-            {
-                return _provisionalAlternateEncoding;
-            }
-            set
-            {
-                _provisionalAlternateEncoding = value;
-            }
+            get => _provisionalAlternateEncoding;
+            set => _provisionalAlternateEncoding = value;
         }
 
 
@@ -507,7 +501,7 @@ namespace Ionic.Zip
                 if (_closed)
                 {
                     _exceptionPending = true;
-                    throw new System.InvalidOperationException("The stream has been closed.");
+                    throw new InvalidOperationException("The stream has been closed.");
                 }
                 _Password = value;
             }
@@ -525,13 +519,7 @@ namespace Ionic.Zip
 
 
 
-        internal Stream ReadStream
-        {
-            get
-            {
-                return _inputStream;
-            }
-        }
+        internal Stream ReadStream => _inputStream;
 
 
         /// <summary>
@@ -561,7 +549,7 @@ namespace Ionic.Zip
             if (_closed)
             {
                 _exceptionPending = true;
-                throw new System.InvalidOperationException("The stream has been closed.");
+                throw new InvalidOperationException("The stream has been closed.");
             }
 
             if (_needSetup)
@@ -569,14 +557,14 @@ namespace Ionic.Zip
 
             if (_LeftToRead == 0) return 0;
 
-            int len = (_LeftToRead > count) ? count : (int)_LeftToRead;
-            int n = _crcStream.Read(buffer, offset, len);
+            var len = _LeftToRead > count ? count : (int)_LeftToRead;
+            var n = _crcStream.Read(buffer, offset, len);
 
             _LeftToRead -= n;
 
             if (_LeftToRead == 0)
             {
-                int CrcResult = _crcStream.Crc;
+                var CrcResult = _crcStream.Crc;
                 _currentEntry.VerifyCrcAfterExtract(CrcResult);
                 _inputStream.Seek(_endOfEntry, SeekOrigin.Begin);
                 // workitem 10178
@@ -627,7 +615,7 @@ namespace Ionic.Zip
             if (_findRequired)
             {
                 // find the next signature
-                long d = SharedUtilities.FindSignature(_inputStream, ZipConstants.ZipEntrySignature);
+                var d = SharedUtilities.FindSignature(_inputStream, ZipConstants.ZipEntrySignature);
                 if (d == -1) return null;
                 // back up 4 bytes: ReadEntry assumes the file pointer is positioned before the entry signature
                 _inputStream.Seek(-4, SeekOrigin.Current);
@@ -714,22 +702,22 @@ namespace Ionic.Zip
         /// <summary>
         /// Always returns true.
         /// </summary>
-        public override bool CanRead { get { return true; } }
+        public override bool CanRead => true;
 
         /// <summary>
         /// Returns the value of <c>CanSeek</c> for the underlying (wrapped) stream.
         /// </summary>
-        public override bool CanSeek { get { return _inputStream.CanSeek; } }
+        public override bool CanSeek => _inputStream.CanSeek;
 
         /// <summary>
         /// Always returns false.
         /// </summary>
-        public override bool CanWrite { get { return false; } }
+        public override bool CanWrite => false;
 
         /// <summary>
         /// Returns the length of the underlying stream.
         /// </summary>
-        public override long Length { get { return _inputStream.Length; } }
+        public override long Length => _inputStream.Length;
 
         /// <summary>
         /// Gets or sets the position of the underlying stream.
@@ -739,8 +727,8 @@ namespace Ionic.Zip
         /// </remarks>
         public override long Position
         {
-            get { return _inputStream.Position; }
-            set { Seek(value, SeekOrigin.Begin); }
+            get => _inputStream.Position;
+            set => Seek(value, SeekOrigin.Begin);
         }
 
         /// <summary>

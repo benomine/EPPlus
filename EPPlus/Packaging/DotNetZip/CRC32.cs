@@ -51,24 +51,12 @@ namespace OfficeOpenXml.Packaging.Ionic.Crc
         /// <summary>
         ///   Indicates the total number of bytes applied to the CRC.
         /// </summary>
-        public Int64 TotalBytesRead
-        {
-            get
-            {
-                return _TotalBytesRead;
-            }
-        }
+        public Int64 TotalBytesRead => _TotalBytesRead;
 
         /// <summary>
         /// Indicates the current CRC for all blocks slurped in.
         /// </summary>
-        public Int32 Crc32Result
-        {
-            get
-            {
-                return unchecked((Int32)(~_register));
-            }
-        }
+        public Int32 Crc32Result => unchecked((Int32)(~_register));
 
         /// <summary>
         /// Returns the CRC32 for the specified stream.
@@ -94,11 +82,11 @@ namespace OfficeOpenXml.Packaging.Ionic.Crc
 
             unchecked
             {
-                byte[] buffer = new byte[BUFFER_SIZE];
-                int readSize = BUFFER_SIZE;
+                var buffer = new byte[BUFFER_SIZE];
+                var readSize = BUFFER_SIZE;
 
                 _TotalBytesRead = 0;
-                int count = input.Read(buffer, 0, readSize);
+                var count = input.Read(buffer, 0, readSize);
                 if (output != null) output.Write(buffer, 0, count);
                 _TotalBytesRead += count;
                 while (count > 0)
@@ -145,18 +133,18 @@ namespace OfficeOpenXml.Packaging.Ionic.Crc
                 throw new Exception("The data buffer must not be null.");
 
             // bzip algorithm
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
-                int x = offset + i;
-                byte b = block[x];
-                if (this.reverseBits)
+                var x = offset + i;
+                var b = block[x];
+                if (reverseBits)
                 {
-                    UInt32 temp = (_register >> 24) ^ b;
+                    var temp = (_register >> 24) ^ b;
                     _register = (_register << 8) ^ crc32Table[temp];
                 }
                 else
                 {
-                    UInt32 temp = (_register & 0x000000FF) ^ b;
+                    var temp = (_register & 0x000000FF) ^ b;
                     _register = (_register >> 8) ^ crc32Table[temp];
                 }
             }
@@ -170,14 +158,14 @@ namespace OfficeOpenXml.Packaging.Ionic.Crc
         /// <param name = "b">the byte to include into the CRC .  </param>
         public void UpdateCRC(byte b)
         {
-            if (this.reverseBits)
+            if (reverseBits)
             {
-                UInt32 temp = (_register >> 24) ^ b;
+                var temp = (_register >> 24) ^ b;
                 _register = (_register << 8) ^ crc32Table[temp];
             }
             else
             {
-                UInt32 temp = (_register & 0x000000FF) ^ b;
+                var temp = (_register & 0x000000FF) ^ b;
                 _register = (_register >> 8) ^ crc32Table[temp];
             }
         }
@@ -200,19 +188,19 @@ namespace OfficeOpenXml.Packaging.Ionic.Crc
         {
             while (n-- > 0)
             {
-                if (this.reverseBits)
+                if (reverseBits)
                 {
-                    uint temp = (_register >> 24) ^ b;
-                    _register = (_register << 8) ^ crc32Table[(temp >= 0)
+                    var temp = (_register >> 24) ^ b;
+                    _register = (_register << 8) ^ crc32Table[temp >= 0
                                                               ? temp
-                                                              : (temp + 256)];
+                                                              : temp + 256];
                 }
                 else
                 {
-                    UInt32 temp = (_register & 0x000000FF) ^ b;
-                    _register = (_register >> 8) ^ crc32Table[(temp >= 0)
+                    var temp = (_register & 0x000000FF) ^ b;
+                    _register = (_register >> 8) ^ crc32Table[temp >= 0
                                                               ? temp
-                                                              : (temp + 256)];
+                                                              : temp + 256];
 
                 }
             }
@@ -224,7 +212,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Crc
         {
             unchecked
             {
-                uint ret = data;
+                var ret = data;
                 ret = (ret & 0x55555555) << 1 | (ret >> 1) & 0x55555555;
                 ret = (ret & 0x33333333) << 2 | (ret >> 2) & 0x33333333;
                 ret = (ret & 0x0F0F0F0F) << 4 | (ret >> 4) & 0x0F0F0F0F;
@@ -237,10 +225,10 @@ namespace OfficeOpenXml.Packaging.Ionic.Crc
         {
             unchecked
             {
-                uint u = (uint)data * 0x00020202;
+                var u = (uint)data * 0x00020202;
                 uint m = 0x01044010;
-                uint s = u & m;
-                uint t = (u << 2) & (m << 1);
+                var s = u & m;
+                var t = (u << 2) & (m << 1);
                 return (byte)((0x01001001 * (s + t)) >> 24);
             }
         }
@@ -301,7 +289,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Crc
         private uint gf2_matrix_times(uint[] matrix, uint vec)
         {
             uint sum = 0;
-            int i = 0;
+            var i = 0;
             while (vec != 0)
             {
                 if ((vec & 0x01)== 0x01)
@@ -314,7 +302,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Crc
 
         private void gf2_matrix_square(uint[] square, uint[] mat)
         {
-            for (int i = 0; i < 32; i++)
+            for (var i = 0; i < 32; i++)
                 square[i] = gf2_matrix_times(mat, mat[i]);
         }
 
@@ -333,19 +321,19 @@ namespace OfficeOpenXml.Packaging.Ionic.Crc
         /// <param name="length">the length of data the CRC value was calculated on</param>
         public void Combine(int crc, int length)
         {
-            uint[] even = new uint[32];     // even-power-of-two zeros operator
-            uint[] odd = new uint[32];      // odd-power-of-two zeros operator
+            var even = new uint[32];     // even-power-of-two zeros operator
+            var odd = new uint[32];      // odd-power-of-two zeros operator
 
             if (length == 0)
                 return;
 
-            uint crc1 = ~_register;
-            uint crc2 = (uint)crc;
+            var crc1 = ~_register;
+            var crc2 = (uint)crc;
 
             // put operator for one zero bit in odd
-            odd[0] = this.dwPolynomial;  // the CRC-32 polynomial
+            odd[0] = dwPolynomial;  // the CRC-32 polynomial
             uint row = 1;
-            for (int i = 1; i < 32; i++)
+            for (var i = 1; i < 32; i++)
             {
                 odd[i] = row;
                 row <<= 1;
@@ -357,7 +345,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Crc
             // put operator for four zero bits in odd
             gf2_matrix_square(odd, even);
 
-            uint len2 = (uint)length;
+            var len2 = (uint)length;
 
             // apply len2 zeros to crc1 (first square will put the operator for one
             // zero byte, eight zero bits, in even)
@@ -449,8 +437,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Crc
         public CRC32(int polynomial, bool reverseBits)
         {
             this.reverseBits = reverseBits;
-            this.dwPolynomial = (uint)polynomial;
-            this.GenerateLookupTable();
+            dwPolynomial = (uint)polynomial;
+            GenerateLookupTable();
         }
 
         /// <summary>
@@ -496,7 +484,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Crc
     /// DotNetZip library.
     /// </para>
     /// </remarks>
-    internal class CrcCalculatorStream : System.IO.Stream, System.IDisposable
+    internal class CrcCalculatorStream : System.IO.Stream, IDisposable
     {
         private static readonly Int64 UnsetLengthLimit = -99;
 
@@ -517,7 +505,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Crc
         /// </remarks>
         /// <param name="stream">The underlying stream</param>
         public CrcCalculatorStream(System.IO.Stream stream)
-            : this(true, CrcCalculatorStream.UnsetLengthLimit, stream, null)
+            : this(true, UnsetLengthLimit, stream, null)
         {
         }
 
@@ -535,7 +523,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Crc
         /// <param name="leaveOpen">true to leave the underlying stream
         /// open upon close of the <c>CrcCalculatorStream</c>; false otherwise.</param>
         public CrcCalculatorStream(System.IO.Stream stream, bool leaveOpen)
-            : this(leaveOpen, CrcCalculatorStream.UnsetLengthLimit, stream, null)
+            : this(leaveOpen, UnsetLengthLimit, stream, null)
         {
         }
 
@@ -633,10 +621,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Crc
         ///   This is either the total number of bytes read, or the total number of
         ///   bytes written, depending on the direction of this stream.
         /// </remarks>
-        public Int64 TotalBytesSlurped
-        {
-            get { return _Crc32.TotalBytesRead; }
-        }
+        public Int64 TotalBytesSlurped => _Crc32.TotalBytesRead;
 
         /// <summary>
         ///   Provides the current CRC for all blocks slurped in.
@@ -648,10 +633,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Crc
         ///     get an accurate CRC for the entire stream.
         ///   </para>
         /// </remarks>
-        public Int32 Crc
-        {
-            get { return _Crc32.Crc32Result; }
-        }
+        public Int32 Crc => _Crc32.Crc32Result;
 
         /// <summary>
         ///   Indicates whether the underlying stream will be left open when the
@@ -664,8 +646,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Crc
         /// </remarks>
         public bool LeaveOpen
         {
-            get { return _leaveOpen; }
-            set { _leaveOpen = value; }
+            get => _leaveOpen;
+            set => _leaveOpen = value;
         }
 
         /// <summary>
@@ -677,7 +659,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Crc
         /// <returns>the number of bytes actually read</returns>
         public override int Read(byte[] buffer, int offset, int count)
         {
-            int bytesToRead = count;
+            var bytesToRead = count;
 
             // Need to limit the # of bytes returned, if the stream is intended to have
             // a definite length.  This is especially useful when returning a stream for
@@ -687,13 +669,13 @@ namespace OfficeOpenXml.Packaging.Ionic.Crc
             // calling ReadToEnd() on it, We can "over-read" the zip data and get a
             // corrupt string.  The length limits that, prevents that problem.
 
-            if (_lengthLimit != CrcCalculatorStream.UnsetLengthLimit)
+            if (_lengthLimit != UnsetLengthLimit)
             {
                 if (_Crc32.TotalBytesRead >= _lengthLimit) return 0; // EOF
-                Int64 bytesRemaining = _lengthLimit - _Crc32.TotalBytesRead;
+                var bytesRemaining = _lengthLimit - _Crc32.TotalBytesRead;
                 if (bytesRemaining < count) bytesToRead = (int)bytesRemaining;
             }
-            int n = _innerStream.Read(buffer, offset, bytesToRead);
+            var n = _innerStream.Read(buffer, offset, bytesToRead);
             if (n > 0) _Crc32.SlurpBlock(buffer, offset, n);
             return n;
         }
@@ -713,10 +695,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Crc
         /// <summary>
         /// Indicates whether the stream supports reading.
         /// </summary>
-        public override bool CanRead
-        {
-            get { return _innerStream.CanRead; }
-        }
+        public override bool CanRead => _innerStream.CanRead;
 
         /// <summary>
         ///   Indicates whether the stream supports seeking.
@@ -726,18 +705,12 @@ namespace OfficeOpenXml.Packaging.Ionic.Crc
         ///     Always returns false.
         ///   </para>
         /// </remarks>
-        public override bool CanSeek
-        {
-            get { return false; }
-        }
+        public override bool CanSeek => false;
 
         /// <summary>
         /// Indicates whether the stream supports writing.
         /// </summary>
-        public override bool CanWrite
-        {
-            get { return _innerStream.CanWrite; }
-        }
+        public override bool CanWrite => _innerStream.CanWrite;
 
         /// <summary>
         /// Flush the stream.
@@ -754,9 +727,9 @@ namespace OfficeOpenXml.Packaging.Ionic.Crc
         {
             get
             {
-                if (_lengthLimit == CrcCalculatorStream.UnsetLengthLimit)
+                if (_lengthLimit == UnsetLengthLimit)
                     return _innerStream.Length;
-                else return _lengthLimit;
+                return _lengthLimit;
             }
         }
 
@@ -767,8 +740,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Crc
         /// </summary>
         public override long Position
         {
-            get { return _Crc32.TotalBytesRead; }
-            set { throw new NotSupportedException(); }
+            get => _Crc32.TotalBytesRead;
+            set => throw new NotSupportedException();
         }
 
         /// <summary>

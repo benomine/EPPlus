@@ -330,13 +330,13 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
             // Returns 0 bytes if not enough space in target
             if (target.Length == 0) return 0;
 
-            char[] charArray = new char[target.Length];
-            int bytesRead = sourceTextReader.Read(charArray, start, count);
+            var charArray = new char[target.Length];
+            var bytesRead = sourceTextReader.Read(charArray, start, count);
 
             // Returns -1 if EOF
             if (bytesRead == 0) return -1;
 
-            for (int index = start; index < start + bytesRead; index++)
+            for (var index = start; index < start + bytesRead; index++)
                 target[index] = (byte)charArray[index];
 
             return bytesRead;
@@ -345,13 +345,13 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
         internal static byte[] ToByteArray(System.String sourceString)
         {
-            return System.Text.UTF8Encoding.UTF8.GetBytes(sourceString);
+            return System.Text.Encoding.UTF8.GetBytes(sourceString);
         }
 
 
         internal static char[] ToCharArray(byte[] byteArray)
         {
-            return System.Text.UTF8Encoding.UTF8.GetChars(byteArray);
+            return System.Text.Encoding.UTF8.GetChars(byteArray);
         }
     }
 
@@ -362,7 +362,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         internal static readonly int D_CODES = 30;
         internal static readonly int LITERALS = 256;
         internal static readonly int LENGTH_CODES = 29;
-        internal static readonly int L_CODES = (LITERALS + 1 + LENGTH_CODES);
+        internal static readonly int L_CODES = LITERALS + 1 + LENGTH_CODES;
 
         // Bit length codes must not exceed MAX_BL_BITS bits
         internal static readonly int MAX_BL_BITS = 7;
@@ -495,12 +495,12 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
             if (buf == null)
                 return 1;
 
-            uint s1 = (uint)(adler & 0xffff);
-            uint s2 = (uint)((adler >> 16) & 0xffff);
+            var s1 = (uint)(adler & 0xffff);
+            var s2 = (uint)((adler >> 16) & 0xffff);
 
             while (len > 0)
             {
-                int k = len < NMAX ? len : NMAX;
+                var k = len < NMAX ? len : NMAX;
                 len -= k;
                 while (k >= 16)
                 {

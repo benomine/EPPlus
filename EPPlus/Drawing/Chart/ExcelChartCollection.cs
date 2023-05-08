@@ -59,26 +59,22 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             if (_topChart.PivotTableSource != null)
             {
-                throw (new InvalidOperationException("Can not add other charttypes to a pivot chart"));
-            }
-            else if (ExcelChart.IsType3D(chartType) || _list[0].IsType3D())
-            {
-                throw (new InvalidOperationException("3D charts can not be combined with other charttypes"));
+                throw new InvalidOperationException("Can not add other charttypes to a pivot chart");
             }
 
-            var prependingChartNode = _list[_list.Count - 1].TopNode;
-            ExcelChart chart = ExcelChart.GetNewChart(_topChart.WorkSheet.Drawings, _topChart.TopNode, chartType, _topChart, null);
+            if (ExcelChart.IsType3D(chartType) || _list[0].IsType3D())
+            {
+                throw new InvalidOperationException("3D charts can not be combined with other charttypes");
+            }
+
+            var prependingChartNode = _list[^1].TopNode;
+            var chart = ExcelChart.GetNewChart(_topChart.WorkSheet.Drawings, _topChart.TopNode, chartType, _topChart, null);
 
             _list.Add(chart);
             return chart;
         }
-        public int Count
-        {
-            get
-            {
-                return _list.Count;
-            }
-        }
+        public int Count => _list.Count;
+
         IEnumerator<ExcelChart> IEnumerable<ExcelChart>.GetEnumerator()
         {
             return _list.GetEnumerator();
@@ -91,16 +87,8 @@ namespace OfficeOpenXml.Drawing.Chart
         /// <summary>
         /// Returns a chart at the specific position.  
         /// </summary>
-        /// <param name="PositionID">The position of the chart. 0-base</param>
+        /// <param name="positionId">The position of the chart. 0-base</param>
         /// <returns></returns>
-        public ExcelChart this[int PositionID]
-        {
-            get
-            {
-                return (_list[PositionID]);
-            }
-        }
-
-
+        public ExcelChart this[int positionId] => _list[positionId];
     }
 }

@@ -85,7 +85,7 @@ namespace EPPlusTest.DataValidation
         public void ExcelTimeTests_ToExcelTime_MinuteIsSet()
         {
             // Arrange
-            decimal expected = SecondsPerHour + (20M * 60M);
+            decimal expected = SecondsPerHour + 20M * 60M;
             // Act
             _time.Hour = 1;
             _time.Minute = 20;
@@ -98,7 +98,7 @@ namespace EPPlusTest.DataValidation
         public void ExcelTimeTests_ToExcelTime_SecondIsSet()
         {
             // Arrange
-            decimal expected = SecondsPerHour + (20M * 60M) + 10M;
+            decimal expected = SecondsPerHour + 20M * 60M + 10M;
             // Act
             _time.Hour = 1;
             _time.Minute = 20;

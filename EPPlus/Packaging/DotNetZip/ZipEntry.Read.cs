@@ -10,44 +10,44 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         {
             _readExtraDepth++;
             // workitem 8098: ok (restore)
-            long posn = this.ArchiveStream.Position;
-            this.ArchiveStream.Seek(this._RelativeOffsetOfLocalHeader, SeekOrigin.Begin);
+            var posn = ArchiveStream.Position;
+            ArchiveStream.Seek(_RelativeOffsetOfLocalHeader, SeekOrigin.Begin);
             // workitem 10178
-            Ionic.Zip.SharedUtilities.Workaround_Ladybug318918(this.ArchiveStream);
+            SharedUtilities.Workaround_Ladybug318918(ArchiveStream);
 
-            byte[] block = new byte[30];
-            this.ArchiveStream.Read(block, 0, block.Length);
-            int i = 26;
-            Int16 filenameLength = (short)(block[i++] + block[i++] * 256);
-            Int16 extraFieldLength = (short)(block[i++] + block[i++] * 256);
+            var block = new byte[30];
+            ArchiveStream.Read(block, 0, block.Length);
+            var i = 26;
+            var filenameLength = (short)(block[i++] + block[i++] * 256);
+            var extraFieldLength = (short)(block[i++] + block[i++] * 256);
 
             // workitem 8098: ok (relative)
-            this.ArchiveStream.Seek(filenameLength, SeekOrigin.Current);
+            ArchiveStream.Seek(filenameLength, SeekOrigin.Current);
             // workitem 10178
-            Ionic.Zip.SharedUtilities.Workaround_Ladybug318918(this.ArchiveStream);
+            SharedUtilities.Workaround_Ladybug318918(ArchiveStream);
 
-            ProcessExtraField(this.ArchiveStream, extraFieldLength);
+            ProcessExtraField(ArchiveStream, extraFieldLength);
 
             // workitem 8098: ok (restore)
-            this.ArchiveStream.Seek(posn, SeekOrigin.Begin);
+            ArchiveStream.Seek(posn, SeekOrigin.Begin);
             // workitem 10178
-            Ionic.Zip.SharedUtilities.Workaround_Ladybug318918(this.ArchiveStream);
+            SharedUtilities.Workaround_Ladybug318918(ArchiveStream);
             _readExtraDepth--;
         }
 
 
         private static bool ReadHeader(ZipEntry ze, System.Text.Encoding defaultEncoding)
         {
-            int bytesRead = 0;
+            var bytesRead = 0;
 
             // change for workitem 8098
             ze._RelativeOffsetOfLocalHeader = ze.ArchiveStream.Position;
 
-            int signature = Ionic.Zip.SharedUtilities.ReadEntrySignature(ze.ArchiveStream);
+            var signature = SharedUtilities.ReadEntrySignature(ze.ArchiveStream);
             bytesRead += 4;
 
             // Return false if this is not a local file header signature.
-            if (ZipEntry.IsNotValidSig(signature))
+            if (IsNotValidSig(signature))
             {
                 // Getting "not a ZipEntry signature" is not always wrong or an error.
                 // This will happen after the last entry in a zipfile.  In that case, we
@@ -59,26 +59,26 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
                 ze.ArchiveStream.Seek(-4, SeekOrigin.Current); // unread the signature
                 // workitem 10178
-                Ionic.Zip.SharedUtilities.Workaround_Ladybug318918(ze.ArchiveStream);
-                if (ZipEntry.IsNotValidZipDirEntrySig(signature) && (signature != ZipConstants.EndOfCentralDirectorySignature))
+                SharedUtilities.Workaround_Ladybug318918(ze.ArchiveStream);
+                if (IsNotValidZipDirEntrySig(signature) && signature != ZipConstants.EndOfCentralDirectorySignature)
                 {
                     throw new BadReadException(String.Format("  Bad signature (0x{0:X8}) at position  0x{1:X8}", signature, ze.ArchiveStream.Position));
                 }
                 return false;
             }
 
-            byte[] block = new byte[26];
-            int n = ze.ArchiveStream.Read(block, 0, block.Length);
+            var block = new byte[26];
+            var n = ze.ArchiveStream.Read(block, 0, block.Length);
             if (n != block.Length) return false;
             bytesRead += n;
 
-            int i = 0;
+            var i = 0;
             ze._VersionNeeded = (Int16)(block[i++] + block[i++] * 256);
             ze._BitField = (Int16)(block[i++] + block[i++] * 256);
             ze._CompressionMethod_FromZipFile = ze._CompressionMethod = (Int16)(block[i++] + block[i++] * 256);
             ze._TimeBlob = block[i++] + block[i++] * 256 + block[i++] * 256 * 256 + block[i++] * 256 * 256 * 256;
             // transform the time data into something usable (a DateTime)
-            ze._LastModified = Ionic.Zip.SharedUtilities.PackedToDateTime(ze._TimeBlob);
+            ze._LastModified = SharedUtilities.PackedToDateTime(ze._TimeBlob);
             ze._timestamp |= ZipEntryTimestamp.DOS;
 
             if ((ze._BitField & 0x01) == 0x01)
@@ -102,8 +102,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                     ze._InputUsesZip64 = true;
             }
 
-            Int16 filenameLength = (short)(block[i++] + block[i++] * 256);
-            Int16 extraFieldLength = (short)(block[i++] + block[i++] * 256);
+            var filenameLength = (short)(block[i++] + block[i++] * 256);
+            var extraFieldLength = (short)(block[i++] + block[i++] * 256);
 
             block = new byte[filenameLength];
             n = ze.ArchiveStream.Read(block, 0, block.Length);
@@ -143,14 +143,14 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                 // archives, the compressed and uncompressed sizes are 8 bytes each.
 
                 // workitem 8098: ok (restore)
-                long posn = ze.ArchiveStream.Position;
+                var posn = ze.ArchiveStream.Position;
 
                 // Here, we're going to loop until we find a ZipEntryDataDescriptorSignature and
                 // a consistent data record after that.   To be consistent, the data record must
                 // indicate the length of the entry data.
-                bool wantMore = true;
+                var wantMore = true;
                 long SizeOfDataRead = 0;
-                int tries = 0;
+                var tries = 0;
                 while (wantMore)
                 {
                     tries++;
@@ -166,7 +166,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                     if (ze._container.ZipFile != null)
                         ze._container.ZipFile.OnReadBytes(ze);
 
-                    long d = Ionic.Zip.SharedUtilities.FindSignature(ze.ArchiveStream, ZipConstants.ZipEntryDataDescriptorSignature);
+                    var d = SharedUtilities.FindSignature(ze.ArchiveStream, ZipConstants.ZipEntryDataDescriptorSignature);
                     if (d == -1) return false;
 
                     // total size of data read (through all loops of this).
@@ -212,7 +212,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
                     }
 
-                    wantMore = (SizeOfDataRead != ze._CompressedSize);
+                    wantMore = SizeOfDataRead != ze._CompressedSize;
 
                     if (wantMore)
                     {
@@ -221,7 +221,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                         // (12 bytes for the CRC, Comp and Uncomp size.)
                         ze.ArchiveStream.Seek(-12, SeekOrigin.Current);
                         // workitem 10178
-                        Ionic.Zip.SharedUtilities.Workaround_Ladybug318918(ze.ArchiveStream);
+                        SharedUtilities.Workaround_Ladybug318918(ze.ArchiveStream);
 
                         // Adjust the size to account for the false signature read in
                         // FindSignature().
@@ -233,7 +233,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                 // workitem 8098: ok (restore)
                 ze.ArchiveStream.Seek(posn, SeekOrigin.Begin);
                 // workitem 10178
-                Ionic.Zip.SharedUtilities.Workaround_Ladybug318918(ze.ArchiveStream);
+                SharedUtilities.Workaround_Ladybug318918(ze.ArchiveStream);
             }
 
             ze._CompressedFileDataSize = ze._CompressedSize;
@@ -259,7 +259,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                 {
                     // read in the header data for "weak" encryption
                     ze._WeakEncryptionHeader = new byte[12];
-                    bytesRead += ZipEntry.ReadWeakEncryptionHeader(ze._archiveStream, ze._WeakEncryptionHeader);
+                    bytesRead += ReadWeakEncryptionHeader(ze._archiveStream, ze._WeakEncryptionHeader);
                     // decrease the filedata size by 12 bytes
                     ze._CompressedFileDataSize -= 12;
                 }
@@ -298,7 +298,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
             // in PKZIP and implemented in the CRC32.cs module in this project.
 
             // read the 12-byte encryption header
-            int additionalBytesRead = s.Read(buffer, 0, 12);
+            var additionalBytesRead = s.Read(buffer, 0, 12);
             if (additionalBytesRead != 12)
                 throw new ZipException(String.Format("Unexpected end of data at position 0x{0:X8}", s.Position));
 
@@ -309,7 +309,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
         private static bool IsNotValidSig(int signature)
         {
-            return (signature != ZipConstants.ZipEntrySignature);
+            return signature != ZipConstants.ZipEntrySignature;
         }
 
 
@@ -325,10 +325,10 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// <returns>the <c>ZipEntry</c> read from the stream.</returns>
         internal static ZipEntry ReadEntry(ZipContainer zc, bool first)
         {
-            ZipFile zf = zc.ZipFile;
-            Stream s = zc.ReadStream;
-            System.Text.Encoding defaultEncoding = zc.AlternateEncoding;
-            ZipEntry entry = new ZipEntry();
+            var zf = zc.ZipFile;
+            var s = zc.ReadStream;
+            var defaultEncoding = zc.AlternateEncoding;
+            var entry = new ZipEntry();
             entry._Source = ZipEntrySource.ZipFile;
             entry._container = zc;
             entry._archiveStream = s;
@@ -347,7 +347,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
             // seek past the data without reading it. We will read on Extract()
             s.Seek(entry._CompressedFileDataSize + entry._LengthOfTrailer, SeekOrigin.Current);
             // workitem 10178
-            Ionic.Zip.SharedUtilities.Workaround_Ladybug318918(s);
+            SharedUtilities.Workaround_Ladybug318918(s);
 
             // ReadHeader moves the file pointer to the end of the entry header,
             // as well as any encryption header.
@@ -375,12 +375,12 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         {
             // in some cases, the zip file begins with "PK00".  This is a throwback and is rare,
             // but we handle it anyway. We do not change behavior based on it.
-            uint datum = (uint)Ionic.Zip.SharedUtilities.ReadInt(s);
+            var datum = (uint)SharedUtilities.ReadInt(s);
             if (datum != ZipConstants.PackedToRemovableMedia)
             {
                 s.Seek(-4, SeekOrigin.Current); // unread the block
                 // workitem 10178
-                Ionic.Zip.SharedUtilities.Workaround_Ladybug318918(s);
+                SharedUtilities.Workaround_Ladybug318918(s);
             }
         }
 
@@ -388,20 +388,20 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
         private static void HandleUnexpectedDataDescriptor(ZipEntry entry)
         {
-            Stream s = entry.ArchiveStream;
+            var s = entry.ArchiveStream;
 
             // In some cases, the "data descriptor" is present, without a signature, even when
             // bit 3 of the BitField is NOT SET.  This is the CRC, followed
             //    by the compressed length and the uncompressed length (4 bytes for each
             //    of those three elements).  Need to check that here.
             //
-            uint datum = (uint)Ionic.Zip.SharedUtilities.ReadInt(s);
+            var datum = (uint)SharedUtilities.ReadInt(s);
             if (datum == entry._Crc32)
             {
-                int sz = Ionic.Zip.SharedUtilities.ReadInt(s);
+                var sz = SharedUtilities.ReadInt(s);
                 if (sz == entry._CompressedSize)
                 {
-                    sz = Ionic.Zip.SharedUtilities.ReadInt(s);
+                    sz = SharedUtilities.ReadInt(s);
                     if (sz == entry._UncompressedSize)
                     {
                         // ignore everything and discard it.
@@ -411,7 +411,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                         s.Seek(-12, SeekOrigin.Current); // unread the three blocks
 
                         // workitem 10178
-                        Ionic.Zip.SharedUtilities.Workaround_Ladybug318918(s);
+                        SharedUtilities.Workaround_Ladybug318918(s);
                     }
                 }
                 else
@@ -419,7 +419,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                     s.Seek(-8, SeekOrigin.Current); // unread the two blocks
 
                     // workitem 10178
-                    Ionic.Zip.SharedUtilities.Workaround_Ladybug318918(s);
+                    SharedUtilities.Workaround_Ladybug318918(s);
                 }
             }
             else
@@ -427,7 +427,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                 s.Seek(-4, SeekOrigin.Current); // unread the block
 
                 // workitem 10178
-                Ionic.Zip.SharedUtilities.Workaround_Ladybug318918(s);
+                SharedUtilities.Workaround_Ladybug318918(s);
             }
         }
 
@@ -440,14 +440,14 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// </summary>
         static internal int FindExtraFieldSegment(byte[] extra, int offx, UInt16 targetHeaderId)
         {
-            int j = offx;
+            var j = offx;
             while (j + 3 < extra.Length)
             {
-                UInt16 headerId = (UInt16)(extra[j++] + extra[j++] * 256);
+                var headerId = (UInt16)(extra[j++] + extra[j++] * 256);
                 if (headerId == targetHeaderId) return j-2;
 
                 // else advance to next segment
-                Int16 dataSize = (short)(extra[j++] + extra[j++] * 256);
+                var dataSize = (short)(extra[j++] + extra[j++] * 256);
                 j+= dataSize;
             }
 
@@ -464,18 +464,18 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// </summary>
         internal int ProcessExtraField(Stream s, Int16 extraFieldLength)
         {
-            int additionalBytesRead = 0;
+            var additionalBytesRead = 0;
             if (extraFieldLength > 0)
             {
-                byte[] buffer = this._Extra = new byte[extraFieldLength];
+                var buffer = _Extra = new byte[extraFieldLength];
                 additionalBytesRead = s.Read(buffer, 0, buffer.Length);
-                long posn = s.Position - additionalBytesRead;
-                int j = 0;
+                var posn = s.Position - additionalBytesRead;
+                var j = 0;
                 while (j + 3 < buffer.Length)
                 {
-                    int start = j;
-                    UInt16 headerId = (UInt16)(buffer[j++] + buffer[j++] * 256);
-                    Int16 dataSize = (short)(buffer[j++] + buffer[j++] * 256);
+                    var start = j;
+                    var headerId = (UInt16)(buffer[j++] + buffer[j++] * 256);
+                    var dataSize = (short)(buffer[j++] + buffer[j++] * 256);
 
                     switch (headerId)
                     {
@@ -609,7 +609,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
             // There may also be a 4-byte "disk start number."
             // This means that the DataSize must be 28 bytes or less.
 
-            this._InputUsesZip64 = true;
+            _InputUsesZip64 = true;
 
             // workitem 7941: check datasize before reading.
             if (dataSize > 28)
@@ -627,14 +627,14 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                 return x;
             });
 
-            if (this._UncompressedSize == 0xFFFFFFFF)
-                this._UncompressedSize = slurp();
+            if (_UncompressedSize == 0xFFFFFFFF)
+                _UncompressedSize = slurp();
 
-            if (this._CompressedSize == 0xFFFFFFFF)
-                this._CompressedSize = slurp();
+            if (_CompressedSize == 0xFFFFFFFF)
+                _CompressedSize = slurp();
 
-            if (this._RelativeOffsetOfLocalHeader == 0xFFFFFFFF)
-                this._RelativeOffsetOfLocalHeader = slurp();
+            if (_RelativeOffsetOfLocalHeader == 0xFFFFFFFF)
+                _RelativeOffsetOfLocalHeader = slurp();
 
             // Ignore anything else. Potentially there are 4 more bytes for the
             // disk start number.  DotNetZip currently doesn't handle multi-disk
@@ -648,15 +648,15 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
             if (dataSize != 12 && dataSize != 8)
                 throw new BadReadException(String.Format("  Unexpected size (0x{0:X4}) for InfoZip v1 extra field at position 0x{1:X16}", dataSize, posn));
 
-            Int32 timet = BitConverter.ToInt32(buffer, j);
-            this._Mtime = _unixEpoch.AddSeconds(timet);
+            var timet = BitConverter.ToInt32(buffer, j);
+            _Mtime = _unixEpoch.AddSeconds(timet);
             j += 4;
 
             timet = BitConverter.ToInt32(buffer, j);
-            this._Atime = _unixEpoch.AddSeconds(timet);
+            _Atime = _unixEpoch.AddSeconds(timet);
             j += 4;
 
-            this._Ctime = DateTime.UtcNow;
+            _Ctime = DateTime.UtcNow;
 
             _ntfsTimesAreSet = true;
             _timestamp |= ZipEntryTimestamp.InfoZip1; return j;
@@ -676,7 +676,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
             var slurp = new Func<DateTime>(() =>
             {
-                Int32 timet = BitConverter.ToInt32(buffer, j);
+                var timet = BitConverter.ToInt32(buffer, j);
                 j += 4;
                 remainingData -= 4;
                 return _unixEpoch.AddSeconds(timet);
@@ -684,17 +684,17 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
             if (dataSize == 13 || _readExtraDepth > 0)
             {
-                byte flag = buffer[j++];
+                var flag = buffer[j++];
                 remainingData--;
 
                 if ((flag & 0x0001) != 0 && remainingData >= 4)
-                    this._Mtime = slurp();
+                    _Mtime = slurp();
 
-                this._Atime = ((flag & 0x0002) != 0 && remainingData >= 4)
+                _Atime = (flag & 0x0002) != 0 && remainingData >= 4
                     ? slurp()
                     : DateTime.UtcNow;
 
-                this._Ctime =  ((flag & 0x0004) != 0 && remainingData >= 4)
+                _Ctime =  (flag & 0x0004) != 0 && remainingData >= 4
                     ? slurp()
                     : DateTime.UtcNow;
 
@@ -729,14 +729,14 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                 throw new BadReadException(String.Format("  Unexpected size (0x{0:X4}) for NTFS times extra field at position 0x{1:X16}", dataSize, posn));
 
             j += 4;  // reserved
-            Int16 timetag = (Int16)(buffer[j] + buffer[j + 1] * 256);
-            Int16 addlsize = (Int16)(buffer[j + 2] + buffer[j + 3] * 256);
+            var timetag = (Int16)(buffer[j] + buffer[j + 1] * 256);
+            var addlsize = (Int16)(buffer[j + 2] + buffer[j + 3] * 256);
             j += 4;  // tag and size
 
             if (timetag == 0x0001 && addlsize >= 24)
             {
-                Int64 z = BitConverter.ToInt64(buffer, j);
-                this._Mtime = DateTime.FromFileTimeUtc(z);
+                var z = BitConverter.ToInt64(buffer, j);
+                _Mtime = DateTime.FromFileTimeUtc(z);
                 j += 8;
 
                 // At this point the library *could* set the LastModified value
@@ -754,11 +754,11 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                 // for LastModified or the SetNtfsTimes() method.
 
                 z = BitConverter.ToInt64(buffer, j);
-                this._Atime = DateTime.FromFileTimeUtc(z);
+                _Atime = DateTime.FromFileTimeUtc(z);
                 j += 8;
 
                 z = BitConverter.ToInt64(buffer, j);
-                this._Ctime = DateTime.FromFileTimeUtc(z);
+                _Ctime = DateTime.FromFileTimeUtc(z);
                 j += 8;
 
                 _ntfsTimesAreSet = true;

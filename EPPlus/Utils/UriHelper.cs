@@ -10,10 +10,10 @@ namespace OfficeOpenXml.Utils
             {
                 return targetUri;
             }
-            string[] source = sourceUri.OriginalString.Split('/');
-            string[] target = targetUri.OriginalString.Split('/');
+            var source = sourceUri.OriginalString.Split('/');
+            var target = targetUri.OriginalString.Split('/');
 
-            int t = target.Length - 1;
+            var t = target.Length - 1;
             int s;
             if (sourceUri.OriginalString.EndsWith("/")) //is the source a directory?
             {
@@ -24,7 +24,7 @@ namespace OfficeOpenXml.Utils
                 s=source.Length-2;
             }
 
-            string file = target[t--];
+            var file = target[t--];
 
             while (t >= 0)
             {
@@ -32,7 +32,8 @@ namespace OfficeOpenXml.Utils
                 {
                     break;
                 }
-                else if (target[t] == "..")
+
+                if (target[t] == "..")
                 {
                     s--;
                     t--;
@@ -44,7 +45,7 @@ namespace OfficeOpenXml.Utils
             }
             if (s >= 0)
             {
-                for (int i = s; i>=0; i--)
+                for (var i = s; i>=0; i--)
                 {
                     file = source[i] + "/" + file;
                 }
@@ -54,8 +55,8 @@ namespace OfficeOpenXml.Utils
 
         internal static Uri GetRelativeUri(Uri WorksheetUri, Uri uri)
         {
-            string[] source = WorksheetUri.OriginalString.Split('/');
-            string[] target = uri.OriginalString.Split('/');
+            var source = WorksheetUri.OriginalString.Split('/');
+            var target = uri.OriginalString.Split('/');
 
             int slen;
             if (WorksheetUri.OriginalString.EndsWith("/"))
@@ -66,19 +67,19 @@ namespace OfficeOpenXml.Utils
             {
                 slen = source.Length-1;
             }
-            int i = 0;
+            var i = 0;
             while (i < slen && i < target.Length && source[i] == target[i])
             {
                 i++;
             }
 
-            string dirUp = "";
-            for (int s = i; s < slen; s++)
+            var dirUp = "";
+            for (var s = i; s < slen; s++)
             {
                 dirUp += "../";
             }
-            string file = "";
-            for (int t = i; t < target.Length; t++)
+            var file = "";
+            for (var t = i; t < target.Length; t++)
             {
                 file += (file=="" ? "" : "/") + target[t];
             }

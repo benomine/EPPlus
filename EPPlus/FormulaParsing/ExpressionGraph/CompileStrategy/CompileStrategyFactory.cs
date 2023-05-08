@@ -40,10 +40,8 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph.CompileStrategy
             {
                 return new StringConcatStrategy(expression);
             }
-            else
-            {
-                return new DefaultCompileStrategy(expression);
-            }
+
+            return new DefaultCompileStrategy(expression);
         }
     }
 }

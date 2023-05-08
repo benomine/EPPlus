@@ -223,29 +223,27 @@ namespace OfficeOpenXml
                                 _toCol = t.Address._toCol;
                                 return;
                             }
-                            else
+
+                            var col = t.Address._fromCol;
+                            var cols = Table.ColumnSpan.Split(':');
+                            foreach (var c in t.Columns)
                             {
-                                var col = t.Address._fromCol;
-                                var cols = Table.ColumnSpan.Split(':');
-                                foreach (var c in t.Columns)
+                                if (_fromCol <= 0 && cols[0].Equals(c.Name, StringComparison.OrdinalIgnoreCase))   //Issue15063 Add invariant igore case
                                 {
-                                    if (_fromCol <= 0 && cols[0].Equals(c.Name, StringComparison.OrdinalIgnoreCase))   //Issue15063 Add invariant igore case
+                                    _fromCol = col;
+                                    if (cols.Length == 1)
                                     {
-                                        _fromCol = col;
-                                        if (cols.Length == 1)
-                                        {
-                                            _toCol = _fromCol;
-                                            return;
-                                        }
-                                    }
-                                    else if (cols.Length > 1 && _fromCol > 0 && cols[1].Equals(c.Name, StringComparison.OrdinalIgnoreCase)) //Issue15063 Add invariant igore case
-                                    {
-                                        _toCol = col;
+                                        _toCol = _fromCol;
                                         return;
                                     }
-
-                                    col++;
                                 }
+                                else if (cols.Length > 1 && _fromCol > 0 && cols[1].Equals(c.Name, StringComparison.OrdinalIgnoreCase)) //Issue15063 Add invariant igore case
+                                {
+                                    _toCol = col;
+                                    return;
+                                }
+
+                                col++;
                             }
                         }
                     }
@@ -276,10 +274,10 @@ namespace OfficeOpenXml
             }
         }
 
-        protected internal void SetAddress(string address)
+        protected void SetAddress(string address)
         {
             address = address.Trim();
-            if (Utils.ConvertUtil._invariantCompareInfo.IsPrefix(address, "'") || Utils.ConvertUtil._invariantCompareInfo.IsPrefix(address, "["))
+            if (Utils.ConvertUtil.InvariantCompareInfo.IsPrefix(address, "'") || Utils.ConvertUtil.InvariantCompareInfo.IsPrefix(address, "["))
             {
                 //int pos = address.IndexOf("'", 1);
                 //while (pos < address.Length && address[pos + 1] == '\'')
@@ -296,7 +294,7 @@ namespace OfficeOpenXml
             }
 
             _addresses = null;
-            if (_address.IndexOfAny(new char[] { ',', '!', '[' }) > -1)
+            if (_address.IndexOfAny(new[] { ',', '!', '[' }) > -1)
             {
                 //Advanced address. Including Sheet or multi or table.
                 ExtractAddress(_address);
@@ -311,7 +309,8 @@ namespace OfficeOpenXml
             _address = address;
             Validate();
         }
-        internal protected virtual void ChangeAddress()
+
+        protected virtual void ChangeAddress()
         {
         }
         private void SetWbWs(string address)
@@ -410,14 +409,7 @@ namespace OfficeOpenXml
         /// <value>The start row column.</value>
         public ExcelCellAddress Start
         {
-            get
-            {
-                if (_start == null)
-                {
-                    _start = new ExcelCellAddress(_fromRow, _fromCol);
-                }
-                return _start;
-            }
+            get { return _start ??= new ExcelCellAddress(_fromRow, _fromCol); }
         }
         protected ExcelCellAddress _end = null;
         /// <summary>
@@ -426,39 +418,22 @@ namespace OfficeOpenXml
         /// <value>The end row column.</value>
         public ExcelCellAddress End
         {
-            get
-            {
-                if (_end == null)
-                {
-                    _end = new ExcelCellAddress(_toRow, _toCol);
-                }
-                return _end;
-            }
+            get { return _end ??= new ExcelCellAddress(_toRow, _toCol); }
         }
-        protected ExcelTableAddress _table = null;
-        public ExcelTableAddress Table
-        {
-            get
-            {
-                return _table;
-            }
-        }
+
+        private ExcelTableAddress _table = null;
+        public ExcelTableAddress Table => _table;
 
         /// <summary>
         /// The address for the range
         /// </summary>
-        public virtual string Address
-        {
-            get
-            {
-                return _address;
-            }
-        }
+        public virtual string Address => _address;
+
         public string FullAddress
         {
             get
             {
-                string a = "";
+                var a = "";
                 if (_addresses != null)
                 {
                     foreach (var sa in _addresses)
@@ -476,13 +451,8 @@ namespace OfficeOpenXml
         /// <summary>
         /// If the address is a defined name
         /// </summary>
-        public bool IsName
-        {
-            get
-            {
-                return _fromRow < 0;
-            }
-        }
+        public bool IsName => _fromRow < 0;
+
         /// <summary>
         /// Returns the address text
         /// </summary>
@@ -496,52 +466,24 @@ namespace OfficeOpenXml
         /// returns the first address if the address is a multi address.
         /// A1:A2,B1:B2 returns A1:A2
         /// </summary>
-        public string FirstAddress
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(_firstAddress))
-                {
-                    return _address;
-                }
-                else
-                {
-                    return _firstAddress;
-                }
-            }
-        }
-        public string AddressSpaceSeparated
-        {
-            get
-            {
-                return _address.Replace(',', ' '); //Conditional formatting and a few other places use space as separator for mulit addresses.
-            }
-        }
+        public string FirstAddress => string.IsNullOrEmpty(_firstAddress) ? _address : _firstAddress;
+        
+        //Conditional formatting and a few other places use space as separator for mulit addresses.
+        public string AddressSpaceSeparated => _address.Replace(',', ' ');
+
         /// <summary>
         /// Validate the address
         /// </summary>
-        protected void Validate()
+        public void Validate()
         {
             if (_fromRow > _toRow || _fromCol > _toCol)
             {
                 throw new ArgumentOutOfRangeException("Start cell Address must be less or equal to End cell address");
             }
         }
-        public string WorkSheet
-        {
-            get
-            {
-                return _ws;
-            }
-        }
-        internal protected List<ExcelAddress> _addresses = null;
-        public virtual List<ExcelAddress> Addresses
-        {
-            get
-            {
-                return _addresses;
-            }
-        }
+        public string WorkSheet => _ws;
+        protected internal List<ExcelAddress> _addresses = null;
+        public virtual List<ExcelAddress> Addresses => _addresses;
 
         private bool ExtractAddress(string fullAddress)
         {
@@ -556,13 +498,14 @@ namespace OfficeOpenXml
                     SetAddress(ref fullAddress, ref second, ref hasSheet, false);
                     return true;
                 }
-                else if (Utils.ConvertUtil._invariantCompareInfo.IsPrefix(fullAddress, "!"))
+
+                if (Utils.ConvertUtil.InvariantCompareInfo.IsPrefix(fullAddress, "!"))
                 {
                     // invalid address!
                     return false;
                 }
-                bool isMulti = false;
-                for (int i = 0; i < fullAddress.Length; i++)
+                var isMulti = false;
+                for (var i = 0; i < fullAddress.Length; i++)
                 {
                     var c = fullAddress[i];
                     if (c == '\'')
@@ -616,7 +559,7 @@ namespace OfficeOpenXml
                             // the following is to handle addresses that specifies the
                             // same worksheet twice: Sheet1!A1:Sheet1:A3
                             // They will be converted to: Sheet1!A1:A3
-                            if (hasSheet && second != null && second.ToLower().EndsWith(first.ToLower()))
+                            if (hasSheet && second.ToLower().EndsWith(first.ToLower()))
                             {
                                 second = Regex.Replace(second, $"{first}$", string.Empty);
                             }
@@ -708,18 +651,20 @@ namespace OfficeOpenXml
             {
                 return eAddressCollition.No;
             }
-            else if (address._fromRow == _fromRow && address._fromCol == _fromCol &&
-                    address._toRow == _toRow && address._toCol == _toCol)
+
+            if (address._fromRow == _fromRow && address._fromCol == _fromCol &&
+                address._toRow == _toRow && address._toCol == _toCol)
             {
                 return eAddressCollition.Equal;
             }
-            else if (address._fromRow >= _fromRow && address._toRow <= _toRow &&
-                     address._fromCol >= _fromCol && address._toCol <= _toCol)
+
+            if (address._fromRow >= _fromRow && address._toRow <= _toRow &&
+                address._fromCol >= _fromCol && address._toCol <= _toCol)
             {
                 return eAddressCollition.Inside;
             }
-            else
-                return eAddressCollition.Partly;
+
+            return eAddressCollition.Partly;
         }
         public ExcelAddressBase AddRow(int row, int rows, bool setFixed = false)
         {
@@ -727,14 +672,13 @@ namespace OfficeOpenXml
             {
                 return this;
             }
-            else if (row <= _fromRow)
+
+            if (row <= _fromRow)
             {
-                return new ExcelAddressBase((setFixed && _fromRowFixed ? _fromRow : _fromRow + rows), _fromCol, (setFixed && _toRowFixed ? _toRow : _toRow + rows), _toCol, _fromRowFixed, _fromColFixed, _toRowFixed, _toColFixed);
+                return new ExcelAddressBase(setFixed && _fromRowFixed ? _fromRow : _fromRow + rows, _fromCol, setFixed && _toRowFixed ? _toRow : _toRow + rows, _toCol, _fromRowFixed, _fromColFixed, _toRowFixed, _toColFixed);
             }
-            else
-            {
-                return new ExcelAddressBase(_fromRow, _fromCol, (setFixed && _toRowFixed ? _toRow : _toRow + rows), _toCol, _fromRowFixed, _fromColFixed, _toRowFixed, _toColFixed);
-            }
+
+            return new ExcelAddressBase(_fromRow, _fromCol, setFixed && _toRowFixed ? _toRow : _toRow + rows, _toCol, _fromRowFixed, _fromColFixed, _toRowFixed, _toColFixed);
         }
         public ExcelAddressBase DeleteRow(int row, int rows, bool setFixed = false)
         {
@@ -742,25 +686,23 @@ namespace OfficeOpenXml
             {
                 return this;
             }
-            else if (row+rows <= _fromRow) //Before
+
+            if (row+rows <= _fromRow) //Before
             {
-                return new ExcelAddressBase((setFixed && _fromRowFixed ? _fromRow : _fromRow - rows), _fromCol, (setFixed && _toRowFixed ? _toRow : _toRow - rows), _toCol, _fromRowFixed, _fromColFixed, _toRowFixed, _toColFixed);
+                return new ExcelAddressBase(setFixed && _fromRowFixed ? _fromRow : _fromRow - rows, _fromCol, setFixed && _toRowFixed ? _toRow : _toRow - rows, _toCol, _fromRowFixed, _fromColFixed, _toRowFixed, _toColFixed);
             }
-            else if (row <= _fromRow && row + rows > _toRow) //Inside
+            if (row <= _fromRow && row + rows > _toRow) //Inside
             {
                 return null;
             }
-            else  //Partly
+
+            //Partly
+            if (row <= _fromRow)
             {
-                if (row <= _fromRow)
-                {
-                    return new ExcelAddressBase(row, _fromCol, (setFixed && _toRowFixed ? _toRow : _toRow - rows), _toCol, _fromRowFixed, _fromColFixed, _toRowFixed, _toColFixed);
-                }
-                else
-                {
-                    return new ExcelAddressBase(_fromRow, _fromCol, (setFixed && _toRowFixed ? _toRow : _toRow - rows < row ? row - 1 : _toRow - rows), _toCol, _fromRowFixed, _fromColFixed, _toRowFixed, _toColFixed);
-                }
+                return new ExcelAddressBase(row, _fromCol, setFixed && _toRowFixed ? _toRow : _toRow - rows, _toCol, _fromRowFixed, _fromColFixed, _toRowFixed, _toColFixed);
             }
+
+            return new ExcelAddressBase(_fromRow, _fromCol, setFixed && _toRowFixed ? _toRow : _toRow - rows < row ? row - 1 : _toRow - rows, _toCol, _fromRowFixed, _fromColFixed, _toRowFixed, _toColFixed);
         }
         public ExcelAddressBase AddColumn(int col, int cols, bool setFixed = false)
         {
@@ -768,14 +710,12 @@ namespace OfficeOpenXml
             {
                 return this;
             }
-            else if (col <= _fromCol)
+
+            if (col <= _fromCol)
             {
-                return new ExcelAddressBase(_fromRow, (setFixed && _fromColFixed ? _fromCol : _fromCol + cols), _toRow, (setFixed && _toColFixed ? _toCol : _toCol + cols), _fromRowFixed, _fromColFixed, _toRowFixed, _toColFixed);
+                return new ExcelAddressBase(_fromRow, setFixed && _fromColFixed ? _fromCol : _fromCol + cols, _toRow, setFixed && _toColFixed ? _toCol : _toCol + cols, _fromRowFixed, _fromColFixed, _toRowFixed, _toColFixed);
             }
-            else
-            {
-                return new ExcelAddressBase(_fromRow, _fromCol, _toRow, (setFixed && _toColFixed ? _toCol : _toCol + cols), _fromRowFixed, _fromColFixed, _toRowFixed, _toColFixed);
-            }
+            return new ExcelAddressBase(_fromRow, _fromCol, _toRow, setFixed && _toColFixed ? _toCol : _toCol + cols, _fromRowFixed, _fromColFixed, _toRowFixed, _toColFixed);
         }
         public ExcelAddressBase DeleteColumn(int col, int cols, bool setFixed = false)
         {
@@ -783,27 +723,25 @@ namespace OfficeOpenXml
             {
                 return this;
             }
-            else if (col + cols <= _fromCol) //Before
+
+            if (col + cols <= _fromCol) //Before
             {
-                return new ExcelAddressBase(_fromRow, (setFixed && _fromColFixed ? _fromCol : _fromCol - cols), _toRow, (setFixed && _toColFixed ? _toCol : _toCol - cols), _fromRowFixed, _fromColFixed, _toRowFixed, _toColFixed);
+                return new ExcelAddressBase(_fromRow, setFixed && _fromColFixed ? _fromCol : _fromCol - cols, _toRow, setFixed && _toColFixed ? _toCol : _toCol - cols, _fromRowFixed, _fromColFixed, _toRowFixed, _toColFixed);
             }
-            else if (col <= _fromCol && col + cols > _toCol) //Inside
+            if (col <= _fromCol && col + cols > _toCol) //Inside
             {
                 return null;
             }
-            else  //Partly
+
+            //Partly
+            if (col <= _fromCol)
             {
-                if (col <= _fromCol)
-                {
-                    return new ExcelAddressBase(_fromRow, col, _toRow, (setFixed && _toColFixed ? _toCol : _toCol - cols), _fromRowFixed, _fromColFixed, _toRowFixed, _toColFixed);
-                }
-                else
-                {
-                    return new ExcelAddressBase(_fromRow, _fromCol, _toRow, (setFixed && _toColFixed ? _toCol : _toCol - cols < col ? col - 1 : _toCol - cols), _fromRowFixed, _fromColFixed, _toRowFixed, _toColFixed);
-                }
+                return new ExcelAddressBase(_fromRow, col, _toRow, setFixed && _toColFixed ? _toCol : _toCol - cols, _fromRowFixed, _fromColFixed, _toRowFixed, _toColFixed);
             }
+
+            return new ExcelAddressBase(_fromRow, _fromCol, _toRow, setFixed && _toColFixed ? _toCol : _toCol - cols < col ? col - 1 : _toCol - cols, _fromRowFixed, _fromColFixed, _toRowFixed, _toColFixed);
         }
-        public ExcelAddressBase Insert(ExcelAddressBase address, eShiftType Shift/*, out ExcelAddressBase topAddress, out ExcelAddressBase leftAddress, out ExcelAddressBase rightAddress, out ExcelAddressBase bottomAddress*/)
+        public ExcelAddressBase Insert(ExcelAddressBase address, eShiftType shift/*, out ExcelAddressBase topAddress, out ExcelAddressBase leftAddress, out ExcelAddressBase rightAddress, out ExcelAddressBase bottomAddress*/)
         {
             //Before or after, no change
             //if ((_toRow > address._fromRow && _toCol > address.column) || 
@@ -817,10 +755,10 @@ namespace OfficeOpenXml
                 return this;
             }
 
-            int rows = address.Rows;
-            int cols = address.Columns;
-            string retAddress = "";
-            if (Shift==eShiftType.Right)
+            var rows = address.Rows;
+            var cols = address.Columns;
+            var retAddress = "";
+            if (shift==eShiftType.Right)
             {
                 if (address._fromRow > _fromRow)
                 {
@@ -836,9 +774,6 @@ namespace OfficeOpenXml
                 if (_fromRow < address._fromRow)
                 {
 
-                }
-                else
-                {
                 }
             }
             return null;
@@ -869,7 +804,7 @@ namespace OfficeOpenXml
             }
             if (isMulti)
             {
-                if (_addresses == null) _addresses = new List<ExcelAddress>();
+                _addresses ??= new List<ExcelAddress>();
                 _addresses.Add(new ExcelAddress(_ws, address));
             }
             else
@@ -888,56 +823,47 @@ namespace OfficeOpenXml
             R1C1
         }
 
-        internal static AddressType IsValid(string Address, bool r1c1 = false)
+        internal static AddressType IsValid(string address, bool r1C1 = false)
         {
             double d;
-            if (Address == "#REF!")
+            if (address == "#REF!")
             {
                 return AddressType.Invalid;
             }
-            else if (double.TryParse(Address, NumberStyles.Any, CultureInfo.InvariantCulture, out d)) //A double, no valid address
+
+            if (double.TryParse(address, NumberStyles.Any, CultureInfo.InvariantCulture, out d)) //A double, no valid address
             {
                 return AddressType.Invalid;
             }
-            else if (IsFormula(Address))
+            if (IsFormula(address))
             {
                 return AddressType.Formula;
             }
-
-            else
+            if (r1C1 && IsR1C1(address))
             {
-                if (r1c1 && IsR1C1(Address))
-                {
-                    return AddressType.R1C1;
-                }
-                else
-                {
-                    string wb, ws, intAddress;
-                    if (SplitAddress(Address, out wb, out ws, out intAddress))
-                    {
-                        if (intAddress.Contains("[")) //Table reference
-                        {
-                            return string.IsNullOrEmpty(wb) ? AddressType.InternalAddress : AddressType.ExternalAddress;
-                        }
-                        else if (intAddress.Contains(","))
-                        {
-                            intAddress = intAddress.Substring(0, intAddress.IndexOf(','));
-                        }
-                        if (IsAddress(intAddress))
-                        {
-                            return string.IsNullOrEmpty(wb) ? AddressType.InternalAddress : AddressType.ExternalAddress;
-                        }
-                        else
-                        {
-                            return string.IsNullOrEmpty(wb) ? AddressType.InternalName : AddressType.ExternalName;
-                        }
-                    }
-                    else
-                    {
-                        return AddressType.Invalid;
-                    }
-                }
+                return AddressType.R1C1;
             }
+
+            if (SplitAddress(address, out var wb, out _, out var intAddress))
+            {
+                if (intAddress.Contains('[')) //Table reference
+                {
+                    return string.IsNullOrEmpty(wb) ? AddressType.InternalAddress : AddressType.ExternalAddress;
+                }
+
+                if (intAddress.Contains(','))
+                {
+                    intAddress = intAddress.Substring(0, intAddress.IndexOf(','));
+                }
+                if (IsAddress(intAddress))
+                {
+                    return string.IsNullOrEmpty(wb) ? AddressType.InternalAddress : AddressType.ExternalAddress;
+                }
+
+                return string.IsNullOrEmpty(wb) ? AddressType.InternalName : AddressType.ExternalName;
+            }
+
+            return AddressType.Invalid;
         }
 
         private static bool IsR1C1(string address)
@@ -952,7 +878,7 @@ namespace OfficeOpenXml
                 return false;
             }
             bool isC = false, isROrC = false;
-            bool startBracket = false;
+            var startBracket = false;
             foreach (var c in address)
             {
                 switch (c)
@@ -979,7 +905,7 @@ namespace OfficeOpenXml
                         isROrC = false;
                         break;
                     default:
-                        if ((c>='0' && c<='9') ||c=='-')
+                        if (c is >= '0' and <= '9' or '-')
                         {
                             if (isROrC==false)
                             {
@@ -1000,9 +926,9 @@ namespace OfficeOpenXml
         {
             if (string.IsNullOrEmpty(intAddress)) return false;
             var cells = intAddress.Split(':');
-            int fromRow, toRow, fromCol, toCol;
+            int toRow, toCol;
 
-            if (!GetRowCol(cells[0], out fromRow, out fromCol, false))
+            if (!GetRowCol(cells[0], out var fromRow, out var fromCol, false))
             {
                 return false;
             }
@@ -1027,33 +953,31 @@ namespace OfficeOpenXml
             {
                 return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
 
-        private static bool SplitAddress(string Address, out string wb, out string ws, out string intAddress)
+        private static bool SplitAddress(string address, out string wb, out string ws, out string intAddress)
         {
             wb = "";
             ws = "";
             intAddress = "";
             var text = "";
-            bool isText = false;
+            var isText = false;
             var brackPos = -1;
-            for (int i = 0; i < Address.Length; i++)
+            for (var i = 0; i < address.Length; i++)
             {
-                if (Address[i] == '\'')
+                if (address[i] == '\'')
                 {
                     isText = !isText;
-                    if (i>0 && Address[i-1]=='\'')
+                    if (i>0 && address[i-1]=='\'')
                     {
                         text += "'";
                     }
                 }
                 else
                 {
-                    if (Address[i]=='!' && !isText)
+                    if (address[i]=='!' && !isText)
                     {
                         if (text.Length>0 && text[0] == '[')
                         {
@@ -1064,36 +988,34 @@ namespace OfficeOpenXml
                         {
                             ws=text;
                         }
-                        intAddress=Address.Substring(i+1);
+                        intAddress=address.Substring(i+1);
                         return true;
                     }
-                    else
+
+                    if (address[i]=='[' && !isText)
                     {
-                        if (Address[i]=='[' && !isText)
+                        if (i > 0) //Table reference return full address;
                         {
-                            if (i > 0) //Table reference return full address;
-                            {
-                                intAddress=Address;
-                                return true;
-                            }
-                            brackPos=i;
+                            intAddress=address;
+                            return true;
                         }
-                        else if (Address[i]==']' && !isText)
+                        brackPos=i;
+                    }
+                    else if (address[i]==']' && !isText)
+                    {
+                        if (brackPos > -1)
                         {
-                            if (brackPos > -1)
-                            {
-                                wb = text;
-                                text = "";
-                            }
-                            else
-                            {
-                                return false;
-                            }
+                            wb = text;
+                            text = "";
                         }
                         else
                         {
-                            text+=Address[i];
+                            return false;
                         }
+                    }
+                    else
+                    {
+                        text+=address[i];
                     }
                 }
             }
@@ -1101,11 +1023,11 @@ namespace OfficeOpenXml
             return true;
         }
 
-        private static readonly HashSet<char> FormulaCharacters = new HashSet<char>(new char[] { '(', ')', '+', '-', '*', '/', '=', '^', '&', '%', '\"' });
+        private static readonly HashSet<char> FormulaCharacters = new(new[] { '(', ')', '+', '-', '*', '/', '=', '^', '&', '%', '\"' });
         private static bool IsFormula(string address)
         {
             var isText = false;
-            for (int i = 0; i < address.Length; i++)
+            for (var i = 0; i < address.Length; i++)
             {
                 var addressChar = address[i];
                 if (addressChar == '\'')
@@ -1117,7 +1039,7 @@ namespace OfficeOpenXml
                     // Table references use [ ] around column names and since table column names can also contain unescaped formula characters,
                     // we need to check that this is not a table column reference in order to avoid false positives.  Since function names and
                     // formulas cannot contain [ ], we should be safe doing this check.
-                    if (addressChar == '[' || addressChar == ']')
+                    if (addressChar is '[' or ']')
                         return false;
                     if (isText == false && FormulaCharacters.Contains(addressChar))
                     {
@@ -1134,40 +1056,21 @@ namespace OfficeOpenXml
             {
                 return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
 
-        public int Rows
-        {
-            get
-            {
-                return _toRow - _fromRow+1;
-            }
-        }
-        public int Columns
-        {
-            get
-            {
-                return _toCol - _fromCol + 1;
-            }
-        }
+        public int Rows => _toRow - _fromRow+1;
 
-        internal bool IsSingleCell
+        public int Columns => _toCol - _fromCol + 1;
+
+        internal bool IsSingleCell => _fromRow == _toRow && _fromCol == _toCol;
+
+        private static string GetWorkbookPart(string address)
         {
-            get
-            {
-                return (_fromRow == _toRow && _fromCol == _toCol);
-            }
-        }
-        internal static String GetWorkbookPart(string address)
-        {
-            var ix = 0;
             if (address[0] == '[')
             {
-                ix = address.IndexOf(']') + 1;
+                var ix = address.IndexOf(']') + 1;
                 if (ix > 0)
                 {
                     return address.Substring(1, ix - 2);
@@ -1177,10 +1080,11 @@ namespace OfficeOpenXml
         }
         internal static string GetWorksheetPart(string address, string defaultWorkSheet)
         {
-            int ix = 0;
+            var ix = 0;
             return GetWorksheetPart(address, defaultWorkSheet, ref ix);
         }
-        internal static string GetWorksheetPart(string address, string defaultWorkSheet, ref int endIx)
+
+        private static string GetWorksheetPart(string address, string defaultWorkSheet, ref int endIx)
         {
             if (address=="") return defaultWorkSheet;
             var ix = 0;
@@ -1194,23 +1098,17 @@ namespace OfficeOpenXml
                 {
                     return GetString(address, ix, out endIx);
                 }
-                else
+
+                var ixEnd = address.IndexOf('!', ix);
+                if (ixEnd>ix)
                 {
-                    var ixEnd = address.IndexOf('!', ix);
-                    if (ixEnd>ix)
-                    {
-                        return address.Substring(ix, ixEnd-ix);
-                    }
-                    else
-                    {
-                        return defaultWorkSheet;
-                    }
+                    return address.Substring(ix, ixEnd-ix);
                 }
-            }
-            else
-            {
+
                 return defaultWorkSheet;
             }
+
+            return defaultWorkSheet;
         }
         internal static string GetAddressPart(string address)
         {
@@ -1222,21 +1120,17 @@ namespace OfficeOpenXml
                 {
                     return address.Substring(ix + 1);
                 }
-                else
-                {
-                    return "";
-                }
-            }
-            else
-            {
+
                 return "";
             }
+
+            return "";
 
         }
         internal static void SplitAddress(string fullAddress, out string wb, out string ws, out string address, string defaultWorksheet = "")
         {
             wb = GetWorkbookPart(fullAddress);
-            int ix = 0;
+            var ix = 0;
             ws = GetWorksheetPart(fullAddress, defaultWorksheet, ref ix);
             if (ix < fullAddress.Length)
             {
@@ -1309,8 +1203,8 @@ namespace OfficeOpenXml
             if (string.IsNullOrEmpty(_ws)) _ws = ws;
         }
 
-        public ExcelAddress(string Address, ExcelPackage package, ExcelAddressBase referenceAddress) :
-            base(Address, package, referenceAddress)
+        public ExcelAddress(string address, ExcelPackage package, ExcelAddressBase referenceAddress) :
+            base(address, package, referenceAddress)
         {
 
         }
@@ -1397,10 +1291,8 @@ namespace OfficeOpenXml
                         rowFixed=true;
                         break;
                     }
-                    else
-                    {
-                        colFixed=true;
-                    }
+
+                    colFixed=true;
                 }
                 ix = address.IndexOf('$', ix);
             }
@@ -1426,23 +1318,14 @@ namespace OfficeOpenXml
                 SetFixed();
             }
         }
-        internal new List<ExcelFormulaAddress> _addresses;
-        public new List<ExcelFormulaAddress> Addresses
-        {
-            get
-            {
-                if (_addresses == null)
-                {
-                    _addresses = new List<ExcelFormulaAddress>();
-                }
-                return _addresses;
 
-            }
-        }
+        private new List<ExcelFormulaAddress> _addresses;
+        public new List<ExcelFormulaAddress> Addresses => _addresses ??= new List<ExcelFormulaAddress>();
+
         internal string GetOffset(int row, int column)
         {
-            int fromRow = _fromRow, fromCol = _fromCol, toRow = _toRow, tocol = _toCol;
-            var isMulti = (fromRow != toRow || fromCol != tocol);
+            int fromRow = _fromRow, fromCol = _fromCol, toRow = _toRow, toCol = _toCol;
+            var isMulti = fromRow != toRow || fromCol != toCol;
             if (!_fromRowFixed)
             {
                 fromRow += row;
@@ -1459,15 +1342,15 @@ namespace OfficeOpenXml
                 }
                 if (!_toColFixed)
                 {
-                    tocol += column;
+                    toCol += column;
                 }
             }
             else
             {
                 toRow = fromRow;
-                tocol = fromCol;
+                toCol = fromCol;
             }
-            string a = GetAddress(fromRow, fromCol, toRow, tocol, _fromRowFixed, _fromColFixed, _toRowFixed, _toColFixed);
+            var a = GetAddress(fromRow, fromCol, toRow, toCol, _fromRowFixed, _fromColFixed, _toRowFixed, _toColFixed);
             if (Addresses != null)
             {
                 foreach (var sa in Addresses)

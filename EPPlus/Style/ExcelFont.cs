@@ -50,118 +50,68 @@ namespace OfficeOpenXml.Style
         /// </summary>
         public string Name
         {
-            get
-            {
-                return _styles.Fonts[Index].Name;
-            }
-            set
-            {
-                _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Font, eStyleProperty.Name, value, _positionID, _address));
-            }
+            get => _styles.Fonts[Index].Name;
+            set => _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Font, eStyleProperty.Name, value, _positionID, _address));
         }
         /// <summary>
         /// The Size of the font
         /// </summary>
         public float Size
         {
-            get
-            {
-                return _styles.Fonts[Index].Size;
-            }
-            set
-            {
-                _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Font, eStyleProperty.Size, value, _positionID, _address));
-            }
+            get => _styles.Fonts[Index].Size;
+            set => _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Font, eStyleProperty.Size, value, _positionID, _address));
         }
         /// <summary>
         /// Font family
         /// </summary>
         public int Family
         {
-            get
-            {
-                return _styles.Fonts[Index].Family;
-            }
-            set
-            {
-                _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Font, eStyleProperty.Family, value, _positionID, _address));
-            }
+            get => _styles.Fonts[Index].Family;
+            set => _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Font, eStyleProperty.Family, value, _positionID, _address));
         }
         /// <summary>
         /// Cell color
         /// </summary>
-        public ExcelColor Color
-        {
-            get
-            {
-                return new ExcelColor(_styles, _ChangedEvent, _positionID, _address, eStyleClass.Font, this);
-            }
-        }
+        public ExcelColor Color => new(_styles, _ChangedEvent, _positionID, _address, eStyleClass.Font, this);
+
         /// <summary>
         /// Scheme
         /// </summary>
         public string Scheme
         {
-            get
-            {
-                return _styles.Fonts[Index].Scheme;
-            }
-            set
-            {
-                _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Font, eStyleProperty.Scheme, value, _positionID, _address));
-            }
+            get => _styles.Fonts[Index].Scheme;
+            set => _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Font, eStyleProperty.Scheme, value, _positionID, _address));
         }
         /// <summary>
         /// Font-bold
         /// </summary>
         public bool Bold
         {
-            get
-            {
-                return _styles.Fonts[Index].Bold;
-            }
-            set
-            {
-                _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Font, eStyleProperty.Bold, value, _positionID, _address));
-            }
+            get => _styles.Fonts[Index].Bold;
+            set => _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Font, eStyleProperty.Bold, value, _positionID, _address));
         }
         /// <summary>
         /// Font-italic
         /// </summary>
         public bool Italic
         {
-            get
-            {
-                return _styles.Fonts[Index].Italic;
-            }
-            set
-            {
-                _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Font, eStyleProperty.Italic, value, _positionID, _address));
-            }
+            get => _styles.Fonts[Index].Italic;
+            set => _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Font, eStyleProperty.Italic, value, _positionID, _address));
         }
         /// <summary>
         /// Font-Strikeout
         /// </summary>
         public bool Strike
         {
-            get
-            {
-                return _styles.Fonts[Index].Strike;
-            }
-            set
-            {
-                _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Font, eStyleProperty.Strike, value, _positionID, _address));
-            }
+            get => _styles.Fonts[Index].Strike;
+            set => _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Font, eStyleProperty.Strike, value, _positionID, _address));
         }
         /// <summary>
         /// Font-Underline
         /// </summary>
         public bool UnderLine
         {
-            get
-            {
-                return _styles.Fonts[Index].UnderLine;
-            }
+            get => _styles.Fonts[Index].UnderLine;
             set
             {
                 if (value)
@@ -177,14 +127,8 @@ namespace OfficeOpenXml.Style
         }
         public ExcelUnderLineType UnderLineType
         {
-            get
-            {
-                return _styles.Fonts[Index].UnderLineType;
-            }
-            set
-            {
-                _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Font, eStyleProperty.UnderlineType, value, _positionID, _address));
-            }
+            get => _styles.Fonts[Index].UnderLineType;
+            set => _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Font, eStyleProperty.UnderlineType, value, _positionID, _address));
         }
         /// <summary>
         /// Font-Vertical Align
@@ -197,15 +141,10 @@ namespace OfficeOpenXml.Style
                 {
                     return ExcelVerticalAlignmentFont.None;
                 }
-                else
-                {
-                    return (ExcelVerticalAlignmentFont)Enum.Parse(typeof(ExcelVerticalAlignmentFont), _styles.Fonts[Index].VerticalAlign, true);
-                }
+
+                return (ExcelVerticalAlignmentFont)Enum.Parse(typeof(ExcelVerticalAlignmentFont), _styles.Fonts[Index].VerticalAlign, true);
             }
-            set
-            {
-                _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Font, eStyleProperty.VerticalAlign, value, _positionID, _address));
-            }
+            set => _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Font, eStyleProperty.VerticalAlign, value, _positionID, _address));
         }
         /// <summary>
         /// Set the font from a Font object
@@ -221,9 +160,6 @@ namespace OfficeOpenXml.Style
             Italic = Font.Typeface.IsItalic;
         }
 
-        internal override string Id
-        {
-            get => Name + Size.ToString() + Family.ToString() + Scheme.ToString() + Bold.ToString()[0] + Italic.ToString()[0] + Strike.ToString()[0] + UnderLine.ToString()[0] + VerticalAlign;
-        }
+        internal override string Id => Name + Size.ToString() + Family.ToString() + Scheme.ToString() + Bold.ToString()[0] + Italic.ToString()[0] + Strike.ToString()[0] + UnderLine.ToString()[0] + VerticalAlign;
     }
 }

@@ -65,21 +65,9 @@ namespace OfficeOpenXml.FormulaParsing.ExcelUtilities
 
         public string Worksheet { get; private set; }
 
-        public bool WorksheetIsSpecified
-        {
-            get
-            {
-                return !string.IsNullOrEmpty(Worksheet);
-            }
-        }
+        public bool WorksheetIsSpecified => !string.IsNullOrEmpty(Worksheet);
 
-        public bool IsMultipleCells
-        {
-            get
-            {
-                return !string.IsNullOrEmpty(EndCell);
-            }
-        }
+        public bool IsMultipleCells => !string.IsNullOrEmpty(EndCell);
 
         public string StartCell { get; private set; }
 

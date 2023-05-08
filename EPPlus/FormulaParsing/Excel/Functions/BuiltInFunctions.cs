@@ -163,7 +163,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions
             Functions["column"] = new Column();
             Functions["columns"] = new Columns();
             Functions["choose"] = new Choose();
-            Functions["index"] = new RefAndLookup.Index();
+            Functions["index"] = new Index();
             Functions["indirect"] = new Indirect();
             Functions["offset"] = new Offset();
             // Date

@@ -34,7 +34,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime
         {
             ValidateArguments(arguments, 1);
             var dateObj = arguments.ElementAt(0).Value;
-            System.DateTime date = ParseDate(arguments, dateObj);
+            var date = ParseDate(arguments, dateObj);
             return CreateResult(date.Second, DataType.Integer);
         }
     }

@@ -29,6 +29,7 @@
  * Jan Källman		Added		2009-12-30
  * Jan Källman		License changed GPL-->LGPL 2011-12-16
  *******************************************************************************/
+
 using System;
 using System.Xml;
 
@@ -42,6 +43,7 @@ namespace OfficeOpenXml.Drawing.Chart
         internal ExcelChartSeries _chartSeries;
         protected XmlNode _node;
         protected XmlNamespaceManager _ns;
+
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -53,17 +55,17 @@ namespace OfficeOpenXml.Drawing.Chart
             : base(ns, node)
         {
             _chartSeries = chartSeries;
-            _node=node;
-            _ns=ns;
-            SchemaNodeOrder = new string[] { "idx", "order", "spPr", "tx", "marker", "trendline", "explosion", "invertIfNegative", "dLbls", "cat", "val", "xVal", "yVal", "bubbleSize", "bubble3D", "smooth" };
+            _node = node;
+            _ns = ns;
+            SchemaNodeOrder = new string[]
+            {
+                "idx", "order", "spPr", "tx", "marker", "trendline", "explosion", "invertIfNegative", "dLbls", "cat",
+                "val", "xVal", "yVal", "bubbleSize", "bubble3D", "smooth"
+            };
 
-            if (chartSeries.Chart.ChartType == eChartType.XYScatter ||
-                chartSeries.Chart.ChartType == eChartType.XYScatterLines ||
-                chartSeries.Chart.ChartType == eChartType.XYScatterLinesNoMarkers ||
-                chartSeries.Chart.ChartType == eChartType.XYScatterSmooth ||
-                chartSeries.Chart.ChartType == eChartType.XYScatterSmoothNoMarkers ||
-                chartSeries.Chart.ChartType == eChartType.Bubble ||
-                chartSeries.Chart.ChartType == eChartType.Bubble3DEffect)
+            if (chartSeries.Chart.ChartType is eChartType.XYScatter or eChartType.XYScatterLines
+                or eChartType.XYScatterLinesNoMarkers or eChartType.XYScatterSmooth
+                or eChartType.XYScatterSmoothNoMarkers or eChartType.Bubble or eChartType.Bubble3DEffect)
             {
                 _seriesTopPath = "c:yVal";
                 _xSeriesTopPath = "c:xVal";
@@ -73,34 +75,28 @@ namespace OfficeOpenXml.Drawing.Chart
                 _seriesTopPath = "c:val";
                 _xSeriesTopPath = "c:cat";
             }
+
             _seriesPath = string.Format(_seriesPath, _seriesTopPath);
 
             var np = string.Format(_xSeriesPath, _xSeriesTopPath, isPivot ? "c:multiLvlStrRef" : "c:numRef");
             var sp = string.Format(_xSeriesPath, _xSeriesTopPath, isPivot ? "c:multiLvlStrRef" : "c:strRef");
-            if (ExistNode(sp))
-            {
-                _xSeriesPath = sp;
-            }
-            else
-            {
-                _xSeriesPath = np;
-            }
+            _xSeriesPath = ExistNode(sp) ? sp : np;
         }
+
         internal void SetID(string id)
         {
             SetXmlNodeString("c:idx/@val", id);
             SetXmlNodeString("c:order/@val", id);
         }
+
         const string headerPath = "c:tx/c:v";
+
         /// <summary>
         /// Header for the serie.
         /// </summary>
         public string Header
         {
-            get
-            {
-                return GetXmlNodeString(headerPath);
-            }
+            get => GetXmlNodeString(headerPath);
             set
             {
                 Cleartx();
@@ -116,7 +112,9 @@ namespace OfficeOpenXml.Drawing.Chart
                 n.InnerXml = "";
             }
         }
+
         const string headerAddressPath = "c:tx/c:strRef/c:f";
+
         /// <summary>
         /// Header address for the serie.
         /// </summary>
@@ -124,21 +122,15 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             get
             {
-                string address = GetXmlNodeString(headerAddressPath);
-                if (address == "")
-                {
-                    return null;
-                }
-                else
-                {
-                    return new ExcelAddressBase(address);
-                }
+                var address = GetXmlNodeString(headerAddressPath);
+                return address == "" ? null : new ExcelAddressBase(address);
             }
             set
             {
-                if ((value._fromCol != value._toCol && value._fromRow != value._toRow) || value.Addresses != null) //Single cell removed, allow row & column --> issue 15102. 
+                if ((value._fromCol != value._toCol && value._fromRow != value._toRow) ||
+                    value.Addresses != null) //Single cell removed, allow row & column --> issue 15102. 
                 {
-                    throw (new ArgumentException("Address must be a row, column or single cell"));
+                    throw new ArgumentException("Address must be a row, column or single cell");
                 }
 
                 Cleartx();
@@ -146,17 +138,16 @@ namespace OfficeOpenXml.Drawing.Chart
                 SetXmlNodeString("c:tx/c:strRef/c:strCache/c:ptCount/@val", "0");
             }
         }
+
         string _seriesTopPath;
         string _seriesPath = "{0}/c:numRef/c:f";
+
         /// <summary>
         /// Set this to a valid address or the drawing will be invalid.
         /// </summary>
         public virtual string Series
         {
-            get
-            {
-                return GetXmlNodeString(_seriesPath);
-            }
+            get => GetXmlNodeString(_seriesPath);
             set
             {
                 CreateNode(_seriesPath, true);
@@ -164,106 +155,65 @@ namespace OfficeOpenXml.Drawing.Chart
 
                 if (_chartSeries.Chart.PivotTableSource != null)
                 {
-                    XmlNode cache = TopNode.SelectSingleNode(string.Format("{0}/c:numRef/c:numCache", _seriesTopPath), _ns);
-                    if (cache != null)
-                    {
-                        cache.ParentNode.RemoveChild(cache);
-                    }
+                    var cache = TopNode.SelectSingleNode(string.Format("{0}/c:numRef/c:numCache", _seriesTopPath), _ns);
+                    cache?.ParentNode.RemoveChild(cache);
+
                     SetXmlNodeString(string.Format("{0}/c:numRef/c:numCache", _seriesTopPath), "General");
                 }
 
-                XmlNode lit = TopNode.SelectSingleNode(string.Format("{0}/c:numLit", _seriesTopPath), _ns);
-                if (lit != null)
-                {
-                    lit.ParentNode.RemoveChild(lit);
-                }
+                var lit = TopNode.SelectSingleNode(string.Format("{0}/c:numLit", _seriesTopPath), _ns);
+                lit?.ParentNode.RemoveChild(lit);
             }
-
         }
+
         string _xSeriesTopPath;
         string _xSeriesPath = "{0}/{1}/c:f";
+
         /// <summary>
         /// Set an address for the horisontal labels
         /// </summary>
         public virtual string XSeries
         {
-            get
-            {
-                return GetXmlNodeString(_xSeriesPath);
-            }
+            get => GetXmlNodeString(_xSeriesPath);
             set
             {
                 CreateNode(_xSeriesPath, true);
                 SetXmlNodeString(_xSeriesPath, ExcelCellBase.GetFullAddress(_chartSeries.Chart.WorkSheet.Name, value));
 
-                if (_xSeriesPath.IndexOf("c:numRef")>0)
+                if (_xSeriesPath.IndexOf("c:numRef") > 0)
                 {
-                    XmlNode cache = TopNode.SelectSingleNode(string.Format("{0}/c:numRef/c:numCache", _xSeriesTopPath), _ns);
-                    if (cache != null)
-                    {
-                        cache.ParentNode.RemoveChild(cache);
-                    }
+                    var cache = TopNode.SelectSingleNode(string.Format("{0}/c:numRef/c:numCache", _xSeriesTopPath),
+                        _ns);
+                    cache?.ParentNode.RemoveChild(cache);
 
-                    XmlNode lit = TopNode.SelectSingleNode(string.Format("{0}/c:numLit", _xSeriesTopPath), _ns);
-                    if (lit != null)
-                    {
-                        lit.ParentNode.RemoveChild(lit);
-                    }
+                    var lit = TopNode.SelectSingleNode(string.Format("{0}/c:numLit", _xSeriesTopPath), _ns);
+                    lit?.ParentNode.RemoveChild(lit);
                 }
                 else
                 {
-                    XmlNode cache = TopNode.SelectSingleNode(string.Format("{0}/c:strRef/c:strCache", _xSeriesTopPath), _ns);
-                    if (cache != null)
-                    {
-                        cache.ParentNode.RemoveChild(cache);
-                    }
+                    var cache = TopNode.SelectSingleNode(string.Format("{0}/c:strRef/c:strCache", _xSeriesTopPath),
+                        _ns);
+                    cache?.ParentNode.RemoveChild(cache);
 
-                    XmlNode lit = TopNode.SelectSingleNode(string.Format("{0}/c:strLit", _xSeriesTopPath), _ns);
-                    if (lit != null)
-                    {
-                        lit.ParentNode.RemoveChild(lit);
-                    }
+                    var lit = TopNode.SelectSingleNode(string.Format("{0}/c:strLit", _xSeriesTopPath), _ns);
+                    lit?.ParentNode.RemoveChild(lit);
                 }
             }
         }
+
         ExcelChartTrendlineCollection _trendLines = null;
+
         /// <summary>
         /// Access to the trendline collection
         /// </summary>
-        public ExcelChartTrendlineCollection TrendLines
-        {
-            get
-            {
-                if (_trendLines == null)
-                {
-                    _trendLines = new ExcelChartTrendlineCollection(this);
-                }
-                return _trendLines;
-            }
-        }
+        public ExcelChartTrendlineCollection TrendLines => _trendLines ??= new ExcelChartTrendlineCollection(this);
+
         ExcelDrawingFill _fill = null;
-        public ExcelDrawingFill Fill
-        {
-            get
-            {
-                if (_fill == null)
-                {
-                    _fill = new ExcelDrawingFill(NameSpaceManager, TopNode, "c:spPr");
-                }
-                return _fill;
-            }
-        }
+
+        public ExcelDrawingFill Fill => _fill ??= new ExcelDrawingFill(NameSpaceManager, TopNode, "c:spPr");
+
         ExcelDrawingBorder _border = null;
-        public ExcelDrawingBorder Border
-        {
-            get
-            {
-                if (_border == null)
-                {
-                    _border = new ExcelDrawingBorder(NameSpaceManager, TopNode, "c:spPr/a:ln");
-                }
-                return _border;
-            }
-        }
+
+        public ExcelDrawingBorder Border => _border ??= new ExcelDrawingBorder(NameSpaceManager, TopNode, "c:spPr/a:ln");
     }
 }

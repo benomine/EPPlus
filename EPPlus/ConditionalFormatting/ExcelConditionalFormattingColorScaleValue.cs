@@ -103,7 +103,7 @@ namespace OfficeOpenXml.ConditionalFormatting
             if (itemElementNode == null)
             {
                 // Get the parent node path by the rule type
-                string parentNodePath = ExcelConditionalFormattingValueObjectType.GetParentPathByRuleType(
+                var parentNodePath = ExcelConditionalFormattingValueObjectType.GetParentPathByRuleType(
                     ruleType);
 
                 // Check for en error (rule type does not have <cfvo>)
@@ -186,8 +186,8 @@ namespace OfficeOpenXml.ConditionalFormatting
                 value,
                 formula,
                 ruleType,
-        address,
-        priority,
+                address,
+                priority,
                 worksheet,
                 null,
                 namespaceManager)
@@ -221,8 +221,8 @@ namespace OfficeOpenXml.ConditionalFormatting
                 0,
                 null,
                 ruleType,
-        address,
-        priority,
+                address,
+                priority,
                 worksheet,
                 null,
                 namespaceManager)
@@ -263,11 +263,11 @@ namespace OfficeOpenXml.ConditionalFormatting
             string attributeValue)
         {
             // Save the current TopNode
-            XmlNode currentTopNode = TopNode;
+            var currentTopNode = TopNode;
 
-            string nodePath = ExcelConditionalFormattingValueObjectType.GetNodePathByNodeType(nodeType);
-            int nodeOrder = GetNodeOrder();
-            eNodeInsertOrder nodeInsertOrder = eNodeInsertOrder.SchemaOrder;
+            var nodePath = ExcelConditionalFormattingValueObjectType.GetNodePathByNodeType(nodeType);
+            var nodeOrder = GetNodeOrder();
+            var nodeInsertOrder = eNodeInsertOrder.SchemaOrder;
             XmlNode referenceNode = null;
 
             if (nodeOrder > 1)
@@ -324,8 +324,8 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// </summary>
         internal eExcelConditionalFormattingValueObjectPosition Position
         {
-            get { return _position; }
-            set { _position = value; }
+            get => _position;
+            set => _position = value;
         }
 
         /// <summary>
@@ -333,8 +333,8 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// </summary>
         internal eExcelConditionalFormattingRuleType RuleType
         {
-            get { return _ruleType; }
-            set { _ruleType = value; }
+            get => _ruleType;
+            set => _ruleType = value;
         }
 
         /// <summary>
@@ -363,7 +363,7 @@ namespace OfficeOpenXml.ConditionalFormatting
                     ExcelConditionalFormattingConstants.Paths.TypeAttribute,
                     ExcelConditionalFormattingValueObjectType.GetAttributeByType(value));
 
-                bool removeValAttribute = false;
+                var removeValAttribute = false;
 
                 // Make sure unnecessary attributes are removed (occures when we change
                 // the value object type)
@@ -378,9 +378,9 @@ namespace OfficeOpenXml.ConditionalFormatting
                 // Check if we need to remove the @val attribute
                 if (removeValAttribute)
                 {
-                    string nodePath = ExcelConditionalFormattingValueObjectType.GetNodePathByNodeType(
+                    var nodePath = ExcelConditionalFormattingValueObjectType.GetNodePathByNodeType(
                           eExcelConditionalFormattingValueObjectNodeType.Cfvo);
-                    int nodeOrder = GetNodeOrder();
+                    var nodeOrder = GetNodeOrder();
 
                     // Remove the attribute (removed when the value = '')
                     CreateComplexNode(
@@ -417,14 +417,12 @@ namespace OfficeOpenXml.ConditionalFormatting
 
                 return ExcelConditionalFormattingHelper.ConvertFromColorCode(colorCode);
             }
-            set
-            {
+            set =>
                 // Use the color code to store (Ex. "FF5B35F2")
                 CreateNodeByOrdem(
                     eExcelConditionalFormattingValueObjectNodeType.Color,
                     ExcelConditionalFormattingConstants.Paths.RgbAttribute,
                     value.ToString());
-            }
         }
 
         /// <summary>
@@ -432,9 +430,8 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// </summary>
         public Double Value
         {
-            get
-            {
-                return GetXmlNodeDouble(
+            get =>
+                GetXmlNodeDouble(
                     string.Format(
                         "{0}[position()={1}]/{2}",
                         // {0}
@@ -443,15 +440,12 @@ namespace OfficeOpenXml.ConditionalFormatting
                         GetNodeOrder(),
                         // {2}
                         ExcelConditionalFormattingConstants.Paths.ValAttribute));
-            }
             set
             {
-                string valueToStore = string.Empty;
+                var valueToStore = string.Empty;
 
                 // Only some types use the @val attribute
-                if ((Type == eExcelConditionalFormattingValueObjectType.Num)
-                    || (Type == eExcelConditionalFormattingValueObjectType.Percent)
-                    || (Type == eExcelConditionalFormattingValueObjectType.Percentile))
+                if (Type is eExcelConditionalFormattingValueObjectType.Num or eExcelConditionalFormattingValueObjectType.Percent or eExcelConditionalFormattingValueObjectType.Percentile)
                 {
                     valueToStore = value.ToString(CultureInfo.InvariantCulture);
                 }
@@ -495,7 +489,7 @@ namespace OfficeOpenXml.ConditionalFormatting
                     CreateNodeByOrdem(
                         eExcelConditionalFormattingValueObjectNodeType.Cfvo,
                         ExcelConditionalFormattingConstants.Paths.ValAttribute,
-                        (value == null) ? string.Empty : value.ToString());
+                        value == null ? string.Empty : value.ToString());
                 }
             }
         }

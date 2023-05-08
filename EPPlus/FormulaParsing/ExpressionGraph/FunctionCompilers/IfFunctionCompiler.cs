@@ -70,10 +70,10 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers
 
             if (v is ExcelDataProvider.IRangeInfo)
             {
-                var r = ((ExcelDataProvider.IRangeInfo)v);
+                var r = (ExcelDataProvider.IRangeInfo)v;
                 if (r.GetNCells()>1)
                 {
-                    throw (new ArgumentException("Logical can't be more than one cell"));
+                    throw new ArgumentException("Logical can't be more than one cell");
                 }
                 v = r.GetOffset(0, 0);
             }
@@ -84,13 +84,13 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers
             }
             else if (!Utils.ConvertUtil.TryParseBooleanString(v, out boolVal))
             {
-                if (OfficeOpenXml.Utils.ConvertUtil.IsNumeric(v))
+                if (Utils.ConvertUtil.IsNumeric(v))
                 {
-                    boolVal = OfficeOpenXml.Utils.ConvertUtil.GetValueDouble(v)!=0;
+                    boolVal = Utils.ConvertUtil.GetValueDouble(v)!=0;
                 }
                 else
                 {
-                    throw (new ArgumentException("Invalid logical test"));
+                    throw new ArgumentException("Invalid logical test");
                 }
             }
             /****  End Handle names and ranges ****/

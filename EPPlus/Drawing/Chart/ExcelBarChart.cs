@@ -29,6 +29,7 @@
  * Jan Källman		Added		2009-10-01
  * Jan Källman		License changed GPL-->LGPL 2011-12-16
  *******************************************************************************/
+
 using System;
 using System.Globalization;
 using System.Xml;
@@ -43,16 +44,18 @@ namespace OfficeOpenXml.Drawing.Chart
     {
         #region "Constructors"
 
-        internal ExcelBarChart(ExcelDrawings drawings, XmlNode node, eChartType type, ExcelChart topChart, ExcelPivotTable PivotTableSource) :
-            base(drawings, node, type, topChart, PivotTableSource)
+        internal ExcelBarChart(ExcelDrawings drawings, XmlNode node, eChartType type, ExcelChart topChart,
+            ExcelPivotTable pivotTableSource) :
+            base(drawings, node, type, topChart, pivotTableSource)
         {
             SetChartNodeText("");
 
             SetTypeProperties(drawings, type);
         }
 
-        internal ExcelBarChart(ExcelDrawings drawings, XmlNode node, Uri uriChart, Packaging.ZipPackagePart part, XmlDocument chartXml, XmlNode chartNode) :
-           base(drawings, node, uriChart, part, chartXml, chartNode)
+        internal ExcelBarChart(ExcelDrawings drawings, XmlNode node, Uri uriChart, Packaging.ZipPackagePart part,
+            XmlDocument chartXml, XmlNode chartNode) :
+            base(drawings, node, uriChart, part, chartXml, chartNode)
         {
             SetChartNodeText(chartNode.Name);
         }
@@ -62,8 +65,11 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             SetChartNodeText(chartNode.Name);
         }
+
         #endregion
+
         #region "Private functions"
+
         private void SetChartNodeText(string chartNodeText)
         {
             if (string.IsNullOrEmpty(chartNodeText))
@@ -71,414 +77,277 @@ namespace OfficeOpenXml.Drawing.Chart
                 chartNodeText = GetChartNodeText();
             }
         }
+
         private void SetTypeProperties(ExcelDrawings drawings, eChartType type)
         {
-            if (type == eChartType.BarClustered ||
-                type == eChartType.BarStacked ||
-                type == eChartType.BarStacked100 ||
-                type == eChartType.BarClustered3D ||
-                type == eChartType.BarStacked3D ||
-                type == eChartType.BarStacked1003D ||
-                type == eChartType.ConeBarClustered ||
-                type == eChartType.ConeBarStacked ||
-                type == eChartType.ConeBarStacked100 ||
-                type == eChartType.CylinderBarClustered ||
-                type == eChartType.CylinderBarStacked ||
-                type == eChartType.CylinderBarStacked100 ||
-                type == eChartType.PyramidBarClustered ||
-                type == eChartType.PyramidBarStacked ||
-                type == eChartType.PyramidBarStacked100)
+            if (type is eChartType.BarClustered or eChartType.BarStacked or eChartType.BarStacked100
+                or eChartType.BarClustered3D or eChartType.BarStacked3D or eChartType.BarStacked1003D
+                or eChartType.ConeBarClustered or eChartType.ConeBarStacked or eChartType.ConeBarStacked100
+                or eChartType.CylinderBarClustered or eChartType.CylinderBarStacked or eChartType.CylinderBarStacked100
+                or eChartType.PyramidBarClustered or eChartType.PyramidBarStacked or eChartType.PyramidBarStacked100)
             {
                 Direction = eDirection.Bar;
             }
             else if (
-                type == eChartType.ColumnClustered ||
-                type == eChartType.ColumnStacked ||
-                type == eChartType.ColumnStacked100 ||
-                type == eChartType.Column3D ||
-                type == eChartType.ColumnClustered3D ||
-                type == eChartType.ColumnStacked3D ||
-                type == eChartType.ColumnStacked1003D ||
-                type == eChartType.ConeCol ||
-                type == eChartType.ConeColClustered ||
-                type == eChartType.ConeColStacked ||
-                type == eChartType.ConeColStacked100 ||
-                type == eChartType.CylinderCol ||
-                type == eChartType.CylinderColClustered ||
-                type == eChartType.CylinderColStacked ||
-                type == eChartType.CylinderColStacked100 ||
-                type == eChartType.PyramidCol ||
-                type == eChartType.PyramidColClustered ||
-                type == eChartType.PyramidColStacked ||
-                type == eChartType.PyramidColStacked100)
+                type is eChartType.ColumnClustered or eChartType.ColumnStacked or eChartType.ColumnStacked100
+                or eChartType.Column3D or eChartType.ColumnClustered3D or eChartType.ColumnStacked3D
+                or eChartType.ColumnStacked1003D or eChartType.ConeCol or eChartType.ConeColClustered
+                or eChartType.ConeColStacked or eChartType.ConeColStacked100 or eChartType.CylinderCol
+                or eChartType.CylinderColClustered or eChartType.CylinderColStacked or eChartType.CylinderColStacked100
+                or eChartType.PyramidCol or eChartType.PyramidColClustered or eChartType.PyramidColStacked
+                or eChartType.PyramidColStacked100)
             {
                 Direction = eDirection.Column;
             }
 
             if (
-                type == eChartType.Column3D ||
-                type == eChartType.ColumnClustered3D ||
-                type == eChartType.ColumnStacked3D ||
-                type == eChartType.ColumnStacked1003D ||
-                type == eChartType.BarClustered3D ||
-                type == eChartType.BarStacked3D ||
-                type == eChartType.BarStacked1003D)
+                type is eChartType.Column3D or eChartType.ColumnClustered3D or eChartType.ColumnStacked3D
+                or eChartType.ColumnStacked1003D or eChartType.BarClustered3D or eChartType.BarStacked3D
+                or eChartType.BarStacked1003D)
             {
                 Shape = eShape.Box;
             }
             else if (
-                type == eChartType.CylinderBarClustered ||
-                type == eChartType.CylinderBarStacked ||
-                type == eChartType.CylinderBarStacked100 ||
-                type == eChartType.CylinderCol ||
-                type == eChartType.CylinderColClustered ||
-                type == eChartType.CylinderColStacked ||
-                type == eChartType.CylinderColStacked100)
+                type is eChartType.CylinderBarClustered or eChartType.CylinderBarStacked
+                or eChartType.CylinderBarStacked100 or eChartType.CylinderCol or eChartType.CylinderColClustered
+                or eChartType.CylinderColStacked or eChartType.CylinderColStacked100)
             {
                 Shape = eShape.Cylinder;
             }
             else if (
-                type == eChartType.ConeBarClustered ||
-                type == eChartType.ConeBarStacked ||
-                type == eChartType.ConeBarStacked100 ||
-                type == eChartType.ConeCol ||
-                type == eChartType.ConeColClustered ||
-                type == eChartType.ConeColStacked ||
-                type == eChartType.ConeColStacked100)
+                type is eChartType.ConeBarClustered or eChartType.ConeBarStacked or eChartType.ConeBarStacked100
+                or eChartType.ConeCol or eChartType.ConeColClustered or eChartType.ConeColStacked
+                or eChartType.ConeColStacked100)
             {
                 Shape = eShape.Cone;
             }
             else if (
-                type == eChartType.PyramidBarClustered ||
-                type == eChartType.PyramidBarStacked ||
-                type == eChartType.PyramidBarStacked100 ||
-                type == eChartType.PyramidCol ||
-                type == eChartType.PyramidColClustered ||
-                type == eChartType.PyramidColStacked ||
-                type == eChartType.PyramidColStacked100)
+                type is eChartType.PyramidBarClustered or eChartType.PyramidBarStacked
+                or eChartType.PyramidBarStacked100 or eChartType.PyramidCol or eChartType.PyramidColClustered
+                or eChartType.PyramidColStacked or eChartType.PyramidColStacked100)
             {
                 Shape = eShape.Pyramid;
             }
         }
+
         #endregion
+
         #region "Properties"
+
         string _directionPath = "c:barDir/@val";
+
         /// <summary>
         /// Direction, Bar or columns
         /// </summary>
         public eDirection Direction
         {
-            get
-            {
-                return GetDirectionEnum(_chartXmlHelper.GetXmlNodeString(_directionPath));
-            }
-            internal set
-            {
-                _chartXmlHelper.SetXmlNodeString(_directionPath, GetDirectionText(value));
-            }
+            get => GetDirectionEnum(_chartXmlHelper.GetXmlNodeString(_directionPath));
+            internal set => _chartXmlHelper.SetXmlNodeString(_directionPath, GetDirectionText(value));
         }
+
         string _shapePath = "c:shape/@val";
+
         /// <summary>
         /// The shape of the bar/columns
         /// </summary>
         public eShape Shape
         {
-            get
-            {
-                return GetShapeEnum(_chartXmlHelper.GetXmlNodeString(_shapePath));
-            }
-            internal set
-            {
-                _chartXmlHelper.SetXmlNodeString(_shapePath, GetShapeText(value));
-            }
+            get => GetShapeEnum(_chartXmlHelper.GetXmlNodeString(_shapePath));
+            internal set => _chartXmlHelper.SetXmlNodeString(_shapePath, GetShapeText(value));
         }
+
         ExcelChartDataLabel _DataLabel = null;
+
         /// <summary>
         /// Access to datalabel properties
         /// </summary>
-        public ExcelChartDataLabel DataLabel
-        {
-            get
-            {
-                if (_DataLabel == null)
-                {
-                    _DataLabel = new ExcelChartDataLabel(NameSpaceManager, ChartNode);
-                }
-                return _DataLabel;
-            }
-        }
+        public ExcelChartDataLabel DataLabel => _DataLabel ??= new ExcelChartDataLabel(NameSpaceManager, ChartNode);
+
         string _gapWidthPath = "c:gapWidth/@val";
+
         /// <summary>
         /// The size of the gap between two adjacent bars/columns
         /// </summary>
         public int GapWidth
         {
-            get
-            {
-                return _chartXmlHelper.GetXmlNodeInt(_gapWidthPath);
-            }
-            set
-            {
-                _chartXmlHelper.SetXmlNodeString(_gapWidthPath, value.ToString(CultureInfo.InvariantCulture));
-            }
+            get => _chartXmlHelper.GetXmlNodeInt(_gapWidthPath);
+            set => _chartXmlHelper.SetXmlNodeString(_gapWidthPath, value.ToString(CultureInfo.InvariantCulture));
         }
+
         #endregion
+
         #region "Direction Enum Traslation"
+
         private string GetDirectionText(eDirection direction)
         {
-            switch (direction)
+            return direction switch
             {
-                case eDirection.Bar:
-                    return "bar";
-                default:
-                    return "col";
-            }
+                eDirection.Bar => "bar",
+                _ => "col"
+            };
         }
 
         private eDirection GetDirectionEnum(string direction)
         {
-            switch (direction)
+            return direction switch
             {
-                case "bar":
-                    return eDirection.Bar;
-                default:
-                    return eDirection.Column;
-            }
+                "bar" => eDirection.Bar,
+                _ => eDirection.Column
+            };
         }
+
         #endregion
-        #region "Shape Enum Translation"
-        private string GetShapeText(eShape Shape)
+
+        #region "shape Enum Translation"
+
+        private string GetShapeText(eShape shape)
         {
-            switch (Shape)
+            return shape switch
             {
-                case eShape.Box:
-                    return "box";
-                case eShape.Cone:
-                    return "cone";
-                case eShape.ConeToMax:
-                    return "coneToMax";
-                case eShape.Cylinder:
-                    return "cylinder";
-                case eShape.Pyramid:
-                    return "pyramid";
-                case eShape.PyramidToMax:
-                    return "pyramidToMax";
-                default:
-                    return "box";
-            }
+                eShape.Box => "box",
+                eShape.Cone => "cone",
+                eShape.ConeToMax => "coneToMax",
+                eShape.Cylinder => "cylinder",
+                eShape.Pyramid => "pyramid",
+                eShape.PyramidToMax => "pyramidToMax",
+                _ => "box"
+            };
         }
 
         private eShape GetShapeEnum(string text)
         {
-            switch (text)
+            return text switch
             {
-                case "box":
-                    return eShape.Box;
-                case "cone":
-                    return eShape.Cone;
-                case "coneToMax":
-                    return eShape.ConeToMax;
-                case "cylinder":
-                    return eShape.Cylinder;
-                case "pyramid":
-                    return eShape.Pyramid;
-                case "pyramidToMax":
-                    return eShape.PyramidToMax;
-                default:
-                    return eShape.Box;
-            }
+                "box" => eShape.Box,
+                "cone" => eShape.Cone,
+                "coneToMax" => eShape.ConeToMax,
+                "cylinder" => eShape.Cylinder,
+                "pyramid" => eShape.Pyramid,
+                "pyramidToMax" => eShape.PyramidToMax,
+                _ => eShape.Box
+            };
         }
+
         #endregion
+
         internal override eChartType GetChartType(string name)
         {
             if (name == "barChart")
             {
-                if (this.Direction == eDirection.Bar)
+                if (Direction == eDirection.Bar)
                 {
-                    if (Grouping == eGrouping.Stacked)
+                    return Grouping switch
                     {
-                        return eChartType.BarStacked;
-                    }
-                    else if (Grouping == eGrouping.PercentStacked)
-                    {
-                        return eChartType.BarStacked100;
-                    }
-                    else
-                    {
-                        return eChartType.BarClustered;
-                    }
+                        eGrouping.Stacked => eChartType.BarStacked,
+                        eGrouping.PercentStacked => eChartType.BarStacked100,
+                        _ => eChartType.BarClustered
+                    };
                 }
-                else
+
+                return Grouping switch
                 {
-                    if (Grouping == eGrouping.Stacked)
-                    {
-                        return eChartType.ColumnStacked;
-                    }
-                    else if (Grouping == eGrouping.PercentStacked)
-                    {
-                        return eChartType.ColumnStacked100;
-                    }
-                    else
-                    {
-                        return eChartType.ColumnClustered;
-                    }
-                }
+                    eGrouping.Stacked => eChartType.ColumnStacked,
+                    eGrouping.PercentStacked => eChartType.ColumnStacked100,
+                    _ => eChartType.ColumnClustered
+                };
             }
-            if (name == "bar3DChart")
+
+            if (name != "bar3DChart") return base.GetChartType(name);
+
+            #region "Bar shape"
+
+            switch (Shape)
             {
-                #region "Bar Shape"
-                if (this.Shape==eShape.Box)
+                case eShape.Box when Direction == eDirection.Bar:
                 {
-                    if (this.Direction == eDirection.Bar)
+                    return Grouping switch
                     {
-                        if (Grouping == eGrouping.Stacked)
-                        {
-                            return eChartType.BarStacked3D;
-                        }
-                        else if (Grouping == eGrouping.PercentStacked)
-                        {
-                            return eChartType.BarStacked1003D;
-                        }
-                        else
-                        {
-                            return eChartType.BarClustered3D;
-                        }
-                    }
-                    else
-                    {
-                        if (Grouping == eGrouping.Stacked)
-                        {
-                            return eChartType.ColumnStacked3D;
-                        }
-                        else if (Grouping == eGrouping.PercentStacked)
-                        {
-                            return eChartType.ColumnStacked1003D;
-                        }
-                        else
-                        {
-                            return eChartType.ColumnClustered3D;
-                        }
-                    }
+                        eGrouping.Stacked => eChartType.BarStacked3D,
+                        eGrouping.PercentStacked => eChartType.BarStacked1003D,
+                        _ => eChartType.BarClustered3D
+                    };
                 }
-                #endregion
-                #region "Cone Shape"
-                if (this.Shape == eShape.Cone || this.Shape == eShape.ConeToMax)
+                case eShape.Box when Grouping == eGrouping.Stacked:
+                    return eChartType.ColumnStacked3D;
+                case eShape.Box when Grouping == eGrouping.PercentStacked:
+                    return eChartType.ColumnStacked1003D;
+                case eShape.Box:
+                    return eChartType.ColumnClustered3D;
+                case eShape.Cone:
+                case eShape.ConeToMax:
                 {
-                    if (this.Direction == eDirection.Bar)
+                    if (Direction == eDirection.Bar)
                     {
-                        if (Grouping == eGrouping.Stacked)
+                        return Grouping switch
                         {
-                            return eChartType.ConeBarStacked;
-                        }
-                        else if (Grouping == eGrouping.PercentStacked)
-                        {
-                            return eChartType.ConeBarStacked100;
-                        }
-                        else if (Grouping == eGrouping.Clustered)
-                        {
-                            return eChartType.ConeBarClustered;
-                        }
+                            eGrouping.Stacked => eChartType.ConeBarStacked,
+                            eGrouping.PercentStacked => eChartType.ConeBarStacked100,
+                            eGrouping.Clustered => eChartType.ConeBarClustered
+                        };
                     }
-                    else
+
+                    return Grouping switch
                     {
-                        if (Grouping == eGrouping.Stacked)
-                        {
-                            return eChartType.ConeColStacked;
-                        }
-                        else if (Grouping == eGrouping.PercentStacked)
-                        {
-                            return eChartType.ConeColStacked100;
-                        }
-                        else if (Grouping == eGrouping.Clustered)
-                        {
-                            return eChartType.ConeColClustered;
-                        }
-                        else
-                        {
-                            return eChartType.ConeCol;
-                        }
-                    }
+                        eGrouping.Stacked => eChartType.ConeColStacked,
+                        eGrouping.PercentStacked => eChartType.ConeColStacked100,
+                        eGrouping.Clustered => eChartType.ConeColClustered,
+                        _ => eChartType.ConeCol
+                    };
                 }
-                #endregion
-                #region "Cylinder Shape"
-                if (this.Shape == eShape.Cylinder)
-                {
-                    if (this.Direction == eDirection.Bar)
-                    {
-                        if (Grouping == eGrouping.Stacked)
-                        {
-                            return eChartType.CylinderBarStacked;
-                        }
-                        else if (Grouping == eGrouping.PercentStacked)
-                        {
-                            return eChartType.CylinderBarStacked100;
-                        }
-                        else if (Grouping == eGrouping.Clustered)
-                        {
-                            return eChartType.CylinderBarClustered;
-                        }
-                    }
-                    else
-                    {
-                        if (Grouping == eGrouping.Stacked)
-                        {
-                            return eChartType.CylinderColStacked;
-                        }
-                        else if (Grouping == eGrouping.PercentStacked)
-                        {
-                            return eChartType.CylinderColStacked100;
-                        }
-                        else if (Grouping == eGrouping.Clustered)
-                        {
-                            return eChartType.CylinderColClustered;
-                        }
-                        else
-                        {
-                            return eChartType.CylinderCol;
-                        }
-                    }
-                }
-                #endregion
-                #region "Pyramide Shape"
-                if (this.Shape == eShape.Pyramid || this.Shape == eShape.PyramidToMax)
-                {
-                    if (this.Direction == eDirection.Bar)
-                    {
-                        if (Grouping == eGrouping.Stacked)
-                        {
-                            return eChartType.PyramidBarStacked;
-                        }
-                        else if (Grouping == eGrouping.PercentStacked)
-                        {
-                            return eChartType.PyramidBarStacked100;
-                        }
-                        else if (Grouping == eGrouping.Clustered)
-                        {
-                            return eChartType.PyramidBarClustered;
-                        }
-                    }
-                    else
-                    {
-                        if (Grouping == eGrouping.Stacked)
-                        {
-                            return eChartType.PyramidColStacked;
-                        }
-                        else if (Grouping == eGrouping.PercentStacked)
-                        {
-                            return eChartType.PyramidColStacked100;
-                        }
-                        else if (Grouping == eGrouping.Clustered)
-                        {
-                            return eChartType.PyramidColClustered;
-                        }
-                        else
-                        {
-                            return eChartType.PyramidCol;
-                        }
-                    }
-                }
-                #endregion
             }
+
+            #endregion
+
+            #region "Cylinder shape"
+
+            if (Shape == eShape.Cylinder)
+            {
+                if (Direction == eDirection.Bar)
+                {
+                    return Grouping switch
+                    {
+                        eGrouping.Stacked => eChartType.CylinderBarStacked,
+                        eGrouping.PercentStacked => eChartType.CylinderBarStacked100,
+                        eGrouping.Clustered => eChartType.CylinderBarClustered
+                    };
+                }
+
+                return Grouping switch
+                {
+                    eGrouping.Stacked => eChartType.CylinderColStacked,
+                    eGrouping.PercentStacked => eChartType.CylinderColStacked100,
+                    eGrouping.Clustered => eChartType.CylinderColClustered,
+                    _ => eChartType.CylinderCol
+                };
+            }
+
+            #endregion
+
+            #region "Pyramide shape"
+
+            if (Shape is eShape.Pyramid or eShape.PyramidToMax)
+            {
+                if (Direction == eDirection.Bar)
+                {
+                    return Grouping switch
+                    {
+                        eGrouping.Stacked => eChartType.PyramidBarStacked,
+                        eGrouping.PercentStacked => eChartType.PyramidBarStacked100,
+                        eGrouping.Clustered => eChartType.PyramidBarClustered
+                    };
+                }
+
+                return Grouping switch
+                {
+                    eGrouping.Stacked => eChartType.PyramidColStacked,
+                    eGrouping.PercentStacked => eChartType.PyramidColStacked100,
+                    eGrouping.Clustered => eChartType.PyramidColClustered,
+                    _ => eChartType.PyramidCol
+                };
+            }
+
+            #endregion
+
             return base.GetChartType(name);
         }
     }

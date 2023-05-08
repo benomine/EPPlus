@@ -110,13 +110,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             return base.AddChild(new FunctionArgumentExpression(this));
         }
 
-        public override bool HasChildren
-        {
-            get
-            {
-                return (Children.Any() && Children.First().Children.Any());
-            }
-        }
+        public override bool HasChildren => Children.Any() && Children.First().Children.Any();
 
         public override Expression AddChild(Expression child)
         {

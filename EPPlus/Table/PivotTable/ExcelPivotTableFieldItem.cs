@@ -50,10 +50,7 @@ namespace OfficeOpenXml.Table.PivotTable
         /// </summary>
         public string Text
         {
-            get
-            {
-                return GetXmlNodeString("@n");
-            }
+            get => GetXmlNodeString("@n");
             set
             {
                 if (string.IsNullOrEmpty(value))
@@ -65,25 +62,14 @@ namespace OfficeOpenXml.Table.PivotTable
                 {
                     if (item.Text == value)
                     {
-                        throw (new ArgumentException("Duplicate Text"));
+                        throw new ArgumentException("Duplicate Text");
                     }
                 }
                 SetXmlNodeString("@n", value);
             }
         }
-        internal int X
-        {
-            get
-            {
-                return GetXmlNodeInt("@x");
-            }
-        }
-        internal string T
-        {
-            get
-            {
-                return GetXmlNodeString("@t");
-            }
-        }
+        internal int X => GetXmlNodeInt("@x");
+
+        internal string T => GetXmlNodeString("@t");
     }
 }

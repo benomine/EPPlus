@@ -53,28 +53,13 @@ namespace OfficeOpenXml.Drawing.Chart
         /// <summary>
         /// Datalabel
         /// </summary>
-        public ExcelChartSerieDataLabel DataLabel
-        {
-            get
-            {
-                if (_DataLabel == null)
-                {
-                    _DataLabel = new ExcelChartSerieDataLabel(_ns, _node);
-                }
-                return _DataLabel;
-            }
-        }
+        public ExcelChartSerieDataLabel DataLabel => _DataLabel ??= new ExcelChartSerieDataLabel(_ns, _node);
+
         const string INVERTIFNEGATIVE_PATH = "c:invertIfNegative/@val";
         internal bool InvertIfNegative
         {
-            get
-            {
-                return GetXmlNodeBool(INVERTIFNEGATIVE_PATH, true);
-            }
-            set
-            {
-                SetXmlNodeBool(INVERTIFNEGATIVE_PATH, value);
-            }
+            get => GetXmlNodeBool(INVERTIFNEGATIVE_PATH, true);
+            set => SetXmlNodeBool(INVERTIFNEGATIVE_PATH, value);
         }
     }
 }

@@ -99,22 +99,20 @@ namespace OfficeOpenXml
         {
             Algorithm = encryptionAlgorithm;
         }
-        bool _isEncrypted = false;
+
+        private bool _isEncrypted = false;
         /// <summary>
         /// Is the package encrypted
         /// </summary>
         public bool IsEncrypted
         {
-            get
-            {
-                return _isEncrypted;
-            }
+            get => _isEncrypted;
             set
             {
                 _isEncrypted = value;
                 if (_isEncrypted)
                 {
-                    if (_password == null) _password = "";
+                    _password ??= "";
                 }
                 else
                 {
@@ -122,20 +120,18 @@ namespace OfficeOpenXml
                 }
             }
         }
-        string _password = null;
+
+        private string _password = null;
         /// <summary>
         /// The password used to encrypt the workbook.
         /// </summary>
         public string Password
         {
-            get
-            {
-                return _password;
-            }
+            get => _password;
             set
             {
                 _password = value;
-                _isEncrypted = (value != null);
+                _isEncrypted = value != null;
             }
         }
         /// <summary>
@@ -148,22 +144,12 @@ namespace OfficeOpenXml
         /// </summary>
         public EncryptionVersion Version
         {
-            get
-            {
-                return _version;
-            }
+            get => _version;
             set
             {
                 if (value != Version)
                 {
-                    if (value == EncryptionVersion.Agile)
-                    {
-                        Algorithm = EncryptionAlgorithm.AES256;
-                    }
-                    else
-                    {
-                        Algorithm = EncryptionAlgorithm.AES128;
-                    }
+                    Algorithm = value == EncryptionVersion.Agile ? EncryptionAlgorithm.AES256 : EncryptionAlgorithm.AES128;
                     _version = value;
                 }
             }

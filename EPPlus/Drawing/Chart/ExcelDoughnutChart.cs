@@ -51,8 +51,8 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             //SetPaths();
         }
-        internal ExcelDoughnutChart(ExcelDrawings drawings, XmlNode node, eChartType type, ExcelChart topChart, ExcelPivotTable PivotTableSource) :
-            base(drawings, node, type, topChart, PivotTableSource)
+        internal ExcelDoughnutChart(ExcelDrawings drawings, XmlNode node, eChartType type, ExcelChart topChart, ExcelPivotTable pivotTableSource) :
+            base(drawings, node, type, topChart, pivotTableSource)
         {
             //SetPaths();
         }
@@ -81,14 +81,8 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public decimal FirstSliceAngle
         {
-            get
-            {
-                return _chartXmlHelper.GetXmlNodeDecimal(_firstSliceAngPath);
-            }
-            internal set
-            {
-                _chartXmlHelper.SetXmlNodeString(_firstSliceAngPath, value.ToString(CultureInfo.InvariantCulture));
-            }
+            get => _chartXmlHelper.GetXmlNodeDecimal(_firstSliceAngPath);
+            internal set => _chartXmlHelper.SetXmlNodeString(_firstSliceAngPath, value.ToString(CultureInfo.InvariantCulture));
         }
         //string _holeSizePath = "c:chartSpace/c:chart/c:plotArea/{0}/c:holeSize/@val";
         string _holeSizePath = "c:holeSize/@val";
@@ -97,27 +91,14 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public decimal HoleSize
         {
-            get
-            {
-                return _chartXmlHelper.GetXmlNodeDecimal(_holeSizePath);
-            }
-            internal set
-            {
-                _chartXmlHelper.SetXmlNodeString(_holeSizePath, value.ToString(CultureInfo.InvariantCulture));
-            }
+            get => _chartXmlHelper.GetXmlNodeDecimal(_holeSizePath);
+            internal set => _chartXmlHelper.SetXmlNodeString(_holeSizePath, value.ToString(CultureInfo.InvariantCulture));
         }
         internal override eChartType GetChartType(string name)
         {
             if (name == "doughnutChart")
             {
-                if (((ExcelPieChartSerie)Series[0]).Explosion > 0)
-                {
-                    return eChartType.DoughnutExploded;
-                }
-                else
-                {
-                    return eChartType.Doughnut;
-                }
+                return ((ExcelPieChartSerie)Series[0]).Explosion > 0 ? eChartType.DoughnutExploded : eChartType.Doughnut;
             }
             return base.GetChartType(name);
         }

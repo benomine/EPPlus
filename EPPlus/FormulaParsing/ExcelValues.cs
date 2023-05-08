@@ -190,7 +190,7 @@ namespace OfficeOpenXml
         public override bool Equals(object obj)
         {
             if (!(obj is ExcelErrorValue)) return false;
-            return ((ExcelErrorValue)obj).ToString() == this.ToString();
+            return ((ExcelErrorValue)obj).ToString() == ToString();
         }
     }
 }

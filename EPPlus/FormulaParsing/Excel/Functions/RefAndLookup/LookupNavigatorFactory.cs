@@ -10,7 +10,8 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
             {
                 return new ExcelLookupNavigator(direction, args, parsingContext);
             }
-            else if (args.ArgumentDataType == LookupArguments.LookupArgumentDataType.DataArray)
+
+            if (args.ArgumentDataType == LookupArguments.LookupArgumentDataType.DataArray)
             {
                 return new ArrayLookupNavigator(direction, args, parsingContext);
             }

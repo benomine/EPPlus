@@ -168,13 +168,7 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             SchemaNodeOrder = new string[] { "axId", "scaling", "logBase", "orientation", "max", "min", "delete", "axPos", "majorGridlines", "minorGridlines", "title", "numFmt", "majorTickMark", "minorTickMark", "tickLblPos", "spPr", "txPr", "crossAx", "crossesAt", "crosses", "crossBetween", "auto", "lblOffset", "majorUnit", "majorTimeUnit", "minorUnit", "minorTimeUnit", "dispUnits", "spPr", "txPr" };
         }
-        internal string Id
-        {
-            get
-            {
-                return GetXmlNodeString("c:axId/@val");
-            }
-        }
+        internal string Id => GetXmlNodeString("c:axId/@val");
         const string _majorTickMark = "c:majorTickMark/@val";
         /// <summary>
         /// majorTickMark 
@@ -189,22 +183,17 @@ namespace OfficeOpenXml.Drawing.Chart
                 {
                     return eAxisTickMark.Cross;
                 }
-                else
+
+                try
                 {
-                    try
-                    {
-                        return (eAxisTickMark)Enum.Parse(typeof(eAxisTickMark), v);
-                    }
-                    catch
-                    {
-                        return eAxisTickMark.Cross;
-                    }
+                    return (eAxisTickMark)Enum.Parse(typeof(eAxisTickMark), v);
+                }
+                catch
+                {
+                    return eAxisTickMark.Cross;
                 }
             }
-            set
-            {
-                SetXmlNodeString(_majorTickMark, value.ToString().ToLower(CultureInfo.InvariantCulture));
-            }
+            set => SetXmlNodeString(_majorTickMark, value.ToString().ToLower(CultureInfo.InvariantCulture));
         }
 
         const string _minorTickMark = "c:minorTickMark/@val";
@@ -221,22 +210,17 @@ namespace OfficeOpenXml.Drawing.Chart
                 {
                     return eAxisTickMark.Cross;
                 }
-                else
+
+                try
                 {
-                    try
-                    {
-                        return (eAxisTickMark)Enum.Parse(typeof(eAxisTickMark), v);
-                    }
-                    catch
-                    {
-                        return eAxisTickMark.Cross;
-                    }
+                    return (eAxisTickMark)Enum.Parse(typeof(eAxisTickMark), v);
+                }
+                catch
+                {
+                    return eAxisTickMark.Cross;
                 }
             }
-            set
-            {
-                SetXmlNodeString(_minorTickMark, value.ToString().ToLower(CultureInfo.InvariantCulture));
-            }
+            set => SetXmlNodeString(_minorTickMark, value.ToString().ToLower(CultureInfo.InvariantCulture));
         }
         /// <summary>
         /// Type of axis
@@ -247,7 +231,7 @@ namespace OfficeOpenXml.Drawing.Chart
             {
                 try
                 {
-                    return (eAxisType)Enum.Parse(typeof(eAxisType), TopNode.LocalName.Substring(0, 3), true);
+                    return (eAxisType)Enum.Parse(typeof(eAxisType), TopNode.LocalName.AsSpan(0, 3), true);
                 }
                 catch
                 {
@@ -263,22 +247,15 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             get
             {
-                switch (GetXmlNodeString(AXIS_POSITION_PATH))
+                return GetXmlNodeString(AXIS_POSITION_PATH) switch
                 {
-                    case "b":
-                        return eAxisPosition.Bottom;
-                    case "r":
-                        return eAxisPosition.Right;
-                    case "t":
-                        return eAxisPosition.Top;
-                    default:
-                        return eAxisPosition.Left;
-                }
+                    "b" => eAxisPosition.Bottom,
+                    "r" => eAxisPosition.Right,
+                    "t" => eAxisPosition.Top,
+                    _ => eAxisPosition.Left
+                };
             }
-            internal set
-            {
-                SetXmlNodeString(AXIS_POSITION_PATH, value.ToString().ToLower(CultureInfo.InvariantCulture).Substring(0, 1));
-            }
+            internal set => SetXmlNodeString(AXIS_POSITION_PATH, value.ToString().ToLower(CultureInfo.InvariantCulture).Substring(0, 1));
         }
         const string _crossesPath = "c:crosses/@val";
         /// <summary>
@@ -293,16 +270,14 @@ namespace OfficeOpenXml.Drawing.Chart
                 {
                     return eCrosses.AutoZero;
                 }
-                else
+
+                try
                 {
-                    try
-                    {
-                        return (eCrosses)Enum.Parse(typeof(eCrosses), v, true);
-                    }
-                    catch
-                    {
-                        return eCrosses.AutoZero;
-                    }
+                    return (eCrosses)Enum.Parse(typeof(eCrosses), v, true);
+                }
+                catch
+                {
+                    return eCrosses.AutoZero;
                 }
             }
             set
@@ -326,16 +301,14 @@ namespace OfficeOpenXml.Drawing.Chart
                 {
                     return eCrossBetween.Between;
                 }
-                else
+
+                try
                 {
-                    try
-                    {
-                        return (eCrossBetween)Enum.Parse(typeof(eCrossBetween), v, true);
-                    }
-                    catch
-                    {
-                        return eCrossBetween.Between;
-                    }
+                    return (eCrossBetween)Enum.Parse(typeof(eCrossBetween), v, true);
+                }
+                catch
+                {
+                    return eCrossBetween.Between;
                 }
             }
             set
@@ -352,10 +325,7 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public double? CrossesAt
         {
-            get
-            {
-                return GetXmlNodeDoubleNull(_crossesAtPath);
-            }
+            get => GetXmlNodeDoubleNull(_crossesAtPath);
             set
             {
                 if (value == null)
@@ -374,10 +344,7 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public string Format
         {
-            get
-            {
-                return GetXmlNodeString(_formatPath);
-            }
+            get => GetXmlNodeString(_formatPath);
             set
             {
                 SetXmlNodeString(_formatPath, value);
@@ -394,14 +361,8 @@ namespace OfficeOpenXml.Drawing.Chart
         const string _sourceLinkedPath = "c:numFmt/@sourceLinked";
         public bool SourceLinked
         {
-            get
-            {
-                return GetXmlNodeBool(_sourceLinkedPath);
-            }
-            set
-            {
-                SetXmlNodeBool(_sourceLinkedPath, value);
-            }
+            get => GetXmlNodeBool(_sourceLinkedPath);
+            set => SetXmlNodeBool(_sourceLinkedPath, value);
         }
         const string _lblPos = "c:tickLblPos/@val";
         /// <summary>
@@ -416,21 +377,19 @@ namespace OfficeOpenXml.Drawing.Chart
                 {
                     return eTickLabelPosition.NextTo;
                 }
-                else
+
+                try
                 {
-                    try
-                    {
-                        return (eTickLabelPosition)Enum.Parse(typeof(eTickLabelPosition), v, true);
-                    }
-                    catch
-                    {
-                        return eTickLabelPosition.NextTo;
-                    }
+                    return (eTickLabelPosition)Enum.Parse(typeof(eTickLabelPosition), v, true);
+                }
+                catch
+                {
+                    return eTickLabelPosition.NextTo;
                 }
             }
             set
             {
-                string lp = value.ToString();
+                var lp = value.ToString();
                 SetXmlNodeString(_lblPos, lp.Substring(0, 1).ToLower(CultureInfo.InvariantCulture) + lp.Substring(1, lp.Length - 1));
             }
         }
@@ -438,32 +397,14 @@ namespace OfficeOpenXml.Drawing.Chart
         /// <summary>
         /// Access to fill properties
         /// </summary>
-        public ExcelDrawingFill Fill
-        {
-            get
-            {
-                if (_fill == null)
-                {
-                    _fill = new ExcelDrawingFill(NameSpaceManager, TopNode, "c:spPr");
-                }
-                return _fill;
-            }
-        }
+        public ExcelDrawingFill Fill => _fill ??= new ExcelDrawingFill(NameSpaceManager, TopNode, "c:spPr");
+
         ExcelDrawingBorder _border = null;
         /// <summary>
         /// Access to border properties
         /// </summary>
-        public ExcelDrawingBorder Border
-        {
-            get
-            {
-                if (_border == null)
-                {
-                    _border = new ExcelDrawingBorder(NameSpaceManager, TopNode, "c:spPr/a:ln");
-                }
-                return _border;
-            }
-        }
+        public ExcelDrawingBorder Border => _border ??= new ExcelDrawingBorder(NameSpaceManager, TopNode, "c:spPr/a:ln");
+
         ExcelTextFont _font = null;
         /// <summary>
         /// Access to font properties
@@ -489,14 +430,8 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public bool Deleted
         {
-            get
-            {
-                return GetXmlNodeBool("c:delete/@val");
-            }
-            set
-            {
-                SetXmlNodeBool("c:delete/@val", value);
-            }
+            get => GetXmlNodeBool("c:delete/@val");
+            set => SetXmlNodeBool("c:delete/@val", value);
         }
         const string _ticLblPos_Path = "c:tickLblPos/@val";
         /// <summary>
@@ -506,19 +441,17 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             get
             {
-                string v = GetXmlNodeString(_ticLblPos_Path);
+                var v = GetXmlNodeString(_ticLblPos_Path);
                 if (v == "")
                 {
                     return eTickLabelPosition.None;
                 }
-                else
-                {
-                    return (eTickLabelPosition)Enum.Parse(typeof(eTickLabelPosition), v, true);
-                }
+
+                return (eTickLabelPosition)Enum.Parse(typeof(eTickLabelPosition), v, true);
             }
             set
             {
-                string v = value.ToString();
+                var v = value.ToString();
                 v=v.Substring(0, 1).ToLower(CultureInfo.InvariantCulture) + v.Substring(1, v.Length - 1);
                 SetXmlNodeString(_ticLblPos_Path, v);
             }
@@ -529,7 +462,7 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             get
             {
-                string v = GetXmlNodeString(_displayUnitPath);
+                var v = GetXmlNodeString(_displayUnitPath);
                 if (string.IsNullOrEmpty(v))
                 {
                     var c = GetXmlNodeDoubleNull(_custUnitPath);
@@ -537,21 +470,17 @@ namespace OfficeOpenXml.Drawing.Chart
                     {
                         return 0;
                     }
-                    else
-                    {
-                        return c.Value;
-                    }
+
+                    return c.Value;
                 }
-                else
+
+                try
                 {
-                    try
-                    {
-                        return (double)(long)Enum.Parse(typeof(eBuildInUnits), v, true);
-                    }
-                    catch
-                    {
-                        return 0;
-                    }
+                    return (double)(long)Enum.Parse(typeof(eBuildInUnits), v, true);
+                }
+                catch
+                {
+                    return 0;
                 }
             }
             set
@@ -605,10 +534,7 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public double? MinValue
         {
-            get
-            {
-                return GetXmlNodeDoubleNull(_minValuePath);
-            }
+            get => GetXmlNodeDoubleNull(_minValuePath);
             set
             {
                 if (value == null)
@@ -628,10 +554,7 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public double? MaxValue
         {
-            get
-            {
-                return GetXmlNodeDoubleNull(_maxValuePath);
-            }
+            get => GetXmlNodeDoubleNull(_maxValuePath);
             set
             {
                 if (value == null)
@@ -652,17 +575,7 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public double? MajorUnit
         {
-            get
-            {
-                if (AxisType == eAxisType.Cat)
-                {
-                    return GetXmlNodeDoubleNull(_majorUnitCatPath);
-                }
-                else
-                {
-                    return GetXmlNodeDoubleNull(_majorUnitPath);
-                }
-            }
+            get => GetXmlNodeDoubleNull(AxisType == eAxisType.Cat ? _majorUnitCatPath : _majorUnitPath);
             set
             {
                 if (value == null)
@@ -672,14 +585,8 @@ namespace OfficeOpenXml.Drawing.Chart
                 }
                 else
                 {
-                    if (AxisType == eAxisType.Cat)
-                    {
-                        SetXmlNodeString(_majorUnitCatPath, ((double)value).ToString(CultureInfo.InvariantCulture));
-                    }
-                    else
-                    {
-                        SetXmlNodeString(_majorUnitPath, ((double)value).ToString(CultureInfo.InvariantCulture));
-                    }
+                    SetXmlNodeString(AxisType == eAxisType.Cat ? _majorUnitCatPath : _majorUnitPath,
+                        ((double)value).ToString(CultureInfo.InvariantCulture));
                 }
             }
         }
@@ -692,17 +599,13 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             get
             {
-                switch (GetXmlNodeString(_majorTimeUnitPath))
+                return GetXmlNodeString(_majorTimeUnitPath) switch
                 {
-                    case "years":
-                        return eTimeUnit.Years;
-                    case "months":
-                        return eTimeUnit.Months;
-                    case "days":
-                        return eTimeUnit.Days;
-                    default:
-                        return null;
-                }
+                    "years" => eTimeUnit.Years,
+                    "months" => eTimeUnit.Months,
+                    "days" => eTimeUnit.Days,
+                    _ => null
+                };
             }
             set
             {
@@ -724,17 +627,7 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public double? MinorUnit
         {
-            get
-            {
-                if (AxisType == eAxisType.Cat)
-                {
-                    return GetXmlNodeDoubleNull(_minorUnitCatPath);
-                }
-                else
-                {
-                    return GetXmlNodeDoubleNull(_minorUnitPath);
-                }
-            }
+            get => GetXmlNodeDoubleNull(AxisType == eAxisType.Cat ? _minorUnitCatPath : _minorUnitPath);
             set
             {
                 if (value == null)
@@ -744,14 +637,8 @@ namespace OfficeOpenXml.Drawing.Chart
                 }
                 else
                 {
-                    if (AxisType == eAxisType.Cat)
-                    {
-                        SetXmlNodeString(_minorUnitCatPath, ((double)value).ToString(CultureInfo.InvariantCulture));
-                    }
-                    else
-                    {
-                        SetXmlNodeString(_minorUnitPath, ((double)value).ToString(CultureInfo.InvariantCulture));
-                    }
+                    SetXmlNodeString(AxisType == eAxisType.Cat ? _minorUnitCatPath : _minorUnitPath,
+                        ((double)value).ToString(CultureInfo.InvariantCulture));
                 }
             }
         }
@@ -764,17 +651,13 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             get
             {
-                switch (GetXmlNodeString(_minorTimeUnitPath))
+                return GetXmlNodeString(_minorTimeUnitPath) switch
                 {
-                    case "years":
-                        return eTimeUnit.Years;
-                    case "months":
-                        return eTimeUnit.Months;
-                    case "days":
-                        return eTimeUnit.Days;
-                    default:
-                        return null;
-                }
+                    "years" => eTimeUnit.Years,
+                    "months" => eTimeUnit.Months,
+                    "days" => eTimeUnit.Days,
+                    _ => null
+                };
             }
             set
             {
@@ -795,10 +678,7 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public double? LogBase
         {
-            get
-            {
-                return GetXmlNodeDoubleNull(_logbasePath);
-            }
+            get => GetXmlNodeDoubleNull(_logbasePath);
             set
             {
                 if (value == null)
@@ -807,10 +687,10 @@ namespace OfficeOpenXml.Drawing.Chart
                 }
                 else
                 {
-                    double v = ((double)value);
-                    if (v < 2 || v > 1000)
+                    var v = (double)value;
+                    if (v is < 2 or > 1000)
                     {
-                        throw (new ArgumentOutOfRangeException("Value must be between 2 and 1000"));
+                        throw new ArgumentOutOfRangeException("Value must be between 2 and 1000");
                     }
                     SetXmlNodeString(_logbasePath, v.ToString("0.0", CultureInfo.InvariantCulture));
                 }
@@ -824,32 +704,30 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             get
             {
-                string v = GetXmlNodeString(_orientationPath);
+                var v = GetXmlNodeString(_orientationPath);
                 if (v == "")
                 {
                     return eAxisOrientation.MinMax;
                 }
-                else
-                {
-                    return (eAxisOrientation)Enum.Parse(typeof(eAxisOrientation), v, true);
-                }
+
+                return (eAxisOrientation)Enum.Parse(typeof(eAxisOrientation), v, true);
             }
             set
             {
-                string s = value.ToString();
+                var s = value.ToString();
                 s=s.Substring(0, 1).ToLower(CultureInfo.InvariantCulture) + s.Substring(1, s.Length-1);
                 SetXmlNodeString(_orientationPath, s);
             }
         }
         #endregion
 
-        #region GridLines 
+        #region GridLines 
         const string _majorGridlinesPath = "c:majorGridlines";
         ExcelDrawingBorder _majorGridlines = null;
 
-        /// <summary> 
-                /// Major Gridlines for the Axis 
-                /// </summary> 
+        /// <summary> 
+        /// Major Gridlines for the Axis 
+        /// </summary> 
         public ExcelDrawingBorder MajorGridlines
         {
             get
@@ -869,9 +747,9 @@ namespace OfficeOpenXml.Drawing.Chart
         const string _minorGridlinesPath = "c:minorGridlines";
         ExcelDrawingBorder _minorGridlines = null;
 
-        /// <summary> 
-                /// Minor Gridlines for the Axis 
-                /// </summary> 
+        /// <summary> 
+        /// Minor Gridlines for the Axis 
+        /// </summary> 
         public ExcelDrawingBorder MinorGridlines
         {
             get
@@ -887,19 +765,13 @@ namespace OfficeOpenXml.Drawing.Chart
                 return _minorGridlines;
             }
         }
-        /// <summary> 
-        /// Removes Major and Minor gridlines from the Axis 
-        /// </summary> 
-        public void RemoveGridlines()
-        {
-            RemoveGridlines(true, true);
-        }
+
         /// <summary>
         ///  Removes gridlines from the Axis
         /// </summary>
-        /// <param name="removeMajor">Indicates if the Major gridlines should be removed</param>
-        /// <param name="removeMinor">Indicates if the Minor gridlines should be removed</param>
-        public void RemoveGridlines(bool removeMajor, bool removeMinor)
+        /// <param name="removeMajor">Indicates if the Major gridlines should be removed</param>
+        /// <param name="removeMinor">Indicates if the Minor gridlines should be removed</param>
+        public void RemoveGridlines(bool removeMajor = true, bool removeMinor = true)
         {
             if (removeMajor)
             {

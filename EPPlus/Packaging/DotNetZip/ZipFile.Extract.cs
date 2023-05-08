@@ -224,20 +224,20 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
         private void _InternalExtractAll(string path, bool overrideExtractExistingProperty)
         {
-            bool header = Verbose;
+            var header = Verbose;
             _inExtractAll = true;
             try
             {
                 OnExtractAllStarted(path);
 
-                int n = 0;
-                foreach (ZipEntry e in _entries.Values)
+                var n = 0;
+                foreach (var e in _entries.Values)
                 {
                     if (header)
                     {
                         StatusMessageTextWriter.WriteLine("\n{1,-22} {2,-8} {3,4}   {4,-8}  {0}",
                                   "Name", "Modified", "Size", "Ratio", "Packed");
-                        StatusMessageTextWriter.WriteLine(new System.String('-', 72));
+                        StatusMessageTextWriter.WriteLine(new String('-', 72));
                         header = false;
                     }
                     if (Verbose)
@@ -254,7 +254,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                     e.Password = _Password;  // this may be null
                     OnExtractEntry(n, true, e, path);
                     if (overrideExtractExistingProperty)
-                        e.ExtractExistingFile = this.ExtractExistingFile;
+                        e.ExtractExistingFile = ExtractExistingFile;
                     e.Extract(path);
                     n++;
                     OnExtractEntry(n, false, e, path);
@@ -269,12 +269,12 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                     // The problem is, extracting a file changes the times on the parent
                     // directory.  So after all files have been extracted, we have to
                     // run through the directories again.
-                    foreach (ZipEntry e in _entries.Values)
+                    foreach (var e in _entries.Values)
                     {
                         // check if it is a directory
-                        if ((e.IsDirectory) || (e.FileName.EndsWith("/")))
+                        if (e.IsDirectory || e.FileName.EndsWith("/"))
                         {
-                            string outputFile = (e.FileName.StartsWith("/"))
+                            var outputFile = e.FileName.StartsWith("/")
                                 ? Path.Combine(path, e.FileName.Substring(1))
                                 : Path.Combine(path, e.FileName);
 

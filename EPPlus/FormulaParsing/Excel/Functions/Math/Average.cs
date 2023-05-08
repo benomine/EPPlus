@@ -95,11 +95,12 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
                 {
                     return ConvertUtil.GetValueDouble(obj);
                 }
-                else if (ConvertUtil.TryParseNumericString(obj, out number))
+
+                if (ConvertUtil.TryParseNumericString(obj, out number))
                 {
                     return number;
                 }
-                else if (ConvertUtil.TryParseDateString(obj, out date))
+                if (ConvertUtil.TryParseDateString(obj, out date))
                 {
                     return date.ToOADate();
                 }

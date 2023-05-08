@@ -64,10 +64,7 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
             _tokens.Add("%", new Token("%", TokenType.Percent));
         }
 
-        IDictionary<string, Token> ITokenSeparatorProvider.Tokens
-        {
-            get { return _tokens; }
-        }
+        IDictionary<string, Token> ITokenSeparatorProvider.Tokens => _tokens;
 
         public bool IsOperator(string item)
         {

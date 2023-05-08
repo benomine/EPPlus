@@ -91,7 +91,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Database
         private bool ShouldCount(object value)
         {
             if (value == null) return false;
-            return (!string.IsNullOrEmpty(value.ToString()));
+            return !string.IsNullOrEmpty(value.ToString());
         }
     }
 }

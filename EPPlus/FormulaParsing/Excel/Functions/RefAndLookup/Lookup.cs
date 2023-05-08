@@ -46,7 +46,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
         private bool HaveTwoRanges(IEnumerable<FunctionArgument> arguments)
         {
             if (arguments.Count() < 3) return false;
-            return (arguments.ElementAt(2).Value is RangeInfo);
+            return arguments.ElementAt(2).Value is RangeInfo;
         }
 
         private CompileResult HandleSingleRange(IEnumerable<FunctionArgument> arguments, ParsingContext context)
@@ -80,12 +80,12 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
             var rangeAddressFactory = new RangeAddressFactory(context.ExcelDataProvider);
             var address1 = rangeAddressFactory.Create(firstAddress);
             var address2 = rangeAddressFactory.Create(secondAddress);
-            var lookupIndex = (address2.FromCol - address1.FromCol) + 1;
+            var lookupIndex = address2.FromCol - address1.FromCol + 1;
             var lookupOffset = address2.FromRow - address1.FromRow;
             var lookupDirection = GetLookupDirection(address1);
             if (lookupDirection == LookupDirection.Horizontal)
             {
-                lookupIndex = (address2.FromRow - address1.FromRow) + 1;
+                lookupIndex = address2.FromRow - address1.FromRow + 1;
                 lookupOffset = address2.FromCol - address1.FromCol;
             }
             var lookupArgs = new LookupArguments(searchedValue, firstAddress, lookupIndex, lookupOffset, true, arguments.ElementAt(1).ValueAsRangeInfo);

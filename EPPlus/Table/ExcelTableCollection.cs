@@ -87,7 +87,7 @@ namespace OfficeOpenXml.Table
             {
                 if (_ws.Workbook.ExistsTableName(Name))
                 {
-                    throw (new ArgumentException("Tablename is not unique"));
+                    throw new ArgumentException("Tablename is not unique");
                 }
             }
 
@@ -97,7 +97,7 @@ namespace OfficeOpenXml.Table
             {
                 if (t.Address.Collide(Range) != ExcelAddressBase.eAddressCollition.No)
                 {
-                    throw (new ArgumentException(string.Format("Table range collides with table {0}", t.Name)));
+                    throw new ArgumentException(string.Format("Table range collides with table {0}", t.Name));
                 }
             }
             return Add(new ExcelTable(_ws, Range, Name, _ws.Workbook._nextTableID));
@@ -110,7 +110,7 @@ namespace OfficeOpenXml.Table
                 throw new ArgumentException("Tablename is null or empty");
             }
 
-            char firstLetterOfName = Name[0];
+            var firstLetterOfName = Name[0];
             if (Char.IsLetter(firstLetterOfName) == false && firstLetterOfName != '_' && firstLetterOfName != '\\')
             {
                 throw new ArgumentException("Tablename start with invalid character");
@@ -122,7 +122,7 @@ namespace OfficeOpenXml.Table
             }
             if (!ExcelAddressUtil.IsValidName(Name))
             {
-                throw (new ArgumentException("Tablename is not valid"));
+                throw new ArgumentException("Tablename is not valid");
             }
         }
 
@@ -143,7 +143,7 @@ namespace OfficeOpenXml.Table
 
         public void Delete(ExcelTable Table, bool ClearRange = false)
         {
-            if (!this._tables.Contains(Table))
+            if (!_tables.Contains(Table))
             {
                 throw new ArgumentOutOfRangeException("Table", String.Format("Table {0} does not exist in this collection", Table.Name));
             }
@@ -170,8 +170,8 @@ namespace OfficeOpenXml.Table
 
         internal string GetNewTableName()
         {
-            string name = "Table1";
-            int i = 2;
+            var name = "Table1";
+            var i = 2;
             while (_ws.Workbook.ExistsTableName(name))
             {
                 name = string.Format("Table{0}", i++);
@@ -181,13 +181,8 @@ namespace OfficeOpenXml.Table
         /// <summary>
         /// Number of items in the collection
         /// </summary>
-        public int Count
-        {
-            get
-            {
-                return _tables.Count;
-            }
-        }
+        public int Count => _tables.Count;
+
         /// <summary>
         /// Get the table object from a range.
         /// </summary>
@@ -215,7 +210,7 @@ namespace OfficeOpenXml.Table
             {
                 if (Index < 0 || Index >= _tables.Count)
                 {
-                    throw (new ArgumentOutOfRangeException("Table index out of range"));
+                    throw new ArgumentOutOfRangeException("Table index out of range");
                 }
                 return _tables[Index];
             }
@@ -233,10 +228,8 @@ namespace OfficeOpenXml.Table
                 {
                     return _tables[_tableNames[Name]];
                 }
-                else
-                {
-                    return null;
-                }
+
+                return null;
             }
         }
         public IEnumerator<ExcelTable> GetEnumerator()

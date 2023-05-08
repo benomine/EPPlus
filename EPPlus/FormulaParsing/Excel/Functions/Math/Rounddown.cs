@@ -46,7 +46,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
             else
             {
                 result = (int)System.Math.Floor(number);
-                result = result - (result % System.Math.Pow(10, (nDecimals*-1)));
+                result = result - result % System.Math.Pow(10, nDecimals*-1);
             }
             return CreateResult(result * nFactor, DataType.Decimal);
         }

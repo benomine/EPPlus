@@ -45,23 +45,11 @@ namespace OfficeOpenXml.DataValidation
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="worksheet"></param>
-        /// <param name="address"></param>
-        /// <param name="validationType"></param>
-        internal ExcelDataValidationWithFormula(ExcelWorksheet worksheet, string address, ExcelDataValidationType validationType)
-            : this(worksheet, address, validationType, null)
-        {
-
-        }
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
         /// <param name="worksheet">Worksheet that owns the validation</param>
         /// <param name="itemElementNode">Xml top node (dataValidations)</param>
         /// <param name="validationType">Data validation type</param>
         /// <param name="address">address for data validation</param>
-        internal ExcelDataValidationWithFormula(ExcelWorksheet worksheet, string address, ExcelDataValidationType validationType, XmlNode itemElementNode)
+        internal ExcelDataValidationWithFormula(ExcelWorksheet worksheet, string address, ExcelDataValidationType validationType, XmlNode itemElementNode = null)
             : base(worksheet, address, validationType, itemElementNode)
         {
 
@@ -94,7 +82,7 @@ namespace OfficeOpenXml.DataValidation
         public override void Validate()
         {
             base.Validate();
-            if (ValidationType != ExcelDataValidationType.List && (Operator == ExcelDataValidationOperator.between || Operator == ExcelDataValidationOperator.notBetween))
+            if (ValidationType != ExcelDataValidationType.List && Operator is ExcelDataValidationOperator.between or ExcelDataValidationOperator.notBetween)
             {
                 if (string.IsNullOrEmpty(Formula2Internal))
                 {

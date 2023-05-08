@@ -51,7 +51,7 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
 
         public bool HasMore()
         {
-            return _tokenIndex < (_context.FormulaChars.Length - 1);
+            return _tokenIndex < _context.FormulaChars.Length - 1;
         }
 
         public void Next()
@@ -144,10 +144,7 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
             return _tokenFactory.Create(context.Result, context.CurrentToken, worksheet);
         }
 
-        int ITokenIndexProvider.Index
-        {
-            get { return _tokenIndex; }
-        }
+        int ITokenIndexProvider.Index => _tokenIndex;
 
 
         void ITokenIndexProvider.MoveIndexPointerForward()

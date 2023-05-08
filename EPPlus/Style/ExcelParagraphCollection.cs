@@ -56,20 +56,10 @@ namespace OfficeOpenXml.Style
             }
             _path = path;
         }
-        public ExcelParagraph this[int Index]
-        {
-            get
-            {
-                return _list[Index];
-            }
-        }
-        public int Count
-        {
-            get
-            {
-                return _list.Count;
-            }
-        }
+        public ExcelParagraph this[int Index] => _list[Index];
+
+        public int Count => _list.Count;
+
         /// <summary>
         /// Add a rich text string
         /// </summary>
@@ -86,7 +76,7 @@ namespace OfficeOpenXml.Style
             {
                 doc = TopNode.OwnerDocument;
             }
-            XmlNode parentNode = TopNode.SelectSingleNode(_path, NameSpaceManager);
+            var parentNode = TopNode.SelectSingleNode(_path, NameSpaceManager);
             if (parentNode == null)
             {
                 CreateNode(_path);
@@ -129,7 +119,7 @@ namespace OfficeOpenXml.Style
         {
             get
             {
-                StringBuilder sb = new StringBuilder();
+                var sb = new StringBuilder();
                 foreach (var item in _list)
                 {
                     sb.Append(item.Text);
@@ -145,8 +135,8 @@ namespace OfficeOpenXml.Style
                 else
                 {
                     this[0].Text = value;
-                    int count = Count;
-                    for (int ix = Count-1; ix > 0; ix--)
+                    var count = Count;
+                    for (var ix = Count-1; ix > 0; ix--)
                     {
                         RemoveAt(ix);
                     }

@@ -44,8 +44,7 @@ namespace OfficeOpenXml.DataValidation.Formulas
             var value = GetXmlNodeString(formulaPath);
             if (!string.IsNullOrEmpty(value))
             {
-                decimal time = default(decimal);
-                if (decimal.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out time))
+                if (decimal.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var time))
                 {
                     Value = new ExcelTime(time);
                 }
@@ -67,14 +66,7 @@ namespace OfficeOpenXml.DataValidation.Formulas
             SetXmlNodeString(FormulaPath, Value.ToExcelString());
         }
 
-        protected override string GetValueAsString()
-        {
-            if (State == FormulaState.Value)
-            {
-                return Value.ToExcelString();
-            }
-            return string.Empty;
-        }
+        protected override string GetValueAsString() => State == FormulaState.Value ? Value.ToExcelString() : string.Empty;
 
         internal override void ResetValue()
         {

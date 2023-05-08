@@ -29,10 +29,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
 
         }
 
-        public override int Index
-        {
-            get { return _index; }
-        }
+        public override int Index => _index;
 
         private void SetCurrentValue()
         {
@@ -43,12 +40,10 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
         {
             if (Direction == LookupDirection.Vertical)
             {
-                return _index < (_arrayData.Length - 1);
+                return _index < _arrayData.Length - 1;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
 
         public override bool MoveNext()
@@ -62,10 +57,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
             return true;
         }
 
-        public override object CurrentValue
-        {
-            get { return _arrayData[_index].Value; }
-        }
+        public override object CurrentValue => _arrayData[_index].Value;
 
         public override object GetLookupValue()
         {

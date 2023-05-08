@@ -30,10 +30,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions
         public abstract void Validate(object obj);
 
         private static CompileResultValidator _empty;
-        public static CompileResultValidator Empty
-        {
-            get { return _empty ?? (_empty = new EmptyCompileResultValidator()); }
-        }
+        public static CompileResultValidator Empty => _empty ?? (_empty = new EmptyCompileResultValidator());
     }
 
     internal class EmptyCompileResultValidator : CompileResultValidator

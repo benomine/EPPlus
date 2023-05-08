@@ -62,7 +62,7 @@ namespace OfficeOpenXml.FormulaParsing.ExcelUtilities
                 }
                 token = token.Substring(token.IndexOf('!') + 1);
             }
-            return OfficeOpenXml.ExcelAddress.IsValidAddress(token);
+            return ExcelCellBase.IsValidAddress(token);
         }
         readonly static char[] NameInvalidChars = new char[] { '!', '@', '#', '$', '£', '%', '&', '/', '(', ')', '[', ']', '{', '}', '<', '>', '=', '+', '*', '-', '~', '^', ':', ';', '|', ',', ' ' };
         public static bool IsValidName(string name)

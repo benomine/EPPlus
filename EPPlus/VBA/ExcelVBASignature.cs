@@ -43,8 +43,8 @@ namespace OfficeOpenXml.VBA
     /// </summary>
     public class ExcelVbaSignature
     {
-        const string schemaRelVbaSignature = "http://schemas.microsoft.com/office/2006/relationships/vbaProjectSignature";
-        Packaging.ZipPackagePart _vbaPart = null;
+        private const string SchemaRelVbaSignature = "http://schemas.microsoft.com/office/2006/relationships/vbaProjectSignature";
+        private readonly Packaging.ZipPackagePart _vbaPart = null;
         internal ExcelVbaSignature(Packaging.ZipPackagePart vbaPart)
         {
             _vbaPart = vbaPart;
@@ -53,35 +53,35 @@ namespace OfficeOpenXml.VBA
         private void GetSignature()
         {
             if (_vbaPart == null) return;
-            var rel = _vbaPart.GetRelationshipsByType(schemaRelVbaSignature).FirstOrDefault();
+            var rel = _vbaPart.GetRelationshipsByType(SchemaRelVbaSignature).FirstOrDefault();
             if (rel != null)
             {
                 Uri = UriHelper.ResolvePartUri(rel.SourceUri, rel.TargetUri);
                 Part = _vbaPart.Package.GetPart(Uri);
 
                 var stream = Part.GetStream();
-                BinaryReader br = new BinaryReader(stream);
-                uint cbSignature = br.ReadUInt32();
-                uint signatureOffset = br.ReadUInt32();     //44 ??
-                uint cbSigningCertStore = br.ReadUInt32();
-                uint certStoreOffset = br.ReadUInt32();
-                uint cbProjectName = br.ReadUInt32();
-                uint projectNameOffset = br.ReadUInt32();
-                uint fTimestamp = br.ReadUInt32();
-                uint cbTimestampUrl = br.ReadUInt32();
-                uint timestampUrlOffset = br.ReadUInt32();
-                byte[] signature = br.ReadBytes((int)cbSignature);
-                uint version = br.ReadUInt32();
-                uint fileType = br.ReadUInt32();
+                var br = new BinaryReader(stream);
+                var cbSignature = br.ReadUInt32();
+                var signatureOffset = br.ReadUInt32();     //44 ??
+                var cbSigningCertStore = br.ReadUInt32();
+                var certStoreOffset = br.ReadUInt32();
+                var cbProjectName = br.ReadUInt32();
+                var projectNameOffset = br.ReadUInt32();
+                var fTimestamp = br.ReadUInt32();
+                var cbTimestampUrl = br.ReadUInt32();
+                var timestampUrlOffset = br.ReadUInt32();
+                var signature = br.ReadBytes((int)cbSignature);
+                var version = br.ReadUInt32();
+                var fileType = br.ReadUInt32();
 
-                uint id = br.ReadUInt32();
+                var id = br.ReadUInt32();
                 while (id != 0)
                 {
-                    uint encodingType = br.ReadUInt32();
-                    uint length = br.ReadUInt32();
+                    var encodingType = br.ReadUInt32();
+                    var length = br.ReadUInt32();
                     if (length > 0)
                     {
-                        byte[] value = br.ReadBytes((int)length);
+                        var value = br.ReadBytes((int)length);
                         switch (id)
                         {
                             //Add property values here...
@@ -94,10 +94,10 @@ namespace OfficeOpenXml.VBA
                     }
                     id = br.ReadUInt32();
                 }
-                uint endel1 = br.ReadUInt32();  //0
-                uint endel2 = br.ReadUInt32();  //0
-                ushort rgchProjectNameBuffer = br.ReadUInt16();
-                ushort rgchTimestampBuffer = br.ReadUInt16();
+                var endel1 = br.ReadUInt32();  //0
+                var endel2 = br.ReadUInt32();  //0
+                var rgchProjectNameBuffer = br.ReadUInt16();
+                var rgchTimestampBuffer = br.ReadUInt16();
 
                 Verifier = new EnvelopedCms();
 
@@ -124,7 +124,7 @@ namespace OfficeOpenXml.VBA
                 {
                     storeCert = GetCertFromStore(StoreLocation.LocalMachine);
                 }
-                if (storeCert != null && storeCert.HasPrivateKey == true)
+                if (storeCert is { HasPrivateKey: true })
                 {
                     Certificate = storeCert;
                 }
@@ -141,9 +141,9 @@ namespace OfficeOpenXml.VBA
             var ms = new MemoryStream();
             var bw = new BinaryWriter(ms);
 
-            byte[] certStore = GetCertStore();
+            var certStore = GetCertStore();
 
-            byte[] cert = SignProject(proj);
+            var cert = SignProject(proj);
             bw.Write((uint)cert.Length);
             bw.Write((uint)44);                  //?? 36 ref inside cert ??
             bw.Write((uint)certStore.Length);    //cbSigningCertStore
@@ -160,7 +160,7 @@ namespace OfficeOpenXml.VBA
             bw.Write((ushort)0);
             bw.Flush();
 
-            var rel = proj.Part.GetRelationshipsByType(schemaRelVbaSignature).FirstOrDefault();
+            var rel = proj.Part.GetRelationshipsByType(SchemaRelVbaSignature).FirstOrDefault();
             if (Part == null)
             {
 
@@ -177,7 +177,7 @@ namespace OfficeOpenXml.VBA
             }
             if (rel == null)
             {
-                proj.Part.CreateRelationship(UriHelper.ResolvePartUri(proj.Uri, Uri), Packaging.TargetMode.Internal, schemaRelVbaSignature);
+                proj.Part.CreateRelationship(UriHelper.ResolvePartUri(proj.Uri, Uri), Packaging.TargetMode.Internal, SchemaRelVbaSignature);
             }
             var b = ms.ToArray();
             Part.GetStream(FileMode.Create).Write(b, 0, b.Length);
@@ -187,7 +187,7 @@ namespace OfficeOpenXml.VBA
         {
             try
             {
-                X509Store store = new X509Store(StoreName.My, loc);
+                var store = new X509Store(StoreName.My, loc);
                 store.Open(OpenFlags.ReadOnly);
                 try
                 {
@@ -239,7 +239,8 @@ namespace OfficeOpenXml.VBA
             bw.Write((uint)data.Length);
             bw.Write(data);
         }
-        internal byte[] SignProject(ExcelVbaProject proj)
+
+        private byte[] SignProject(ExcelVbaProject proj)
         {
             if (!Certificate.HasPrivateKey)
             {
@@ -249,7 +250,7 @@ namespace OfficeOpenXml.VBA
             }
             var hash = GetContentHash(proj);
 
-            BinaryWriter bw = new BinaryWriter(new MemoryStream());
+            var bw = new BinaryWriter(new MemoryStream());
             bw.Write((byte)0x30); //Constructed Type 
             bw.Write((byte)0x32); //Total length
             bw.Write((byte)0x30); //Constructed Type 
@@ -273,8 +274,13 @@ namespace OfficeOpenXml.VBA
             bw.Write((byte)hash.Length);   //Hash length
             bw.Write(hash);                //Content hash
 
-            ContentInfo contentInfo = new ContentInfo(((MemoryStream)bw.BaseStream).ToArray());
-            contentInfo.ContentType.Value = "1.3.6.1.4.1.311.2.1.4";
+            var contentInfo = new ContentInfo(((MemoryStream)bw.BaseStream).ToArray())
+            {
+                ContentType =
+                {
+                    Value = "1.3.6.1.4.1.311.2.1.4"
+                }
+            };
 
             Verifier = new EnvelopedCms(contentInfo);
             var r = new CmsRecipient(Certificate);
@@ -286,7 +292,7 @@ namespace OfficeOpenXml.VBA
         {
             //MS-OVBA 2.4.2
             var enc = System.Text.Encoding.GetEncoding(proj.CodePage);
-            BinaryWriter bw = new BinaryWriter(new MemoryStream());
+            var bw = new BinaryWriter(new MemoryStream());
             bw.Write(enc.GetBytes(proj.Name));
             bw.Write(enc.GetBytes(proj.Constants));
             foreach (var reference in proj.References)
@@ -305,7 +311,7 @@ namespace OfficeOpenXml.VBA
                     //bwTemp.Write(enc.GetBytes(r.LibIdRelative));
                     //bwTemp.Write(r.MajorVersion);
                     //bwTemp.Write(r.MinorVersion);
-                    foreach (byte b in BitConverter.GetBytes((uint)reference.Libid.Length))  //Length will never be an UInt with 4 bytes that aren't 0 (> 0x00FFFFFF), so no need for the rest of the properties.
+                    foreach (var b in BitConverter.GetBytes((uint)reference.Libid.Length))  //Length will never be an UInt with 4 bytes that aren't 0 (> 0x00FFFFFF), so no need for the rest of the properties.
                     {
                         if (b != 0)
                         {
@@ -345,10 +351,10 @@ namespace OfficeOpenXml.VBA
         /// The verifier
         /// </summary>
 
-        public EnvelopedCms Verifier { get; internal set; }
+        private EnvelopedCms Verifier { get; set; }
 
         internal CompoundDocument Signature { get; set; }
-        internal Packaging.ZipPackagePart Part { get; set; }
-        internal Uri Uri { get; private set; }
+        private Packaging.ZipPackagePart Part { get; set; }
+        private Uri Uri { get; set; }
     }
 }

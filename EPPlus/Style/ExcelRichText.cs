@@ -62,10 +62,7 @@ namespace OfficeOpenXml.Style
         public string Text
         {
 
-            get
-            {
-                return GetXmlNodeString(TEXT_PATH);
-            }
+            get => GetXmlNodeString(TEXT_PATH);
             set
             {
                 _collection.ConvertRichtext();
@@ -74,7 +71,7 @@ namespace OfficeOpenXml.Style
                 SetXmlNodeString(TEXT_PATH, value, false);
                 if (PreserveSpace)
                 {
-                    XmlElement elem = TopNode.SelectSingleNode(TEXT_PATH, NameSpaceManager) as XmlElement;
+                    var elem = TopNode.SelectSingleNode(TEXT_PATH, NameSpaceManager) as XmlElement;
                     elem.SetAttribute("xml:space", "preserve");
                 }
                 if (_callback != null) _callback();
@@ -87,7 +84,7 @@ namespace OfficeOpenXml.Style
         {
             get
             {
-                XmlElement elem = TopNode.SelectSingleNode(TEXT_PATH, NameSpaceManager) as XmlElement;
+                var elem = TopNode.SelectSingleNode(TEXT_PATH, NameSpaceManager) as XmlElement;
                 if (elem != null)
                 {
                     return elem.GetAttribute("xml:space")=="preserve";
@@ -97,7 +94,7 @@ namespace OfficeOpenXml.Style
             set
             {
                 _collection.ConvertRichtext();
-                XmlElement elem = TopNode.SelectSingleNode(TEXT_PATH, NameSpaceManager) as XmlElement;
+                var elem = TopNode.SelectSingleNode(TEXT_PATH, NameSpaceManager) as XmlElement;
                 if (elem != null)
                 {
                     if (value)
@@ -118,10 +115,7 @@ namespace OfficeOpenXml.Style
         /// </summary>
         public bool Bold
         {
-            get
-            {
-                return ExistNode(BOLD_PATH);
-            }
+            get => ExistNode(BOLD_PATH);
             set
             {
                 _collection.ConvertRichtext();
@@ -142,11 +136,9 @@ namespace OfficeOpenXml.Style
         /// </summary>
         public bool Italic
         {
-            get
-            {
+            get =>
                 //return GetXmlNodeBool(ITALIC_PATH, false);
-                return ExistNode(ITALIC_PATH);
-            }
+                ExistNode(ITALIC_PATH);
             set
             {
                 _collection.ConvertRichtext();
@@ -167,10 +159,7 @@ namespace OfficeOpenXml.Style
         /// </summary>
         public bool Strike
         {
-            get
-            {
-                return ExistNode(STRIKE_PATH);
-            }
+            get => ExistNode(STRIKE_PATH);
             set
             {
                 _collection.ConvertRichtext();
@@ -191,10 +180,7 @@ namespace OfficeOpenXml.Style
         /// </summary>
         public bool UnderLine
         {
-            get
-            {
-                return ExistNode(UNDERLINE_PATH);
-            }
+            get => ExistNode(UNDERLINE_PATH);
             set
             {
                 _collection.ConvertRichtext();
@@ -218,21 +204,19 @@ namespace OfficeOpenXml.Style
         {
             get
             {
-                string v = GetXmlNodeString(VERT_ALIGN_PATH);
+                var v = GetXmlNodeString(VERT_ALIGN_PATH);
                 if (v=="")
                 {
                     return ExcelVerticalAlignmentFont.None;
                 }
-                else
+
+                try
                 {
-                    try
-                    {
-                        return (ExcelVerticalAlignmentFont)Enum.Parse(typeof(ExcelVerticalAlignmentFont), v, true);
-                    }
-                    catch
-                    {
-                        return ExcelVerticalAlignmentFont.None;
-                    }
+                    return (ExcelVerticalAlignmentFont)Enum.Parse(typeof(ExcelVerticalAlignmentFont), v, true);
+                }
+                catch
+                {
+                    return ExcelVerticalAlignmentFont.None;
                 }
             }
             set
@@ -258,10 +242,7 @@ namespace OfficeOpenXml.Style
         /// </summary>
         public float Size
         {
-            get
-            {
-                return Convert.ToSingle(GetXmlNodeDecimal(SIZE_PATH));
-            }
+            get => Convert.ToSingle(GetXmlNodeDecimal(SIZE_PATH));
             set
             {
                 _collection.ConvertRichtext();
@@ -275,10 +256,7 @@ namespace OfficeOpenXml.Style
         /// </summary>
         public string FontName
         {
-            get
-            {
-                return GetXmlNodeString(FONT_PATH);
-            }
+            get => GetXmlNodeString(FONT_PATH);
             set
             {
                 _collection.ConvertRichtext();
@@ -294,15 +272,13 @@ namespace OfficeOpenXml.Style
         {
             get
             {
-                string col = GetXmlNodeString(COLOR_PATH);
+                var col = GetXmlNodeString(COLOR_PATH);
                 if (col == "")
                 {
                     return SKColors.Empty;
                 }
-                else
-                {
-                    return SKColor.Parse(col);
-                }
+
+                return SKColor.Parse(col);
             }
             set
             {

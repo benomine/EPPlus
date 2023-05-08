@@ -84,7 +84,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
                     nValues++;
                     retVal += numericValue.Value;
                 }
-                else if ((arg.Value is string))
+                else if (arg.Value is string)
                 {
                     if (isInArray)
                     {
@@ -114,11 +114,12 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
                     if (isInArray) return default(double?);
                     return ConvertUtil.GetValueDouble(obj);
                 }
-                else if (ConvertUtil.TryParseNumericString(obj, out number))
+
+                if (ConvertUtil.TryParseNumericString(obj, out number))
                 {
                     return number;
                 }
-                else if (ConvertUtil.TryParseDateString(obj, out date))
+                if (ConvertUtil.TryParseDateString(obj, out date))
                 {
                     return date.ToOADate();
                 }

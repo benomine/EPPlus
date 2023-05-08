@@ -129,52 +129,34 @@ namespace OfficeOpenXml.DataValidation
         /// <returns></returns>
         internal static ExcelDataValidationType GetByValidationType(eDataValidationType type)
         {
-            switch (type)
+            return type switch
             {
-                case eDataValidationType.Any:
-                    return ExcelDataValidationType.Any;
-                case eDataValidationType.Whole:
-                    return ExcelDataValidationType.Whole;
-                case eDataValidationType.List:
-                    return ExcelDataValidationType.List;
-                case eDataValidationType.Decimal:
-                    return ExcelDataValidationType.Decimal;
-                case eDataValidationType.TextLength:
-                    return ExcelDataValidationType.TextLength;
-                case eDataValidationType.DateTime:
-                    return ExcelDataValidationType.DateTime;
-                case eDataValidationType.Time:
-                    return ExcelDataValidationType.Time;
-                case eDataValidationType.Custom:
-                    return ExcelDataValidationType.Custom;
-                default:
-                    throw new InvalidOperationException("Non supported Validationtype : " + type.ToString());
-            }
+                eDataValidationType.Any => Any,
+                eDataValidationType.Whole => Whole,
+                eDataValidationType.List => List,
+                eDataValidationType.Decimal => Decimal,
+                eDataValidationType.TextLength => TextLength,
+                eDataValidationType.DateTime => DateTime,
+                eDataValidationType.Time => Time,
+                eDataValidationType.Custom => Custom,
+                _ => throw new InvalidOperationException("Non supported Validationtype : " + type.ToString())
+            };
         }
 
         internal static ExcelDataValidationType GetBySchemaName(string schemaName)
         {
-            switch (schemaName)
+            return schemaName switch
             {
-                case DataValidationSchemaNames.Any:
-                    return ExcelDataValidationType.Any;
-                case DataValidationSchemaNames.Whole:
-                    return ExcelDataValidationType.Whole;
-                case DataValidationSchemaNames.Decimal:
-                    return ExcelDataValidationType.Decimal;
-                case DataValidationSchemaNames.List:
-                    return ExcelDataValidationType.List;
-                case DataValidationSchemaNames.TextLength:
-                    return ExcelDataValidationType.TextLength;
-                case DataValidationSchemaNames.Date:
-                    return ExcelDataValidationType.DateTime;
-                case DataValidationSchemaNames.Time:
-                    return ExcelDataValidationType.Time;
-                case DataValidationSchemaNames.Custom:
-                    return ExcelDataValidationType.Custom;
-                default:
-                    throw new ArgumentException("Invalid schemaname: " + schemaName);
-            }
+                DataValidationSchemaNames.Any => Any,
+                DataValidationSchemaNames.Whole => Whole,
+                DataValidationSchemaNames.Decimal => Decimal,
+                DataValidationSchemaNames.List => List,
+                DataValidationSchemaNames.TextLength => TextLength,
+                DataValidationSchemaNames.Date => DateTime,
+                DataValidationSchemaNames.Time => Time,
+                DataValidationSchemaNames.Custom => Custom,
+                _ => throw new ArgumentException("Invalid schemaname: " + schemaName)
+            };
         }
 
         /// <summary>
@@ -184,11 +166,11 @@ namespace OfficeOpenXml.DataValidation
         /// <returns></returns>
         public override bool Equals(object obj)
         {
-            if (!(obj is ExcelDataValidationType))
+            if (obj is not ExcelDataValidationType validationType)
             {
                 return false;
             }
-            return ((ExcelDataValidationType)obj).Type == Type;
+            return validationType.Type == Type;
         }
 
         /// <summary>
@@ -204,113 +186,44 @@ namespace OfficeOpenXml.DataValidation
         /// Integer values
         /// </summary>
         private static ExcelDataValidationType _any;
-        public static ExcelDataValidationType Any
-        {
-            get
-            {
-                if (_any == null)
-                {
-                    _any = new ExcelDataValidationType(eDataValidationType.Any, false, DataValidationSchemaNames.Any);
-                }
-                return _any;
-            }
-        }
+        public static ExcelDataValidationType Any => _any ??= new ExcelDataValidationType(eDataValidationType.Any, false, DataValidationSchemaNames.Any);
 
         /// <summary>
         /// Integer values
         /// </summary>
         private static ExcelDataValidationType _whole;
-        public static ExcelDataValidationType Whole
-        {
-            get
-            {
-                if (_whole == null)
-                {
-                    _whole = new ExcelDataValidationType(eDataValidationType.Whole, true, DataValidationSchemaNames.Whole);
-                }
-                return _whole;
-            }
-        }
+        public static ExcelDataValidationType Whole =>
+            _whole ??= new ExcelDataValidationType(eDataValidationType.Whole, true, DataValidationSchemaNames.Whole);
 
         /// <summary>
         /// List of allowed values
         /// </summary>
         private static ExcelDataValidationType _list;
-        public static ExcelDataValidationType List
-        {
-            get
-            {
-                if (_list == null)
-                {
-                    _list = new ExcelDataValidationType(eDataValidationType.List, false, DataValidationSchemaNames.List);
-                }
-                return _list;
-            }
-        }
+        public static ExcelDataValidationType List =>
+            _list ??= new ExcelDataValidationType(eDataValidationType.List, false, DataValidationSchemaNames.List);
 
         private static ExcelDataValidationType _decimal;
-        public static ExcelDataValidationType Decimal
-        {
-            get
-            {
-                if (_decimal == null)
-                {
-                    _decimal = new ExcelDataValidationType(eDataValidationType.Decimal, true, DataValidationSchemaNames.Decimal);
-                }
-                return _decimal;
-            }
-        }
+        public static ExcelDataValidationType Decimal =>
+            _decimal ??= new ExcelDataValidationType(eDataValidationType.Decimal, true,
+                DataValidationSchemaNames.Decimal);
 
         private static ExcelDataValidationType _textLength;
-        public static ExcelDataValidationType TextLength
-        {
-            get
-            {
-                if (_textLength == null)
-                {
-                    _textLength = new ExcelDataValidationType(eDataValidationType.TextLength, true, DataValidationSchemaNames.TextLength);
-                }
-                return _textLength;
-            }
-        }
+        public static ExcelDataValidationType TextLength =>
+            _textLength ??= new ExcelDataValidationType(eDataValidationType.TextLength, true,
+                DataValidationSchemaNames.TextLength);
 
         private static ExcelDataValidationType _dateTime;
-        public static ExcelDataValidationType DateTime
-        {
-            get
-            {
-                if (_dateTime == null)
-                {
-                    _dateTime = new ExcelDataValidationType(eDataValidationType.DateTime, true, DataValidationSchemaNames.Date);
-                }
-                return _dateTime;
-            }
-        }
+        public static ExcelDataValidationType DateTime =>
+            _dateTime ??= new ExcelDataValidationType(eDataValidationType.DateTime, true,
+                DataValidationSchemaNames.Date);
 
         private static ExcelDataValidationType _time;
-        public static ExcelDataValidationType Time
-        {
-            get
-            {
-                if (_time == null)
-                {
-                    _time = new ExcelDataValidationType(eDataValidationType.Time, true, DataValidationSchemaNames.Time);
-                }
-                return _time;
-            }
-        }
+        public static ExcelDataValidationType Time =>
+            _time ??= new ExcelDataValidationType(eDataValidationType.Time, true, DataValidationSchemaNames.Time);
 
         private static ExcelDataValidationType _custom;
-        public static ExcelDataValidationType Custom
-        {
-            get
-            {
-                if (_custom == null)
-                {
-                    _custom = new ExcelDataValidationType(eDataValidationType.Custom, true, DataValidationSchemaNames.Custom);
-                }
-                return _custom;
-            }
-        }
+        public static ExcelDataValidationType Custom =>
+            _custom ??= new ExcelDataValidationType(eDataValidationType.Custom, true,
+                DataValidationSchemaNames.Custom);
     }
 }

@@ -39,7 +39,7 @@ namespace OfficeOpenXml.Style
     /// </summary>
     public class ExcelGradientFill : StyleBase
     {
-        internal ExcelGradientFill(ExcelStyles styles, OfficeOpenXml.XmlHelper.ChangedEventHandler ChangedEvent, int PositionID, string address, int index) :
+        internal ExcelGradientFill(ExcelStyles styles, XmlHelper.ChangedEventHandler ChangedEvent, int PositionID, string address, int index) :
             base(styles, ChangedEvent, PositionID, address)
 
         {
@@ -50,43 +50,28 @@ namespace OfficeOpenXml.Style
         /// </summary>
         public double Degree
         {
-            get
-            {
-                return ((ExcelGradientFillXml)_styles.Fills[Index]).Degree;
-            }
-            set
-            {
-                _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.GradientFill, eStyleProperty.GradientDegree, value, _positionID, _address));
-            }
+            get => ((ExcelGradientFillXml)_styles.Fills[Index]).Degree;
+            set => _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.GradientFill, eStyleProperty.GradientDegree, value, _positionID, _address));
         }
         /// <summary>
         /// Linear or Path gradient
         /// </summary>
         public ExcelFillGradientType Type
         {
-            get
-            {
-                return ((ExcelGradientFillXml)_styles.Fills[Index]).Type;
-            }
-            set
-            {
-                _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.GradientFill, eStyleProperty.GradientType, value, _positionID, _address));
-            }
+            get => ((ExcelGradientFillXml)_styles.Fills[Index]).Type;
+            set => _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.GradientFill, eStyleProperty.GradientType, value, _positionID, _address));
         }
         /// <summary>
         /// Specifies in percentage format(from the top to the bottom) the position of the top edge of the inner rectangle (color 1). For top, 0 means the top edge of the inner rectangle is on the top edge of the cell, and 1 means it is on the bottom edge of the cell. (applies to From Corner and From Center gradients).
         /// </summary>
         public double Top
         {
-            get
-            {
-                return ((ExcelGradientFillXml)_styles.Fills[Index]).Top;
-            }
+            get => ((ExcelGradientFillXml)_styles.Fills[Index]).Top;
             set
             {
                 if (value < 0 | value > 1)
                 {
-                    throw (new ArgumentOutOfRangeException("Value must be between 0 and 1"));
+                    throw new ArgumentOutOfRangeException("Value must be between 0 and 1");
                 }
                 _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.GradientFill, eStyleProperty.GradientTop, value, _positionID, _address));
             }
@@ -96,15 +81,12 @@ namespace OfficeOpenXml.Style
         /// </summary>
         public double Bottom
         {
-            get
-            {
-                return ((ExcelGradientFillXml)_styles.Fills[Index]).Bottom;
-            }
+            get => ((ExcelGradientFillXml)_styles.Fills[Index]).Bottom;
             set
             {
                 if (value < 0 | value > 1)
                 {
-                    throw (new ArgumentOutOfRangeException("Value must be between 0 and 1"));
+                    throw new ArgumentOutOfRangeException("Value must be between 0 and 1");
                 }
                 _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.GradientFill, eStyleProperty.GradientBottom, value, _positionID, _address));
             }
@@ -114,15 +96,12 @@ namespace OfficeOpenXml.Style
         /// </summary>
         public double Left
         {
-            get
-            {
-                return ((ExcelGradientFillXml)_styles.Fills[Index]).Left;
-            }
+            get => ((ExcelGradientFillXml)_styles.Fills[Index]).Left;
             set
             {
                 if (value < 0 | value > 1)
                 {
-                    throw (new ArgumentOutOfRangeException("Value must be between 0 and 1"));
+                    throw new ArgumentOutOfRangeException("Value must be between 0 and 1");
                 }
                 _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.GradientFill, eStyleProperty.GradientLeft, value, _positionID, _address));
             }
@@ -132,15 +111,12 @@ namespace OfficeOpenXml.Style
         /// </summary>
         public double Right
         {
-            get
-            {
-                return ((ExcelGradientFillXml)_styles.Fills[Index]).Right;
-            }
+            get => ((ExcelGradientFillXml)_styles.Fills[Index]).Right;
             set
             {
                 if (value < 0 | value > 1)
                 {
-                    throw (new ArgumentOutOfRangeException("Value must be between 0 and 1"));
+                    throw new ArgumentOutOfRangeException("Value must be between 0 and 1");
                 }
                 _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.GradientFill, eStyleProperty.GradientRight, value, _positionID, _address));
             }
@@ -177,9 +153,6 @@ namespace OfficeOpenXml.Style
 
             }
         }
-        internal override string Id
-        {
-            get { return Degree.ToString() + Type + Color1.Id + Color2.Id + Top.ToString() + Bottom.ToString() + Left.ToString() + Right.ToString(); }
-        }
+        internal override string Id => Degree.ToString() + Type + Color1.Id + Color2.Id + Top.ToString() + Bottom.ToString() + Left.ToString() + Right.ToString();
     }
 }

@@ -98,8 +98,7 @@ namespace OfficeOpenXml.ConditionalFormatting
               _worksheet.NameSpaceManager);
 
             // Check if we found at least 1 node
-            if ((conditionalFormattingNodes != null)
-              && (conditionalFormattingNodes.Count > 0))
+            if (conditionalFormattingNodes is { Count: > 0 })
             {
                 // Foreach <conditionalFormatting>
                 foreach (XmlNode conditionalFormattingNode in conditionalFormattingNodes)
@@ -112,7 +111,7 @@ namespace OfficeOpenXml.ConditionalFormatting
                     }
 
                     // Get the @sqref attribute
-                    ExcelAddress address = new ExcelAddress(
+                    var address = new ExcelAddress(
                       conditionalFormattingNode.Attributes[ExcelConditionalFormattingConstants.Attributes.Sqref].Value);
 
                     // Check for all the <cfRules> nodes and load them
@@ -138,11 +137,11 @@ namespace OfficeOpenXml.ConditionalFormatting
                         }
 
                         // Get the <cfRule> main attributes
-                        string typeAttribute = ExcelConditionalFormattingHelper.GetAttributeString(
+                        var typeAttribute = ExcelConditionalFormattingHelper.GetAttributeString(
                           cfRuleNode,
                           ExcelConditionalFormattingConstants.Attributes.Type);
 
-                        int priority = ExcelConditionalFormattingHelper.GetAttributeInt(
+                        var priority = ExcelConditionalFormattingHelper.GetAttributeInt(
                           cfRuleNode,
                           ExcelConditionalFormattingConstants.Attributes.Priority);
 
@@ -216,7 +215,7 @@ namespace OfficeOpenXml.ConditionalFormatting
         private int GetNextPriority()
         {
             // Consider zero as the last priority when we have no CF rules
-            int lastPriority = 0;
+            var lastPriority = 0;
 
             // Search for the last priority
             foreach (var cfRule in _rules)
@@ -238,10 +237,7 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// <summary>
         /// Number of validations
         /// </summary>
-        public int Count
-        {
-            get { return _rules.Count; }
-        }
+        public int Count => _rules.Count;
 
         /// <summary>
         /// Index operator, returns by 0-based index
@@ -250,8 +246,8 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// <returns></returns>
         public IExcelConditionalFormattingRule this[int index]
         {
-            get { return _rules[index]; }
-            set { _rules[index] = value; }
+            get => _rules[index];
+            set => _rules[index] = value;
         }
 
         /// <summary>
@@ -267,7 +263,7 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// Get the 'cfRule' enumerator
         /// </summary>
         /// <returns></returns>
-        IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return _rules.GetEnumerator();
         }
@@ -335,7 +331,7 @@ namespace OfficeOpenXml.ConditionalFormatting
         public void RemoveAt(
           int index)
         {
-            Require.Argument(index).IsInRange(0, this.Count - 1, "index");
+            Require.Argument(index).IsInRange(0, Count - 1, "index");
 
             Remove(this[index]);
         }

@@ -98,10 +98,7 @@ namespace OfficeOpenXml.Drawing
         /// </summary>
         public eLineStyle LineStyle
         {
-            get
-            {
-                return TranslateLineStyle(GetXmlNodeString(_lineStylePath));
-            }
+            get => TranslateLineStyle(GetXmlNodeString(_lineStylePath));
             set
             {
                 CreateNode(_linePath, false);
@@ -114,10 +111,7 @@ namespace OfficeOpenXml.Drawing
         /// </summary>
         public eLineCap LineCap
         {
-            get
-            {
-                return TranslateLineCap(GetXmlNodeString(_lineCapPath));
-            }
+            get => TranslateLineCap(GetXmlNodeString(_lineCapPath));
             set
             {
                 CreateNode(_linePath, false);
@@ -130,20 +124,14 @@ namespace OfficeOpenXml.Drawing
         /// </summary>
         public int Width
         {
-            get
-            {
-                return GetXmlNodeInt(_lineWidth) / 12700;
-            }
-            set
-            {
-                SetXmlNodeString(_lineWidth, (value * 12700).ToString());
-            }
+            get => GetXmlNodeInt(_lineWidth) / 12700;
+            set => SetXmlNodeString(_lineWidth, (value * 12700).ToString());
         }
         #endregion
         #region "Translate Enum functions"
         private string TranslateLineStyleText(eLineStyle value)
         {
-            string text = value.ToString();
+            var text = value.ToString();
             switch (value)
             {
                 case eLineStyle.Dash:
@@ -161,7 +149,7 @@ namespace OfficeOpenXml.Drawing
                 case eLineStyle.SystemDot:
                     return "sys" + text.Substring(6, text.Length - 6);
                 default:
-                    throw (new Exception("Invalid Linestyle"));
+                    throw new Exception("Invalid Linestyle");
             }
         }
         private eLineStyle TranslateLineStyle(string text)
@@ -183,7 +171,7 @@ namespace OfficeOpenXml.Drawing
                 case "sysDot":
                     return (eLineStyle)Enum.Parse(typeof(eLineStyle), "System" + text.Substring(3, text.Length - 3));
                 default:
-                    throw (new Exception("Invalid Linestyle"));
+                    throw new Exception("Invalid Linestyle");
             }
         }
         private string TranslateLineCapText(eLineCap value)

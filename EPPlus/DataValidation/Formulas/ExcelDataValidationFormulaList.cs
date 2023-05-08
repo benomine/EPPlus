@@ -49,8 +49,8 @@ namespace OfficeOpenXml.DataValidation.Formulas
 
             public event EventHandler<EventArgs> ListChanged
             {
-                add { _listChanged += value; }
-                remove { _listChanged -= value; }
+                add => _listChanged += value;
+                remove => _listChanged -= value;
             }
 
             private void OnListChanged()
@@ -81,10 +81,7 @@ namespace OfficeOpenXml.DataValidation.Formulas
 
             string IList<string>.this[int index]
             {
-                get
-                {
-                    return _items[index];
-                }
+                get => _items[index];
                 set
                 {
                     _items[index] = value;
@@ -114,15 +111,9 @@ namespace OfficeOpenXml.DataValidation.Formulas
                 _items.CopyTo(array, arrayIndex);
             }
 
-            int ICollection<string>.Count
-            {
-                get { return _items.Count; }
-            }
+            int ICollection<string>.Count => _items.Count;
 
-            bool ICollection<string>.IsReadOnly
-            {
-                get { return false; }
-            }
+            bool ICollection<string>.IsReadOnly => false;
 
             bool ICollection<string>.Remove(string item)
             {
@@ -136,7 +127,7 @@ namespace OfficeOpenXml.DataValidation.Formulas
                 return _items.GetEnumerator();
             }
 
-            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+            IEnumerator IEnumerable.GetEnumerator()
             {
                 return _items.GetEnumerator();
             }
@@ -147,20 +138,11 @@ namespace OfficeOpenXml.DataValidation.Formulas
                 _items.CopyTo((string[])array, index);
             }
 
-            int ICollection.Count
-            {
-                get { return _items.Count; }
-            }
+            int ICollection.Count => _items.Count;
 
-            public bool IsSynchronized
-            {
-                get { return ((ICollection)_items).IsSynchronized; }
-            }
+            public bool IsSynchronized => ((ICollection)_items).IsSynchronized;
 
-            public object SyncRoot
-            {
-                get { return ((ICollection)_items).SyncRoot; }
-            }
+            public object SyncRoot => ((ICollection)_items).SyncRoot;
         }
         #endregion
 
@@ -225,7 +207,7 @@ namespace OfficeOpenXml.DataValidation.Formulas
             {
                 if (sb.Length == 0)
                 {
-                    sb.Append("\"");
+                    sb.Append('"');
                     sb.Append(val);
                 }
                 else
@@ -233,7 +215,7 @@ namespace OfficeOpenXml.DataValidation.Formulas
                     sb.AppendFormat(",{0}", val);
                 }
             }
-            sb.Append("\"");
+            sb.Append('"');
             return sb.ToString();
         }
 

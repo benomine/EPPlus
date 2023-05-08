@@ -150,14 +150,8 @@ namespace OfficeOpenXml.Table.PivotTable
         }
         internal string RecordRelationshipID
         {
-            get
-            {
-                return GetXmlNodeString("@r:id");
-            }
-            set
-            {
-                SetXmlNodeString("@r:id", value);
-            }
+            get => GetXmlNodeString("@r:id");
+            set => SetXmlNodeString("@r:id", value);
         }
         /// <summary>
         /// Referece to the PivoTable object
@@ -221,7 +215,7 @@ namespace OfficeOpenXml.Table.PivotTable
                     }
                     else
                     {
-                        throw (new ArgumentException("The cachesource is not a worksheet"));
+                        throw new ArgumentException("The cachesource is not a worksheet");
                     }
                 }
                 return _sourceRange;
@@ -230,13 +224,13 @@ namespace OfficeOpenXml.Table.PivotTable
             {
                 if (PivotTable.WorkSheet.Workbook != value.Worksheet.Workbook)
                 {
-                    throw (new ArgumentException("Range must be in the same package as the pivottable"));
+                    throw new ArgumentException("Range must be in the same package as the pivottable");
                 }
 
                 var sr = SourceRange;
                 if (value.End.Column - value.Start.Column != sr.End.Column - sr.Start.Column)
                 {
-                    throw (new ArgumentException("Can not change the number of columns(fields) in the SourceRange"));
+                    throw new ArgumentException("Can not change the number of columns(fields) in the SourceRange");
                 }
 
                 SetXmlNodeString(_sourceWorksheetPath, value.Worksheet.Name);
@@ -256,22 +250,20 @@ namespace OfficeOpenXml.Table.PivotTable
                 {
                     return eSourceType.Worksheet;
                 }
-                else
-                {
-                    return (eSourceType)Enum.Parse(typeof(eSourceType), s, true);
-                }
+
+                return (eSourceType)Enum.Parse(typeof(eSourceType), s, true);
             }
         }
         private string GetStartXml(ExcelRangeBase sourceAddress)
         {
-            string xml = "<pivotCacheDefinition xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"\" refreshOnLoad=\"1\" refreshedBy=\"SomeUser\" refreshedDate=\"40504.582403125001\" createdVersion=\"1\" refreshedVersion=\"3\" recordCount=\"5\" upgradeOnRefresh=\"1\">";
+            var xml = "<pivotCacheDefinition xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"\" refreshOnLoad=\"1\" refreshedBy=\"SomeUser\" refreshedDate=\"40504.582403125001\" createdVersion=\"1\" refreshedVersion=\"3\" recordCount=\"5\" upgradeOnRefresh=\"1\">";
 
             xml += "<cacheSource type=\"worksheet\">";
             xml += string.Format("<worksheetSource ref=\"{0}\" sheet=\"{1}\" /> ", sourceAddress.Address, sourceAddress.WorkSheet);
             xml += "</cacheSource>";
             xml += string.Format("<cacheFields count=\"{0}\">", sourceAddress._toCol - sourceAddress._fromCol + 1);
             var sourceWorksheet = PivotTable.WorkSheet.Workbook.Worksheets[sourceAddress.WorkSheet];
-            for (int col = sourceAddress._fromCol; col <= sourceAddress._toCol; col++)
+            for (var col = sourceAddress._fromCol; col <= sourceAddress._toCol; col++)
             {
                 if (sourceWorksheet == null || sourceWorksheet.GetValueInner(sourceAddress._fromRow, col) == null || sourceWorksheet.GetValueInner(sourceAddress._fromRow, col).ToString().Trim() == "")
                 {

@@ -157,7 +157,7 @@ namespace OfficeOpenXml.DataValidation
         /// </summary>
         /// <param name="address"></param>
         /// <param name="validatingValidation"></param>
-        private void ValidateAddress(string address, IExcelDataValidation validatingValidation)
+        private void ValidateAddress(string address, IExcelDataValidation validatingValidation = null)
         {
             Require.Argument(address).IsNotNullOrEmpty("address");
 
@@ -180,11 +180,6 @@ namespace OfficeOpenXml.DataValidation
                     }
                 }
             }
-        }
-
-        private void ValidateAddress(string address)
-        {
-            ValidateAddress(address, null);
         }
 
         /// <summary>
@@ -343,10 +338,7 @@ namespace OfficeOpenXml.DataValidation
         /// <summary>
         /// Number of validations
         /// </summary>
-        public int Count
-        {
-            get { return _validations.Count; }
-        }
+        public int Count => _validations.Count;
 
 
         /// <summary>
@@ -367,8 +359,8 @@ namespace OfficeOpenXml.DataValidation
         /// <returns></returns>
         public IExcelDataValidation this[int index]
         {
-            get { return _validations[index]; }
-            set { _validations[index] = value; }
+            get => _validations[index];
+            set => _validations[index] = value;
         }
 
         /// <summary>
@@ -400,10 +392,7 @@ namespace OfficeOpenXml.DataValidation
         /// </summary>
         /// <param name="match"></param>
         /// <returns></returns>
-        public IExcelDataValidation Find(Predicate<IExcelDataValidation> match)
-        {
-            return _validations.Find(match);
-        }
+        public IExcelDataValidation Find(Predicate<IExcelDataValidation> match) => _validations.Find(match);
 
         /// <summary>
         /// Removes all validations from the collection.
@@ -423,11 +412,11 @@ namespace OfficeOpenXml.DataValidation
             var matches = _validations.FindAll(match);
             foreach (var m in matches)
             {
-                if (!(m is ExcelDataValidation))
+                if (m is not ExcelDataValidation validation)
                 {
                     throw new InvalidCastException("The supplied item must inherit OfficeOpenXml.DataValidation.ExcelDataValidation");
                 }
-                TopNode.RemoveChild(((ExcelDataValidation)m).TopNode);
+                TopNode.RemoveChild(validation.TopNode);
                 //var dvNode = TopNode.SelectSingleNode(DataValidationPath.TrimStart('/'), NameSpaceManager);
                 //if (dvNode != null)
                 //{
@@ -443,7 +432,7 @@ namespace OfficeOpenXml.DataValidation
             return _validations.GetEnumerator();
         }
 
-        IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return _validations.GetEnumerator();
         }

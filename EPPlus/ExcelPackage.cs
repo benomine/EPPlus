@@ -70,7 +70,7 @@ namespace OfficeOpenXml
     public sealed class ExcelPackage : IDisposable
     {
         public const bool preserveWhitespace = false;
-        Stream _stream = null;
+        private Stream _stream = null;
         private bool _isExternalStream = false;
         public class ImageInfo
         {
@@ -136,7 +136,6 @@ namespace OfficeOpenXml
         public const string contentTypeWorkbookMacroEnabled = "application/vnd.ms-excel.sheet.macroEnabled.main+xml";
         public const string contentTypeSharedString = @"application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml";
         //Package reference
-        private Packaging.ZipPackage _package;
         public ExcelWorkbook _workbook;
         /// <summary>
         /// Maximum number of columns in a worksheet (16384). 
@@ -271,7 +270,7 @@ namespace OfficeOpenXml
             {
                 _stream = newStream;
                 _isExternalStream = true;
-                _package = new Packaging.ZipPackage(_stream);
+                Package = new Packaging.ZipPackage(_stream);
                 CreateBlankWb();
             }
         }
@@ -284,9 +283,10 @@ namespace OfficeOpenXml
         {
             if (newStream.Length > 0)
             {
-                throw (new Exception("The output stream must be empty. Length > 0"));
+                throw new Exception("The output stream must be empty. Length > 0");
             }
-            else if (!(newStream.CanRead && newStream.CanWrite))
+
+            if (!(newStream.CanRead && newStream.CanWrite))
             {
                 throw new Exception("The stream must be read/write");
             }
@@ -298,26 +298,24 @@ namespace OfficeOpenXml
         /// </summary>
         /// <param name="newStream">The output stream. Must be an empty read/write stream.</param>
         /// <param name="templateStream">This stream is copied to the output stream at load</param>
-        /// <param name="Password">Password to decrypted the template</param>
-        public ExcelPackage(Stream newStream, Stream templateStream, string Password)
+        /// <param name="password">Password to decrypted the template</param>
+        public ExcelPackage(Stream newStream, Stream templateStream, string password)
         {
             if (newStream.Length > 0)
             {
-                throw (new Exception("The output stream must be empty. Length > 0"));
+                throw new Exception("The output stream must be empty. Length > 0");
             }
-            else if (!(newStream.CanRead && newStream.CanWrite))
+
+            if (!(newStream.CanRead && newStream.CanWrite))
             {
                 throw new Exception("The stream must be read/write");
             }
             Init();
-            Load(templateStream, newStream, Password);
+            Load(templateStream, newStream, password);
         }
         #endregion
-        public ImageInfo AddImage(byte[] image)
-        {
-            return AddImage(image, null, "");
-        }
-        public ImageInfo AddImage(byte[] image, Uri uri, string contentType)
+
+        public ImageInfo AddImage(byte[] image, Uri uri = null, string contentType = "")
         {
             var hashProvider = SHA1.Create();
             var hash = BitConverter.ToString(hashProvider.ComputeHash(image)).Replace("-", "");
@@ -387,10 +385,8 @@ namespace OfficeOpenXml
             {
                 return _images[hash];
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
         public static int _id = 1;
         private Uri GetNewUri(Packaging.ZipPackage package, string sUri)
@@ -422,7 +418,7 @@ namespace OfficeOpenXml
 #endif
             if (v != null)
             {
-                if (bool.TryParse(v.ToLowerInvariant(), out bool value))
+                if (bool.TryParse(v.ToLowerInvariant(), out var value))
                 {
                     Compatibility.IsWorksheets1Based = value;
                 }
@@ -436,7 +432,7 @@ namespace OfficeOpenXml
         /// <returns></returns>
         private void CreateFromTemplate(FileInfo template, string password)
         {
-            if (template != null) template.Refresh();
+            template?.Refresh();
             if (template.Exists)
             {
                 if (_stream==null) _stream=new MemoryStream();
@@ -456,7 +452,7 @@ namespace OfficeOpenXml
                 try
                 {
                     //_package = Package.Open(_stream, FileMode.Open, FileAccess.ReadWrite);
-                    _package = new Packaging.ZipPackage(ms);
+                    Package = new Packaging.ZipPackage(ms);
                 }
                 catch (Exception ex)
                 {
@@ -464,22 +460,22 @@ namespace OfficeOpenXml
                     {
                         throw new Exception("Can not open the package. Package is an OLE compound document. If this is an encrypted package, please supply the password", ex);
                     }
-                    else
-                    {
-                        throw;
-                    }
+
+                    throw;
                 }
             }
             else
+            {
                 throw new Exception("Passed invalid TemplatePath to Excel Template");
+            }
             //return newFile;
         }
         private void ConstructNewFile(string password)
         {
             var ms = new MemoryStream();
-            if (_stream == null) _stream = new MemoryStream();
-            if (File != null) File.Refresh();
-            if (File != null && File.Exists)
+            _stream ??= new MemoryStream();
+            File?.Refresh();
+            if (File is { Exists: true })
             {
                 if (password != null)
                 {
@@ -496,7 +492,7 @@ namespace OfficeOpenXml
                 try
                 {
                     //_package = Package.Open(_stream, FileMode.Open, FileAccess.ReadWrite);
-                    _package = new Packaging.ZipPackage(ms);
+                    Package = new Packaging.ZipPackage(ms);
                 }
                 catch (Exception ex)
                 {
@@ -504,16 +500,14 @@ namespace OfficeOpenXml
                     {
                         throw new Exception("Can not open the package. Package is an OLE compound document. If this is an encrypted package, please supply the password", ex);
                     }
-                    else
-                    {
-                        throw;
-                    }
+
+                    throw;
                 }
             }
             else
             {
                 //_package = Package.Open(_stream, FileMode.Create, FileAccess.ReadWrite);
-                _package = new Packaging.ZipPackage(ms);
+                Package = new Packaging.ZipPackage(ms);
                 CreateBlankWb();
             }
         }
@@ -524,42 +518,32 @@ namespace OfficeOpenXml
         /// <param name="stream">Stream</param>
         private static void WriteFileToStream(string path, Stream stream)
         {
-            using (var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            var buffer = new byte[4096];
+            int read;
+            while ((read = fileStream.Read(buffer, 0, buffer.Length)) > 0)
             {
-                var buffer = new byte[4096];
-                int read;
-                while ((read = fileStream.Read(buffer, 0, buffer.Length)) > 0)
-                {
-                    stream.Write(buffer, 0, read);
-                }
+                stream.Write(buffer, 0, read);
             }
         }
         private void CreateBlankWb()
         {
-            XmlDocument workbook = Workbook.WorkbookXml; // this will create the workbook xml in the package
+            var workbook = Workbook.WorkbookXml; // this will create the workbook xml in the package
             // create the relationship to the main part
-            _package.CreateRelationship(UriHelper.GetRelativeUri(new Uri("/xl", UriKind.Relative), Workbook.WorkbookUri), Packaging.TargetMode.Public, schemaRelationships + "/officeDocument");
+            Package.CreateRelationship(UriHelper.GetRelativeUri(new Uri("/xl", UriKind.Relative), Workbook.WorkbookUri), Packaging.TargetMode.Public, schemaRelationships + "/officeDocument");
         }
 
         /// <summary>
         /// Returns a reference to the package
         /// </summary>
-        public Packaging.ZipPackage Package { get { return (_package); } }
-        ExcelEncryption _encryption = null;
+        public Packaging.ZipPackage Package { get; private set; }
+
+        private ExcelEncryption _encryption = null;
         /// <summary>
         /// Information how and if the package is encrypted
         /// </summary>
-        public ExcelEncryption Encryption
-        {
-            get
-            {
-                if (_encryption == null)
-                {
-                    _encryption = new ExcelEncryption();
-                }
-                return _encryption;
-            }
-        }
+        public ExcelEncryption Encryption => _encryption ??= new ExcelEncryption();
+
         /// <summary>
         /// Returns a reference to the workbook component within the package.
         /// All worksheets and cells can be accessed through the workbook.
@@ -578,7 +562,7 @@ namespace OfficeOpenXml
                     _workbook.GetDefinedNames();
 
                 }
-                return (_workbook);
+                return _workbook;
             }
         }
         /// <summary>
@@ -594,12 +578,12 @@ namespace OfficeOpenXml
         {
             //  Create a NamespaceManager to handle the default namespace, 
             //  and create a prefix for the default namespace:
-            NameTable nt = new NameTable();
+            var nt = new NameTable();
             var ns = new XmlNamespaceManager(nt);
-            ns.AddNamespace(string.Empty, ExcelPackage.schemaMain);
-            ns.AddNamespace("d", ExcelPackage.schemaMain);
-            ns.AddNamespace("r", ExcelPackage.schemaRelationships);
-            ns.AddNamespace("c", ExcelPackage.schemaChart);
+            ns.AddNamespace(string.Empty, schemaMain);
+            ns.AddNamespace("d", schemaMain);
+            ns.AddNamespace("r", schemaRelationships);
+            ns.AddNamespace("c", schemaChart);
             ns.AddNamespace("vt", schemaVt);
             // extended properties (app.xml)
             ns.AddNamespace("xp", schemaExtended);
@@ -615,9 +599,7 @@ namespace OfficeOpenXml
             ns.AddNamespace("x14", schemaMainX14);
             ns.AddNamespace("xm", schemaMainXm);
             ns.AddNamespace("xr2", schemaXr2);
-
-
-
+            
             return ns;
         }
 
@@ -629,7 +611,7 @@ namespace OfficeOpenXml
         /// <param name="xmlDoc">The XmlDocument to save</param>
         public void SavePart(Uri uri, XmlDocument xmlDoc)
         {
-            Packaging.ZipPackagePart part = _package.GetPart(uri);
+            var part = Package.GetPart(uri);
             var stream = part.GetStream(FileMode.Create, FileAccess.Write);
             var xr = new XmlTextWriter(stream, Encoding.UTF8);
             xr.Formatting = Formatting.None;
@@ -643,12 +625,12 @@ namespace OfficeOpenXml
 		/// <param name="xmlDoc">The XmlDocument to save</param>
         public void SaveWorkbook(Uri uri, XmlDocument xmlDoc)
         {
-            Packaging.ZipPackagePart part = _package.GetPart(uri);
+            var part = Package.GetPart(uri);
             if (Workbook.VbaProject==null)
             {
                 if (part.ContentType != contentTypeWorkbookDefault)
                 {
-                    part = _package.CreatePart(uri, contentTypeWorkbookDefault, Compression);
+                    part = Package.CreatePart(uri, contentTypeWorkbookDefault, Compression);
                 }
             }
             else
@@ -656,7 +638,7 @@ namespace OfficeOpenXml
                 if (part.ContentType != contentTypeWorkbookMacroEnabled)
                 {
                     var rels = part.GetRelationships();
-                    _package.DeletePart(uri);
+                    Package.DeletePart(uri);
                     part = Package.CreatePart(uri, contentTypeWorkbookMacroEnabled);
                     foreach (var rel in rels)
                     {
@@ -680,18 +662,18 @@ namespace OfficeOpenXml
         /// </summary>
         public void Dispose()
         {
-            if (_package != null)
+            if (Package != null)
             {
                 if (_isExternalStream==false && _stream != null && (_stream.CanRead || _stream.CanWrite))
                 {
                     CloseStream();
                 }
-                _package.Close();
+                Package.Close();
                 if (_workbook != null)
                 {
                     _workbook.Dispose();
                 }
-                _package = null;
+                Package = null;
                 _images = null;
                 _file = null;
                 _workbook = null;
@@ -727,18 +709,18 @@ namespace OfficeOpenXml
                     if (Encryption.IsEncrypted)
                     {
                         var ms = new MemoryStream();
-                        _package.Save(ms);
-                        byte[] file = ms.ToArray();
-                        EncryptedPackageHandler eph = new EncryptedPackageHandler();
+                        Package.Save(ms);
+                        var file = ms.ToArray();
+                        var eph = new EncryptedPackageHandler();
                         var msEnc = eph.EncryptPackage(file, Encryption);
                         CopyStream(msEnc, ref _stream);
                     }
                     else
                     {
-                        _package.Save(_stream);
+                        Package.Save(_stream);
                     }
                     _stream.Flush();
-                    _package.Close();
+                    Package.Close();
                 }
                 else
                 {
@@ -750,20 +732,20 @@ namespace OfficeOpenXml
                         }
                         catch (Exception ex)
                         {
-                            throw (new Exception(string.Format("Error overwriting file {0}", File.FullName), ex));
+                            throw new Exception(string.Format("Error overwriting file {0}", File.FullName), ex);
                         }
                     }
 
-                    _package.Save(_stream);
-                    _package.Close();
+                    Package.Save(_stream);
+                    Package.Close();
                     if (Stream is MemoryStream)
                     {
                         var fi = new FileStream(File.FullName, FileMode.Create);
                         //EncryptPackage
                         if (Encryption.IsEncrypted)
                         {
-                            byte[] file = ((MemoryStream)Stream).ToArray();
-                            EncryptedPackageHandler eph = new EncryptedPackageHandler();
+                            var file = ((MemoryStream)Stream).ToArray();
+                            var eph = new EncryptedPackageHandler();
                             var ms = eph.EncryptPackage(file, Encryption);
 
                             fi.Write(ms.ToArray(), 0, (int)ms.Length);
@@ -787,10 +769,8 @@ namespace OfficeOpenXml
                 {
                     throw;
                 }
-                else
-                {
-                    throw (new InvalidOperationException(string.Format("Error saving file {0}", File.FullName), ex));
-                }
+
+                throw new InvalidOperationException(string.Format("Error saving file {0}", File.FullName), ex);
             }
         }
         /// <summary>
@@ -832,44 +812,39 @@ namespace OfficeOpenXml
         /// Copies the Package to the Outstream
         /// The package is closed after it has been saved
         /// </summary>
-        /// <param name="OutputStream">The stream to copy the package to</param>
-        public void SaveAs(Stream OutputStream)
+        /// <param name="outputStream">The stream to copy the package to</param>
+        public void SaveAs(Stream outputStream)
         {
             File = null;
             Save();
 
-            if (OutputStream != _stream)
+            if (outputStream != _stream)
             {
-                CopyStream(_stream, ref OutputStream);
+                CopyStream(_stream, ref outputStream);
             }
         }
         /// <summary>
         /// Copies the Package to the Outstream
         /// The package is closed after it has been saved
         /// </summary>
-        /// <param name="OutputStream">The stream to copy the package to</param>
+        /// <param name="outputStream">The stream to copy the package to</param>
         /// <param name="password">The password to encrypt the workbook with. 
         /// This parameter overrides the Encryption.Password.</param>
-        public void SaveAs(Stream OutputStream, string password)
+        public void SaveAs(Stream outputStream, string password)
         {
             Encryption.Password = password;
-            SaveAs(OutputStream);
+            SaveAs(outputStream);
         }
-        FileInfo _file = null;
+
+        private FileInfo _file = null;
 
         /// <summary>
         /// The output file. Null if no file is used
         /// </summary>
         public FileInfo File
         {
-            get
-            {
-                return _file;
-            }
-            set
-            {
-                _file = value;
-            }
+            get => _file;
+            set => _file = value;
         }
         /// <summary>
         /// Close the public stream
@@ -889,43 +864,24 @@ namespace OfficeOpenXml
         /// The output stream. This stream is the not the encrypted package.
         /// To get the encrypted package use the SaveAs(stream) method.
         /// </summary>
-        public Stream Stream
-        {
-            get
-            {
-                return _stream;
-            }
-        }
+        public Stream Stream => _stream;
+
         #endregion
         /// <summary>
         /// Compression option for the package
         /// </summary>        
         public CompressionLevel Compression
         {
-            get
-            {
-                return Package.Compression;
-            }
-            set
-            {
-                Package.Compression = value;
-            }
+            get => Package.Compression;
+            set => Package.Compression = value;
         }
-        CompatibilitySettings _compatibility = null;
+
+        private CompatibilitySettings _compatibility = null;
         /// <summary>
         /// Compatibility settings for older versions of EPPlus.
         /// </summary>
-        public CompatibilitySettings Compatibility
-        {
-            get
-            {
-                if (_compatibility==null)
-                {
-                    _compatibility=new CompatibilitySettings(this);
-                }
-                return _compatibility;
-            }
-        }
+        public CompatibilitySettings Compatibility => _compatibility ??= new CompatibilitySettings(this);
+
         #region GetXmlFromUri
         /// <summary>
         /// Get the XmlDocument from an URI
@@ -934,33 +890,13 @@ namespace OfficeOpenXml
         /// <returns>The XmlDocument</returns>
         public XmlDocument GetXmlFromUri(Uri uri)
         {
-            XmlDocument xml = new XmlDocument();
-            Packaging.ZipPackagePart part = _package.GetPart(uri);
+            var xml = new XmlDocument();
+            var part = Package.GetPart(uri);
             XmlHelper.LoadXmlSafe(xml, part.GetStream());
-            return (xml);
+            return xml;
         }
         #endregion
 
-        /// <summary>
-        /// Saves and returns the Excel files as a bytearray.
-        /// Note that the package is closed upon save
-        /// </summary>
-        /// <example>      
-        /// Example how to return a document from a Webserver...
-        /// <code> 
-        ///  ExcelPackage package=new ExcelPackage();
-        ///  /**** ... Create the document ****/
-        ///  Byte[] bin = package.GetAsByteArray();
-        ///  Response.ContentType = "Application/vnd.ms-Excel";
-        ///  Response.AddHeader("content-disposition", "attachment;  filename=TheFile.xlsx");
-        ///  Response.BinaryWrite(bin);
-        /// </code>
-        /// </example>
-        /// <returns></returns>
-        public byte[] GetAsByteArray()
-        {
-            return GetAsByteArray(true);
-        }
         /// <summary>
         /// Saves and returns the Excel files as a bytearray
         /// Note that the package is closed upon save
@@ -987,23 +923,23 @@ namespace OfficeOpenXml
             }
             return GetAsByteArray(true);
         }
-        public byte[] GetAsByteArray(bool save)
+        public byte[] GetAsByteArray(bool save = true)
         {
             if (save)
             {
                 Workbook.Save();
-                _package.Close();
-                _package.Save(_stream);
+                Package.Close();
+                Package.Save(_stream);
             }
-            Byte[] byRet = new byte[Stream.Length];
-            long pos = Stream.Position;
+            var byRet = new byte[Stream.Length];
+            var pos = Stream.Position;
             Stream.Seek(0, SeekOrigin.Begin);
             Stream.Read(byRet, 0, (int)Stream.Length);
 
             //Encrypt Workbook?
             if (Encryption.IsEncrypted)
             {
-                EncryptedPackageHandler eph = new EncryptedPackageHandler();
+                var eph = new EncryptedPackageHandler();
                 var ms = eph.EncryptPackage(byRet, Encryption);
                 byRet = ms.ToArray();
             }
@@ -1024,47 +960,47 @@ namespace OfficeOpenXml
         /// Loads the specified package data from a stream.
         /// </summary>
         /// <param name="input">The input.</param>
-        /// <param name="Password">The password to decrypt the document</param>
-        public void Load(Stream input, string Password)
+        /// <param name="password">The password to decrypt the document</param>
+        public void Load(Stream input, string password)
         {
-            Load(input, new MemoryStream(), Password);
+            Load(input, new MemoryStream(), password);
         }
         /// <summary>
         /// 
         /// </summary>
         /// <param name="input"></param>    
         /// <param name="output"></param>
-        /// <param name="Password"></param>
-        private void Load(Stream input, Stream output, string Password)
+        /// <param name="password"></param>
+        private void Load(Stream input, Stream output, string password)
         {
             //Release some resources:
-            if (this._package != null)
+            if (Package != null)
             {
-                this._package.Close();
-                this._package = null;
+                Package.Close();
+                Package = null;
             }
-            if (this._stream != null)
+            if (_stream != null)
             {
-                this._stream.Close();
-                this._stream.Dispose();
-                this._stream = null;
+                _stream.Close();
+                _stream.Dispose();
+                _stream = null;
             }
             _isExternalStream = true;
             if (input.Length == 0) // Template is blank, Construct new
             {
                 _stream = output;
-                ConstructNewFile(Password);
+                ConstructNewFile(password);
             }
             else
             {
                 Stream ms;
-                this._stream = output;
-                if (Password != null)
+                _stream = output;
+                if (password != null)
                 {
                     Stream encrStream = new MemoryStream();
                     CopyStream(input, ref encrStream);
-                    EncryptedPackageHandler eph = new EncryptedPackageHandler();
-                    Encryption.Password = Password;
+                    var eph = new EncryptedPackageHandler();
+                    Encryption.Password = password;
                     ms = eph.DecryptPackage((MemoryStream)encrStream, Encryption);
                 }
                 else
@@ -1076,23 +1012,21 @@ namespace OfficeOpenXml
                 try
                 {
                     //this._package = Package.Open(this._stream, FileMode.Open, FileAccess.ReadWrite);
-                    _package = new Packaging.ZipPackage(ms);
+                    Package = new Packaging.ZipPackage(ms);
                 }
                 catch (Exception ex)
                 {
-                    EncryptedPackageHandler eph = new EncryptedPackageHandler();
-                    if (Password == null && CompoundDocument.IsCompoundDocument((MemoryStream)_stream))
+                    var eph = new EncryptedPackageHandler();
+                    if (password == null && CompoundDocument.IsCompoundDocument((MemoryStream)_stream))
                     {
                         throw new Exception("Can not open the package. Package is an OLE compound document. If this is an encrypted package, please supply the password", ex);
                     }
-                    else
-                    {
-                        throw;
-                    }
+
+                    throw;
                 }
             }
             //Clear the workbook so that it gets reinitialized next time
-            this._workbook = null;
+            _workbook = null;
         }
         static object _lock = new object();
 
@@ -1107,11 +1041,11 @@ namespace OfficeOpenXml
         {
             if (!inputStream.CanRead)
             {
-                throw (new Exception("Can not read from inputstream"));
+                throw new Exception("Can not read from inputstream");
             }
             if (!outputStream.CanWrite)
             {
-                throw (new Exception("Can not write to outputstream"));
+                throw new Exception("Can not write to outputstream");
             }
             if (inputStream.CanSeek)
             {
@@ -1122,7 +1056,7 @@ namespace OfficeOpenXml
             var buffer = new Byte[bufferLength];
             lock (_lock)
             {
-                int bytesRead = inputStream.Read(buffer, 0, bufferLength);
+                var bytesRead = inputStream.Read(buffer, 0, bufferLength);
                 // write the required bytes
                 while (bytesRead > 0)
                 {

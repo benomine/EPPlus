@@ -48,7 +48,7 @@ namespace OfficeOpenXml.ConditionalFormatting
               priority,
               worksheet,
               itemElementNode,
-              (namespaceManager == null) ? worksheet.NameSpaceManager : namespaceManager)
+              namespaceManager == null ? worksheet.NameSpaceManager : namespaceManager)
         {
         }
     }
@@ -90,11 +90,11 @@ namespace OfficeOpenXml.ConditionalFormatting
               priority,
               worksheet,
               itemElementNode,
-              (namespaceManager == null) ? worksheet.NameSpaceManager : namespaceManager)
+              namespaceManager == null ? worksheet.NameSpaceManager : namespaceManager)
         {
             if (itemElementNode != null && itemElementNode.HasChildNodes)
             {
-                int pos = 1;
+                var pos = 1;
                 foreach (XmlNode node in itemElementNode.SelectNodes("d:iconSet/d:cfvo", NameSpaceManager))
                 {
                     if (pos==1)
@@ -269,14 +269,8 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// </summary>
         public bool Reverse
         {
-            get
-            {
-                return GetXmlNodeBool(_reversePath, false);
-            }
-            set
-            {
-                SetXmlNodeBool(_reversePath, value);
-            }
+            get => GetXmlNodeBool(_reversePath, false);
+            set => SetXmlNodeBool(_reversePath, value);
         }
 
         private const string _showValuePath = "d:iconSet/@showValue";
@@ -285,14 +279,8 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// </summary>
         public bool ShowValue
         {
-            get
-            {
-                return GetXmlNodeBool(_showValuePath, true);
-            }
-            set
-            {
-                SetXmlNodeBool(_showValuePath, value);
-            }
+            get => GetXmlNodeBool(_showValuePath, true);
+            set => SetXmlNodeBool(_showValuePath, value);
         }
         private const string _iconSetPath = "d:iconSet/@iconSet";
         /// <summary>
@@ -306,10 +294,7 @@ namespace OfficeOpenXml.ConditionalFormatting
                 v = v.Substring(1); //Skip first icon.
                 return (T)Enum.Parse(typeof(T), v, true);
             }
-            set
-            {
-                SetXmlNodeString(_iconSetPath, GetIconSetString(value));
-            }
+            set => SetXmlNodeString(_iconSetPath, GetIconSetString(value));
         }
         private string GetIconSetString(T value)
         {
@@ -328,10 +313,11 @@ namespace OfficeOpenXml.ConditionalFormatting
                     case "TrafficLights":
                         return "4TrafficLights";
                     default:
-                        throw (new ArgumentException("Invalid type"));
+                        throw new ArgumentException("Invalid type");
                 }
             }
-            else if (Type == eExcelConditionalFormattingRuleType.FiveIconSet)
+
+            if (Type == eExcelConditionalFormattingRuleType.FiveIconSet)
             {
                 switch (value.ToString())
                 {
@@ -344,32 +330,29 @@ namespace OfficeOpenXml.ConditionalFormatting
                     case "Rating":
                         return "5Rating";
                     default:
-                        throw (new ArgumentException("Invalid type"));
+                        throw new ArgumentException("Invalid type");
                 }
             }
-            else
+            switch (value.ToString())
             {
-                switch (value.ToString())
-                {
-                    case "Arrows":
-                        return "3Arrows";
-                    case "ArrowsGray":
-                        return "3ArrowsGray";
-                    case "Flags":
-                        return "3Flags";
-                    case "Signs":
-                        return "3Signs";
-                    case "Symbols":
-                        return "3Symbols";
-                    case "Symbols2":
-                        return "3Symbols2";
-                    case "TrafficLights1":
-                        return "3TrafficLights1";
-                    case "TrafficLights2":
-                        return "3TrafficLights2";
-                    default:
-                        throw (new ArgumentException("Invalid type"));
-                }
+                case "Arrows":
+                    return "3Arrows";
+                case "ArrowsGray":
+                    return "3ArrowsGray";
+                case "Flags":
+                    return "3Flags";
+                case "Signs":
+                    return "3Signs";
+                case "Symbols":
+                    return "3Symbols";
+                case "Symbols2":
+                    return "3Symbols2";
+                case "TrafficLights1":
+                    return "3TrafficLights1";
+                case "TrafficLights2":
+                    return "3TrafficLights2";
+                default:
+                    throw new ArgumentException("Invalid type");
             }
         }
     }

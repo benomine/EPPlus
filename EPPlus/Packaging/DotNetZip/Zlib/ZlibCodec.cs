@@ -136,7 +136,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         /// <summary>
         /// used for diagnostics, when something goes wrong!
         /// </summary>
-        public System.String Message;
+        public String Message;
 
         internal DeflateManager dstate;
         internal InflateManager istate;
@@ -178,7 +178,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         /// <summary>
         /// The Adler32 checksum on the data transferred through the codec so far. You probably don't need to look at this.
         /// </summary>
-        public int Adler32 { get { return (int)_Adler32; } }
+        public int Adler32 => (int)_Adler32;
 
 
         /// <summary>
@@ -201,12 +201,12 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         {
             if (mode == CompressionMode.Compress)
             {
-                int rc = InitializeDeflate();
+                var rc = InitializeDeflate();
                 if (rc != ZlibConstants.Z_OK) throw new ZlibException("Cannot initialize for deflate.");
             }
             else if (mode == CompressionMode.Decompress)
             {
-                int rc = InitializeInflate();
+                var rc = InitializeInflate();
                 if (rc != ZlibConstants.Z_OK) throw new ZlibException("Cannot initialize for inflate.");
             }
             else throw new ZlibException("Invalid ZlibStreamFlavor.");
@@ -222,7 +222,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         /// <returns>Z_OK if everything goes well.</returns>
         public int InitializeInflate()
         {
-            return InitializeInflate(this.WindowBits);
+            return InitializeInflate(WindowBits);
         }
 
         /// <summary>
@@ -245,7 +245,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         /// <returns>Z_OK if everything goes well.</returns>
         public int InitializeInflate(bool expectRfc1950Header)
         {
-            return InitializeInflate(this.WindowBits, expectRfc1950Header);
+            return InitializeInflate(WindowBits, expectRfc1950Header);
         }
 
         /// <summary>
@@ -256,7 +256,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         /// <returns>Z_OK if all goes well.</returns>
         public int InitializeInflate(int windowBits)
         {
-            this.WindowBits = windowBits;
+            WindowBits = windowBits;
             return InitializeInflate(windowBits, true);
         }
 
@@ -281,7 +281,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         /// <returns>Z_OK if everything goes well.</returns>
         public int InitializeInflate(int windowBits, bool expectRfc1950Header)
         {
-            this.WindowBits = windowBits;
+            WindowBits = windowBits;
             if (dstate != null) throw new ZlibException("You may not call InitializeInflate() after calling InitializeDeflate().");
             istate = new InflateManager(expectRfc1950Header);
             return istate.Initialize(this, windowBits);
@@ -371,7 +371,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         {
             if (istate == null)
                 throw new ZlibException("No Inflate State!");
-            int ret = istate.End();
+            var ret = istate.End();
             istate = null;
             return ret;
         }
@@ -443,7 +443,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         /// <returns>Z_OK if all goes well.</returns>
         public int InitializeDeflate(CompressionLevel level)
         {
-            this.CompressLevel = level;
+            CompressLevel = level;
             return _InternalInitializeDeflate(true);
         }
 
@@ -464,7 +464,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         /// <returns>Z_OK if all goes well.</returns>
         public int InitializeDeflate(CompressionLevel level, bool wantRfc1950Header)
         {
-            this.CompressLevel = level;
+            CompressLevel = level;
             return _InternalInitializeDeflate(wantRfc1950Header);
         }
 
@@ -481,8 +481,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         /// <returns>Z_OK if all goes well.</returns>
         public int InitializeDeflate(CompressionLevel level, int bits)
         {
-            this.CompressLevel = level;
-            this.WindowBits = bits;
+            CompressLevel = level;
+            WindowBits = bits;
             return _InternalInitializeDeflate(true);
         }
 
@@ -498,8 +498,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         /// <returns>Z_OK if all goes well.</returns>
         public int InitializeDeflate(CompressionLevel level, int bits, bool wantRfc1950Header)
         {
-            this.CompressLevel = level;
-            this.WindowBits = bits;
+            CompressLevel = level;
+            WindowBits = bits;
             return _InternalInitializeDeflate(wantRfc1950Header);
         }
 
@@ -509,7 +509,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
             dstate = new DeflateManager();
             dstate.WantRfc1950HeaderBytes = wantRfc1950Header;
 
-            return dstate.Initialize(this, this.CompressLevel, this.WindowBits, this.Strategy);
+            return dstate.Initialize(this, CompressLevel, WindowBits, Strategy);
         }
 
         /// <summary>
@@ -657,7 +657,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         // (See also read_buf()).
         internal void flush_pending()
         {
-            int len = dstate.pendingCount;
+            var len = dstate.pendingCount;
 
             if (len > AvailableBytesOut)
                 len = AvailableBytesOut;
@@ -666,8 +666,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
             if (dstate.pending.Length <= dstate.nextPending ||
                 OutputBuffer.Length <= NextOut ||
-                dstate.pending.Length < (dstate.nextPending + len) ||
-                OutputBuffer.Length < (NextOut + len))
+                dstate.pending.Length < dstate.nextPending + len ||
+                OutputBuffer.Length < NextOut + len)
             {
                 throw new ZlibException(String.Format("Invalid State. (pending.Length={0}, pendingCount={1})",
                     dstate.pending.Length, dstate.pendingCount));
@@ -693,7 +693,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         // (See also flush_pending()).
         internal int read_buf(byte[] buf, int start, int size)
         {
-            int len = AvailableBytesIn;
+            var len = AvailableBytesIn;
 
             if (len > size)
                 len = size;

@@ -12,7 +12,7 @@ namespace OfficeOpenXml.Utils
         public static bool IsNumeric(object candidate)
         {
             if (candidate == null) return false;
-            return (TypeCompat.IsPrimitive(candidate) || candidate is double || candidate is decimal || candidate is DateTime || candidate is TimeSpan || candidate is long);
+            return TypeCompat.IsPrimitive(candidate) || candidate is double || candidate is decimal || candidate is DateTime || candidate is TimeSpan || candidate is long;
         }
         /// <summary>
         /// Tries to parse a double from the specified <paramref name="candidate"/> which is expected to be a string value.
@@ -83,18 +83,12 @@ namespace OfficeOpenXml.Utils
                 }
                 if (IsNumeric(v))
                 {
-                    if (v is DateTime)
+                    d = v switch
                     {
-                        d = ((DateTime)v).ToOADate();
-                    }
-                    else if (v is TimeSpan)
-                    {
-                        d = DateTime.FromOADate(0).Add((TimeSpan)v).ToOADate();
-                    }
-                    else
-                    {
-                        d = Convert.ToDouble(v, CultureInfo.InvariantCulture);
-                    }
+                        DateTime dateTime => dateTime.ToOADate(),
+                        TimeSpan timeSpan => DateTime.FromOADate(0).Add(timeSpan).ToOADate(),
+                        _ => Convert.ToDouble(v, CultureInfo.InvariantCulture)
+                    };
                 }
                 else
                 {
@@ -132,7 +126,7 @@ namespace OfficeOpenXml.Utils
             if (Regex.IsMatch(t, "(_x[0-9A-F]{4,4}_)"))
             {
                 var match = Regex.Match(t, "(_x[0-9A-F]{4,4}_)");
-                int indexAdd = 0;
+                var indexAdd = 0;
                 while (match.Success)
                 {
                     t = t.Insert(match.Index + indexAdd, "_x005F");
@@ -140,7 +134,7 @@ namespace OfficeOpenXml.Utils
                     match = match.NextMatch();
                 }
             }
-            for (int i = 0; i < t.Length; i++)
+            for (var i = 0; i < t.Length; i++)
             {
                 if (t[i] <= 0x1f && t[i] != '\t' && t[i] != '\n' && t[i] != '\r') //Not Tab, CR or LF
                 {
@@ -151,21 +145,20 @@ namespace OfficeOpenXml.Utils
                     sw.Write(t[i]);
                 }
             }
-
         }
         /// <summary>
         /// Return true if preserve space attribute is set.
         /// </summary>
         /// <param name="sb"></param>
         /// <param name="t"></param>
-        /// <param name="encodeTabCRLF"></param>
+        /// <param name="encodeTabCrlf"></param>
         /// <returns></returns>
-        public static void ExcelEncodeString(StringBuilder sb, string t, bool encodeTabCRLF = false)
+        public static void ExcelEncodeString(StringBuilder sb, string t, bool encodeTabCrlf = false)
         {
             if (Regex.IsMatch(t, "(_x[0-9A-F]{4,4}_)"))
             {
                 var match = Regex.Match(t, "(_x[0-9A-F]{4,4}_)");
-                int indexAdd = 0;
+                var indexAdd = 0;
                 while (match.Success)
                 {
                     t = t.Insert(match.Index + indexAdd, "_x005F");
@@ -173,9 +166,9 @@ namespace OfficeOpenXml.Utils
                     match = match.NextMatch();
                 }
             }
-            for (int i = 0; i < t.Length; i++)
+            for (var i = 0; i < t.Length; i++)
             {
-                if (t[i] <= 0x1f && ((t[i] != '\t' && t[i] != '\n' && t[i] != '\r' && encodeTabCRLF == false) || encodeTabCRLF)) //Not Tab, CR or LF
+                if (t[i] <= 0x1f && ((t[i] != '\t' && t[i] != '\n' && t[i] != '\r' && encodeTabCrlf == false) || encodeTabCrlf)) //Not Tab, CR or LF
                 {
                     sb.AppendFormat("_x00{0}_", (t[i] < 0xf ? "0" : "") + ((int)t[i]).ToString("X"));
                 }
@@ -193,7 +186,7 @@ namespace OfficeOpenXml.Utils
         /// <returns></returns>
         public static string ExcelEncodeString(string t)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             t=t.Replace("\r\n", "\n"); //For some reason can't table name have cr in them. Replace with nl
             ExcelEncodeString(sb, t, true);
             return sb.ToString();
@@ -240,7 +233,7 @@ namespace OfficeOpenXml.Utils
 
             var fromType = value.GetType();
             var toType = typeof(T);
-            var toNullableUnderlyingType = (TypeCompat.IsGenericType(toType) && toType.GetGenericTypeDefinition() == typeof(Nullable<>))
+            var toNullableUnderlyingType = TypeCompat.IsGenericType(toType) && toType.GetGenericTypeDefinition() == typeof(Nullable<>)
                 ? Nullable.GetUnderlyingType(toType)
                 : null;
 
@@ -255,22 +248,22 @@ namespace OfficeOpenXml.Utils
 
             if (toType == typeof(DateTime))
             {
-                if (value is double)
-                    return (T)(object)(DateTime.FromOADate((double)value));
+                if (value is double @double)
+                    return (T)(object)DateTime.FromOADate(@double);
 
                 if (fromType == typeof(TimeSpan))
-                    return ((T)(object)(new DateTime(((TimeSpan)value).Ticks)));
+                    return (T)(object)new DateTime(((TimeSpan)value).Ticks);
 
                 if (fromType == typeof(string))
                     return (T)(object)DateTime.Parse(value.ToString());
             }
             else if (toType == typeof(TimeSpan))
             {
-                if (value is double)
-                    return (T)(object)(new TimeSpan(DateTime.FromOADate((double)value).Ticks));
+                if (value is double @double)
+                    return (T)(object)new TimeSpan(DateTime.FromOADate(@double).Ticks);
 
                 if (fromType == typeof(DateTime))
-                    return ((T)(object)(new TimeSpan(((DateTime)value).Ticks)));
+                    return (T)(object)new TimeSpan(((DateTime)value).Ticks);
 
                 if (fromType == typeof(string))
                     return (T)(object)TimeSpan.Parse(value.ToString());
@@ -280,8 +273,8 @@ namespace OfficeOpenXml.Utils
         }
 
         #region internal cache objects
-        internal static TextInfo _invariantTextInfo = CultureInfo.InvariantCulture.TextInfo;
-        internal static CompareInfo _invariantCompareInfo = CompareInfo.GetCompareInfo(CultureInfo.InvariantCulture.Name);  //TODO:Check that it works
+        internal static readonly TextInfo InvariantTextInfo = CultureInfo.InvariantCulture.TextInfo;
+        internal static readonly CompareInfo InvariantCompareInfo = CompareInfo.GetCompareInfo(CultureInfo.InvariantCulture.Name);  //TODO:Check that it works
         #endregion
     }
 }

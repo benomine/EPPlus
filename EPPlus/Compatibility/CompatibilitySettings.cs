@@ -62,17 +62,13 @@ namespace OfficeOpenXml.Compatibility
 
         public bool IsWorksheets1Based
         {
-            get
-            {
-                return excelPackage._worksheetAdd==1;
-            }
+            get => excelPackage._worksheetAdd==1;
             set
             {
                 excelPackage._worksheetAdd = value ? 1 : 0;
-                if (excelPackage._workbook!=null && excelPackage._workbook._worksheets!=null)
+                if (excelPackage._workbook is { _worksheets: not null })
                 {
                     excelPackage.Workbook.Worksheets.ReindexWorksheetDictionary();
-
                 }
             }
         }

@@ -93,7 +93,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
                         var v = sumRange.GetOffset(or, oc);
                         if (v is ExcelErrorValue)
                         {
-                            throw (new ExcelErrorValueException((ExcelErrorValue)v));
+                            throw new ExcelErrorValueException((ExcelErrorValue)v);
                         }
                         retVal += ConvertUtil.GetValueDouble(v, true);
                     }
@@ -111,7 +111,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
                 {
                     if (candidate.IsExcelError)
                     {
-                        throw (new ExcelErrorValueException((ExcelErrorValue)candidate.Value));
+                        throw new ExcelErrorValueException((ExcelErrorValue)candidate.Value);
                     }
                     retVal += candidate.ValueDouble;
                 }

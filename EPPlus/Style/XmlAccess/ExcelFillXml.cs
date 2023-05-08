@@ -67,13 +67,8 @@ namespace OfficeOpenXml.Style.XmlAccess
                 return ExcelFillStyle.None;
             }
         }
-        internal override string Id
-        {
-            get
-            {
-                return PatternType + PatternColor.Id + BackgroundColor.Id;
-            }
-        }
+        internal override string Id => PatternType + PatternColor.Id + BackgroundColor.Id;
+
         #region Public Properties
         const string fillPatternTypePath = "d:patternFill/@patternType";
         protected ExcelFillStyle _fillPatternType;
@@ -82,14 +77,8 @@ namespace OfficeOpenXml.Style.XmlAccess
         /// </summary>
         public ExcelFillStyle PatternType
         {
-            get
-            {
-                return _fillPatternType;
-            }
-            set
-            {
-                _fillPatternType=value;
-            }
+            get => _fillPatternType;
+            set => _fillPatternType=value;
         }
         protected ExcelColorXml _patternColor = null;
         const string _patternColorPath = "d:patternFill/d:bgColor";
@@ -98,14 +87,8 @@ namespace OfficeOpenXml.Style.XmlAccess
         /// </summary>
         public ExcelColorXml PatternColor
         {
-            get
-            {
-                return _patternColor;
-            }
-            internal set
-            {
-                _patternColor = value;
-            }
+            get => _patternColor;
+            internal set => _patternColor = value;
         }
         protected ExcelColorXml _backgroundColor = null;
         const string _backgroundColorPath = "d:patternFill/d:fgColor";
@@ -114,14 +97,8 @@ namespace OfficeOpenXml.Style.XmlAccess
         /// </summary>
         public ExcelColorXml BackgroundColor
         {
-            get
-            {
-                return _backgroundColor;
-            }
-            internal set
-            {
-                _backgroundColor=value;
-            }
+            get => _backgroundColor;
+            internal set => _backgroundColor=value;
         }
         #endregion
 
@@ -134,7 +111,7 @@ namespace OfficeOpenXml.Style.XmlAccess
 
         internal virtual ExcelFillXml Copy()
         {
-            ExcelFillXml newFill = new ExcelFillXml(NameSpaceManager);
+            var newFill = new ExcelFillXml(NameSpaceManager);
             newFill.PatternType = _fillPatternType;
             newFill.BackgroundColor = _backgroundColor.Copy();
             newFill.PatternColor = _patternColor.Copy();
@@ -147,7 +124,7 @@ namespace OfficeOpenXml.Style.XmlAccess
             SetXmlNodeString(fillPatternTypePath, SetPatternString(_fillPatternType));
             if (PatternType != ExcelFillStyle.None)
             {
-                XmlNode pattern = topNode.SelectSingleNode(fillPatternTypePath, NameSpaceManager);
+                var pattern = topNode.SelectSingleNode(fillPatternTypePath, NameSpaceManager);
                 if (BackgroundColor.Exists)
                 {
                     CreateNode(_backgroundColorPath);
@@ -164,7 +141,7 @@ namespace OfficeOpenXml.Style.XmlAccess
 
         private string SetPatternString(ExcelFillStyle pattern)
         {
-            string newName = Enum.GetName(typeof(ExcelFillStyle), pattern);
+            var newName = Enum.GetName(typeof(ExcelFillStyle), pattern);
             return newName.Substring(0, 1).ToLower(CultureInfo.InvariantCulture) + newName.Substring(1, newName.Length - 1);
         }
     }

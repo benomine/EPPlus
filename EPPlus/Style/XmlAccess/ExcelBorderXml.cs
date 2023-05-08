@@ -53,13 +53,7 @@ namespace OfficeOpenXml.Style.XmlAccess
             _diagonalUp = GetBoolValue(topNode, diagonalUpPath);
             _diagonalDown = GetBoolValue(topNode, diagonalDownPath);
         }
-        internal override string Id
-        {
-            get
-            {
-                return Left.Id + Right.Id + Top.Id + Bottom.Id + Diagonal.Id + DiagonalUp.ToString() + DiagonalDown.ToString();
-            }
-        }
+        internal override string Id => Left.Id + Right.Id + Top.Id + Bottom.Id + Diagonal.Id + DiagonalUp.ToString() + DiagonalDown.ToString();
         const string leftPath = "d:left";
         ExcelBorderItemXml _left = null;
         /// <summary>
@@ -67,14 +61,8 @@ namespace OfficeOpenXml.Style.XmlAccess
         /// </summary>
         public ExcelBorderItemXml Left
         {
-            get
-            {
-                return _left;
-            }
-            internal set
-            {
-                _left = value;
-            }
+            get => _left;
+            internal set => _left = value;
         }
         const string rightPath = "d:right";
         ExcelBorderItemXml _right = null;
@@ -83,14 +71,8 @@ namespace OfficeOpenXml.Style.XmlAccess
         /// </summary>
         public ExcelBorderItemXml Right
         {
-            get
-            {
-                return _right;
-            }
-            internal set
-            {
-                _right = value;
-            }
+            get => _right;
+            internal set => _right = value;
         }
         const string topPath = "d:top";
         ExcelBorderItemXml _top = null;
@@ -99,14 +81,8 @@ namespace OfficeOpenXml.Style.XmlAccess
         /// </summary>
         public ExcelBorderItemXml Top
         {
-            get
-            {
-                return _top;
-            }
-            internal set
-            {
-                _top = value;
-            }
+            get => _top;
+            internal set => _top = value;
         }
         const string bottomPath = "d:bottom";
         ExcelBorderItemXml _bottom = null;
@@ -115,14 +91,8 @@ namespace OfficeOpenXml.Style.XmlAccess
         /// </summary>
         public ExcelBorderItemXml Bottom
         {
-            get
-            {
-                return _bottom;
-            }
-            internal set
-            {
-                _bottom = value;
-            }
+            get => _bottom;
+            internal set => _bottom = value;
         }
         const string diagonalPath = "d:diagonal";
         ExcelBorderItemXml _diagonal = null;
@@ -131,14 +101,8 @@ namespace OfficeOpenXml.Style.XmlAccess
         /// </summary>
         public ExcelBorderItemXml Diagonal
         {
-            get
-            {
-                return _diagonal;
-            }
-            internal set
-            {
-                _diagonal = value;
-            }
+            get => _diagonal;
+            internal set => _diagonal = value;
         }
         const string diagonalUpPath = "@diagonalUp";
         bool _diagonalUp = false;
@@ -147,14 +111,8 @@ namespace OfficeOpenXml.Style.XmlAccess
         /// </summary>
         public bool DiagonalUp
         {
-            get
-            {
-                return _diagonalUp;
-            }
-            internal set
-            {
-                _diagonalUp = value;
-            }
+            get => _diagonalUp;
+            internal set => _diagonalUp = value;
         }
         const string diagonalDownPath = "@diagonalDown";
         bool _diagonalDown = false;
@@ -163,19 +121,13 @@ namespace OfficeOpenXml.Style.XmlAccess
         /// </summary>
         public bool DiagonalDown
         {
-            get
-            {
-                return _diagonalDown;
-            }
-            internal set
-            {
-                _diagonalDown = value;
-            }
+            get => _diagonalDown;
+            internal set => _diagonalDown = value;
         }
 
         internal ExcelBorderXml Copy()
         {
-            ExcelBorderXml newBorder = new ExcelBorderXml(NameSpaceManager);
+            var newBorder = new ExcelBorderXml(NameSpaceManager);
             newBorder.Bottom = _bottom.Copy();
             newBorder.Diagonal = _diagonal.Copy();
             newBorder.Left = _left.Copy();

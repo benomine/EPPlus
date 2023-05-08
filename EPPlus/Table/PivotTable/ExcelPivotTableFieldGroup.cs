@@ -63,41 +63,25 @@ namespace OfficeOpenXml.Table.PivotTable
         {
             get
             {
-                string v = GetXmlNodeString(groupByPath);
+                var v = GetXmlNodeString(groupByPath);
                 if (v != "")
                 {
                     return (eDateGroupBy)Enum.Parse(typeof(eDateGroupBy), v, true);
                 }
-                else
-                {
-                    throw (new Exception("Invalid date Groupby"));
-                }
+
+                throw new Exception("Invalid date Groupby");
             }
-            private set
-            {
-                SetXmlNodeString(groupByPath, value.ToString().ToLower(CultureInfo.InvariantCulture));
-            }
+            private set => SetXmlNodeString(groupByPath, value.ToString().ToLower(CultureInfo.InvariantCulture));
         }
         /// <summary>
         /// Auto detect start date
         /// </summary>
-        public bool AutoStart
-        {
-            get
-            {
-                return GetXmlNodeBool("@autoStart", false);
-            }
-        }
+        public bool AutoStart => GetXmlNodeBool("@autoStart", false);
+
         /// <summary>
         /// Auto detect end date
         /// </summary>
-        public bool AutoEnd
-        {
-            get
-            {
-                return GetXmlNodeBool("@autoStart", false);
-            }
-        }
+        public bool AutoEnd => GetXmlNodeBool("@autoStart", false);
     }
     /// <summary>
     /// A pivot table field numeric grouping
@@ -114,14 +98,8 @@ namespace OfficeOpenXml.Table.PivotTable
         /// </summary>
         public double Start
         {
-            get
-            {
-                return (double)GetXmlNodeDoubleNull(startPath);
-            }
-            private set
-            {
-                SetXmlNodeString(startPath, value.ToString(CultureInfo.InvariantCulture));
-            }
+            get => (double)GetXmlNodeDoubleNull(startPath);
+            private set => SetXmlNodeString(startPath, value.ToString(CultureInfo.InvariantCulture));
         }
         const string endPath = "d:fieldGroup/d:rangePr/@endNum";
         /// <summary>
@@ -129,14 +107,8 @@ namespace OfficeOpenXml.Table.PivotTable
         /// </summary>
         public double End
         {
-            get
-            {
-                return (double)GetXmlNodeDoubleNull(endPath);
-            }
-            private set
-            {
-                SetXmlNodeString(endPath, value.ToString(CultureInfo.InvariantCulture));
-            }
+            get => (double)GetXmlNodeDoubleNull(endPath);
+            private set => SetXmlNodeString(endPath, value.ToString(CultureInfo.InvariantCulture));
         }
         const string groupIntervalPath = "d:fieldGroup/d:rangePr/@groupInterval";
         /// <summary>
@@ -144,14 +116,8 @@ namespace OfficeOpenXml.Table.PivotTable
         /// </summary>
         public double Interval
         {
-            get
-            {
-                return (double)GetXmlNodeDoubleNull(groupIntervalPath);
-            }
-            private set
-            {
-                SetXmlNodeString(groupIntervalPath, value.ToString(CultureInfo.InvariantCulture));
-            }
+            get => (double)GetXmlNodeDoubleNull(groupIntervalPath);
+            private set => SetXmlNodeString(groupIntervalPath, value.ToString(CultureInfo.InvariantCulture));
         }
     }
 }

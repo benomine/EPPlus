@@ -64,7 +64,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
         public static ZipCrypto ForWrite(string password)
         {
-            ZipCrypto z = new ZipCrypto();
+            var z = new ZipCrypto();
             if (password == null)
                 throw new BadPasswordException("This entry requires a password.");
             z.InitCipher(password);
@@ -74,10 +74,10 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
         public static ZipCrypto ForRead(string password, ZipEntry e)
         {
-            System.IO.Stream s = e._archiveStream;
+            var s = e._archiveStream;
             e._WeakEncryptionHeader = new byte[12];
-            byte[] eh = e._WeakEncryptionHeader;
-            ZipCrypto z = new ZipCrypto();
+            var eh = e._WeakEncryptionHeader;
+            var z = new ZipCrypto();
 
             if (password == null)
                 throw new BadPasswordException("This entry requires a password.");
@@ -88,7 +88,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
             // Decrypt the header.  This has a side effect of "further initializing the
             // encryption keys" in the traditional zip encryption.
-            byte[] DecryptedHeader = z.DecryptMessage(eh, eh.Length);
+            var DecryptedHeader = z.DecryptMessage(eh, eh.Length);
 
             // CRC check
             // According to the pkzip spec, the final byte in the decrypted header
@@ -125,17 +125,16 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                 {
                     throw new BadPasswordException("The password did not match.");
                 }
-                else if (DecryptedHeader[11] != (byte)((e._TimeBlob >> 8) & 0xff))
+
+                if (DecryptedHeader[11] != (byte)((e._TimeBlob >> 8) & 0xff))
                 {
                     throw new BadPasswordException("The password did not match.");
                 }
 
                 // We have a good password.
             }
-            else
-            {
-                // A-OK
-            }
+
+            // A-OK
             return z;
         }
 
@@ -154,7 +153,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         {
             get
             {
-                UInt16 t = (UInt16)((UInt16)(_Keys[2] & 0xFFFF) | 2);
+                var t = (UInt16)((UInt16)(_Keys[2] & 0xFFFF) | 2);
                 return (byte)((t * (t ^ 1)) >> 8);
             }
         }
@@ -199,10 +198,10 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                 throw new ArgumentOutOfRangeException("length",
                                                       "Bad length during Decryption: the length parameter must be smaller than or equal to the size of the destination array.");
 
-            byte[] plainText = new byte[length];
-            for (int i = 0; i < length; i++)
+            var plainText = new byte[length];
+            for (var i = 0; i < length; i++)
             {
-                byte C = (byte)(cipherText[i] ^ MagicByte);
+                var C = (byte)(cipherText[i] ^ MagicByte);
                 UpdateKeys(C);
                 plainText[i] = C;
             }
@@ -231,10 +230,10 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                 throw new ArgumentOutOfRangeException("length",
                                                       "Bad length during Encryption: The length parameter must be smaller than or equal to the size of the destination array.");
 
-            byte[] cipherText = new byte[length];
-            for (int i = 0; i < length; i++)
+            var cipherText = new byte[length];
+            for (var i = 0; i < length; i++)
             {
-                byte C = plainText[i];
+                var C = plainText[i];
                 cipherText[i] = (byte)(plainText[i] ^ MagicByte);
                 UpdateKeys(C);
             }
@@ -294,8 +293,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// </remarks>
         public void InitCipher(string passphrase)
         {
-            byte[] p = SharedUtilities.StringToByteArray(passphrase);
-            for (int i = 0; i < passphrase.Length; i++)
+            var p = SharedUtilities.StringToByteArray(passphrase);
+            for (var i = 0; i < passphrase.Length; i++)
                 UpdateKeys(p[i]);
         }
 
@@ -336,7 +335,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
         // private fields for the crypto stuff:
         private UInt32[] _Keys = { 0x12345678, 0x23456789, 0x34567890 };
-        private Ionic.Crc.CRC32 crc32 = new Ionic.Crc.CRC32();
+        private Crc.CRC32 crc32 = new Crc.CRC32();
 
     }
 
@@ -376,10 +375,10 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
             if (buffer == null)
                 throw new ArgumentNullException("buffer");
 
-            byte[] db = new byte[count];
-            int n = _s.Read(db, 0, count);
-            byte[] decrypted = _cipher.DecryptMessage(db, n);
-            for (int i = 0; i < n; i++)
+            var db = new byte[count];
+            var n = _s.Read(db, 0, count);
+            var decrypted = _cipher.DecryptMessage(db, n);
+            for (var i = 0; i < n; i++)
             {
                 buffer[offset + i] = decrypted[i];
             }
@@ -401,46 +400,35 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
             if (offset != 0)
             {
                 plaintext = new byte[count];
-                for (int i = 0; i < count; i++)
+                for (var i = 0; i < count; i++)
                 {
                     plaintext[i] = buffer[offset + i];
                 }
             }
             else plaintext = buffer;
 
-            byte[] encrypted = _cipher.EncryptMessage(plaintext, count);
+            var encrypted = _cipher.EncryptMessage(plaintext, count);
             _s.Write(encrypted, 0, encrypted.Length);
         }
 
 
-        public override bool CanRead
-        {
-            get { return (_mode == CryptoMode.Decrypt); }
-        }
-        public override bool CanSeek
-        {
-            get { return false; }
-        }
+        public override bool CanRead => _mode == CryptoMode.Decrypt;
 
-        public override bool CanWrite
-        {
-            get { return (_mode == CryptoMode.Encrypt); }
-        }
+        public override bool CanSeek => false;
+
+        public override bool CanWrite => _mode == CryptoMode.Encrypt;
 
         public override void Flush()
         {
             //throw new NotSupportedException();
         }
 
-        public override long Length
-        {
-            get { throw new NotSupportedException(); }
-        }
+        public override long Length => throw new NotSupportedException();
 
         public override long Position
         {
-            get { throw new NotSupportedException(); }
-            set { throw new NotSupportedException(); }
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
         }
         public override long Seek(long offset, System.IO.SeekOrigin origin)
         {

@@ -65,10 +65,7 @@ namespace OfficeOpenXml.FormulaParsing
         /// <summary>
         /// Number of items in the cache
         /// </summary>
-        public int Count
-        {
-            get { return _addressCache.Count; }
-        }
+        public int Count => _addressCache.Count;
 
         /// <summary>
         /// Returns an address by its cache id

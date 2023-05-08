@@ -90,10 +90,7 @@ namespace OfficeOpenXml.DataValidation.Formulas
         /// </summary>
         public string ExcelFormula
         {
-            get
-            {
-                return _formula;
-            }
+            get => _formula;
             set
             {
                 if (!string.IsNullOrEmpty(value))

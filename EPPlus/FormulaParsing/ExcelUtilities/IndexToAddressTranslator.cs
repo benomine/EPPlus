@@ -59,11 +59,11 @@ namespace OfficeOpenXml.FormulaParsing.ExcelUtilities
                 return "#REF!";
             }
 
-            string sCol = "";
+            var sCol = "";
             do
             {
-                sCol = ((char)('A' + ((iColumnNumber - 1) % 26))) + sCol;
-                iColumnNumber = (iColumnNumber - ((iColumnNumber - 1) % 26)) / 26;
+                sCol = (char)('A' + (iColumnNumber - 1) % 26) + sCol;
+                iColumnNumber = (iColumnNumber - (iColumnNumber - 1) % 26) / 26;
             }
             while (iColumnNumber > 0);
             return fixedCol ? "$" + sCol : sCol;
@@ -79,7 +79,7 @@ namespace OfficeOpenXml.FormulaParsing.ExcelUtilities
 
         private string GetRowNumber(int rowNo)
         {
-            var retVal = rowNo < (_excelDataProvider.ExcelMaxRows) ? rowNo.ToString() : string.Empty;
+            var retVal = rowNo < _excelDataProvider.ExcelMaxRows ? rowNo.ToString() : string.Empty;
             if (!string.IsNullOrEmpty(retVal))
             {
                 switch (_excelReferenceType)

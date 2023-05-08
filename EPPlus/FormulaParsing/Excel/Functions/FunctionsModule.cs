@@ -39,10 +39,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions
         /// <summary>
         /// Gets a dictionary of custom function implementations.
         /// </summary>
-        public IDictionary<string, ExcelFunction> Functions
-        {
-            get { return _functions; }
-        }
+        public IDictionary<string, ExcelFunction> Functions => _functions;
 
         /// <summary>
         /// Gets a dictionary of custom function compilers. A function compiler is not 
@@ -51,9 +48,6 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions
         /// is created, it should be given a reference to the same function instance that exists
         /// in the Functions collection of this module.
         /// </summary>
-        public IDictionary<Type, FunctionCompiler> CustomCompilers
-        {
-            get { return _customCompilers; }
-        }
+        public IDictionary<Type, FunctionCompiler> CustomCompilers => _customCompilers;
     }
 }

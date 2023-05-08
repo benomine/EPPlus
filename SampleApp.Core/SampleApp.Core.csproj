@@ -6,11 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-	<PackageReference Include="SkiaSharp" Version="2.88.0" />
-	<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.0" />
+	<PackageReference Include="SkiaSharp" Version="2.88.3" />
+	<PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.3" />
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
-    <PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>

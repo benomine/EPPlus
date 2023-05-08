@@ -89,7 +89,7 @@ namespace OfficeOpenXml.ConditionalFormatting
             if (itemElementNode == null)
             {
                 // Get the parent node path by the rule type
-                string parentNodePath = ExcelConditionalFormattingValueObjectType.GetParentPathByRuleType(
+                var parentNodePath = ExcelConditionalFormattingValueObjectType.GetParentPathByRuleType(
                     ruleType);
 
                 // Check for en error (rule type does not have <cfvo>)
@@ -170,7 +170,7 @@ namespace OfficeOpenXml.ConditionalFormatting
             if (itemElementNode == null)
             {
                 // Get the parent node path by the rule type
-                string parentNodePath = ExcelConditionalFormattingValueObjectType.GetParentPathByRuleType(
+                var parentNodePath = ExcelConditionalFormattingValueObjectType.GetParentPathByRuleType(
                     ruleType);
 
                 // Check for en error (rule type does not have <cfvo>)
@@ -261,8 +261,8 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// </summary>
         internal eExcelConditionalFormattingRuleType RuleType
         {
-            get { return _ruleType; }
-            set { _ruleType = value; }
+            get => _ruleType;
+            set => _ruleType = value;
         }
 
         /// <summary>
@@ -281,7 +281,7 @@ namespace OfficeOpenXml.ConditionalFormatting
                 if ((_ruleType==eExcelConditionalFormattingRuleType.ThreeIconSet || _ruleType==eExcelConditionalFormattingRuleType.FourIconSet || _ruleType==eExcelConditionalFormattingRuleType.FiveIconSet) &&
                     (value == eExcelConditionalFormattingValueObjectType.Min || value == eExcelConditionalFormattingValueObjectType.Max))
                 {
-                    throw (new ArgumentException("Value type can't be Min or Max for icon sets"));
+                    throw new ArgumentException("Value type can't be Min or Max for icon sets");
                 }
                 SetXmlNodeString(ExcelConditionalFormattingConstants.Paths.TypeAttribute, value.ToString().ToLower(CultureInfo.InvariantCulture));
             }
@@ -292,18 +292,13 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// </summary>
         public bool GreaterThanOrEqualTo
         {
-            get
-            {
-                return GetXmlNodeBool(ExcelConditionalFormattingConstants.Paths.GteAttribute);
-            }
+            get => GetXmlNodeBool(ExcelConditionalFormattingConstants.Paths.GteAttribute);
 
-            set
-            {
+            set =>
                 SetXmlNodeString(
                     ExcelConditionalFormattingConstants.Paths.GteAttribute,
-                    (value == false) ? "0" : string.Empty,
+                    value == false ? "0" : string.Empty,
                     true);
-            }
         }
 
 
@@ -315,25 +310,23 @@ namespace OfficeOpenXml.ConditionalFormatting
         {
             get
             {
-                if ((Type == eExcelConditionalFormattingValueObjectType.Num)
-                    || (Type == eExcelConditionalFormattingValueObjectType.Percent)
-                    || (Type == eExcelConditionalFormattingValueObjectType.Percentile))
+                if (Type == eExcelConditionalFormattingValueObjectType.Num
+                    || Type == eExcelConditionalFormattingValueObjectType.Percent
+                    || Type == eExcelConditionalFormattingValueObjectType.Percentile)
                 {
                     return GetXmlNodeDouble(ExcelConditionalFormattingConstants.Paths.ValAttribute);
                 }
-                else
-                {
-                    return 0;
-                }
+
+                return 0;
             }
             set
             {
-                string valueToStore = string.Empty;
+                var valueToStore = string.Empty;
 
                 // Only some types use the @val attribute
-                if ((Type == eExcelConditionalFormattingValueObjectType.Num)
-                    || (Type == eExcelConditionalFormattingValueObjectType.Percent)
-                    || (Type == eExcelConditionalFormattingValueObjectType.Percentile))
+                if (Type == eExcelConditionalFormattingValueObjectType.Num
+                    || Type == eExcelConditionalFormattingValueObjectType.Percent
+                    || Type == eExcelConditionalFormattingValueObjectType.Percentile)
                 {
                     valueToStore = value.ToString(CultureInfo.InvariantCulture);
                 }

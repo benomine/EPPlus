@@ -17,10 +17,10 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
             ValidateArguments(arguments, 2);
             var number = ArgToDecimal(arguments, 0);
             var refer = arguments.ElementAt(1);
-            bool asc = false;
+            var asc = false;
             if (arguments.Count() > 2)
             {
-                asc = base.ArgToBool(arguments, 2);
+                asc = ArgToBool(arguments, 2);
             }
             var l = new List<double>();
 
@@ -39,9 +39,9 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
                 ix = l.IndexOf(number)+1;
                 if (_isAvg)
                 {
-                    int st = Convert.ToInt32(ix);
+                    var st = Convert.ToInt32(ix);
                     while (l.Count > st && l[st] == number) st++;
-                    if (st > ix) ix = ix + ((st - ix) / 2D);
+                    if (st > ix) ix = ix + (st - ix) / 2D;
                 }
             }
             else
@@ -49,9 +49,9 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
                 ix = l.LastIndexOf(number);
                 if (_isAvg)
                 {
-                    int st = Convert.ToInt32(ix)-1;
+                    var st = Convert.ToInt32(ix)-1;
                     while (0 <= st && l[st] == number) st--;
-                    if (st+1 < ix) ix = ix - ((ix - st - 1) / 2D);
+                    if (st+1 < ix) ix = ix - (ix - st - 1) / 2D;
                 }
                 ix = l.Count - ix;
             }
@@ -59,10 +59,8 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
             {
                 return new CompileResult(ExcelErrorValue.Create(eErrorType.NA), DataType.ExcelError);
             }
-            else
-            {
-                return CreateResult(ix, DataType.Decimal);
-            }
+
+            return CreateResult(ix, DataType.Decimal);
         }
     }
 }

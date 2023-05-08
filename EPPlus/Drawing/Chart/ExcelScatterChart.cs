@@ -59,18 +59,13 @@ namespace OfficeOpenXml.Drawing.Chart
         }
         private void SetTypeProperties()
         {
-            if (ChartType == eChartType.XYScatter ||
-               ChartType == eChartType.XYScatterLines ||
-               ChartType == eChartType.XYScatterLinesNoMarkers)
+            ScatterStyle = ChartType switch
             {
-                ScatterStyle = eScatterStyle.LineMarker;
-            }
-            else if (
-               ChartType == eChartType.XYScatterSmooth ||
-               ChartType == eChartType.XYScatterSmoothNoMarkers)
-            {
-                ScatterStyle = eScatterStyle.SmoothMarker;
-            }
+                eChartType.XYScatter or eChartType.XYScatterLines or eChartType.XYScatterLinesNoMarkers =>
+                    eScatterStyle.LineMarker,
+                eChartType.XYScatterSmooth or eChartType.XYScatterSmoothNoMarkers => eScatterStyle.SmoothMarker,
+                _ => ScatterStyle
+            };
         }
         #region "Grouping Enum Translation"
         string _scatterTypePath = "c:scatterStyle/@val";
@@ -101,10 +96,7 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public eScatterStyle ScatterStyle
         {
-            get
-            {
-                return GetScatterEnum(_chartXmlHelper.GetXmlNodeString(_scatterTypePath));
-            }
+            get => GetScatterEnum(_chartXmlHelper.GetXmlNodeString(_scatterTypePath));
             internal set
             {
                 _chartXmlHelper.CreateNode(_scatterTypePath, true);
@@ -117,47 +109,25 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public bool Marker
         {
-            get
-            {
-                return GetXmlNodeBool(MARKER_PATH, false);
-            }
-            set
-            {
-                SetXmlNodeBool(MARKER_PATH, value, false);
-            }
+            get => GetXmlNodeBool(MARKER_PATH, false);
+            set => SetXmlNodeBool(MARKER_PATH, value, false);
         }
         internal override eChartType GetChartType(string name)
         {
             if (name == "scatterChart")
             {
-                if (ScatterStyle==eScatterStyle.LineMarker)
+                switch (ScatterStyle)
                 {
-                    if (((ExcelScatterChartSerie)Series[0]).Marker == eMarkerStyle.None)
-                    {
+                    case eScatterStyle.LineMarker when ((ExcelScatterChartSerie)Series[0]).Marker == eMarkerStyle.None:
                         return eChartType.XYScatterLinesNoMarkers;
-                    }
-                    else
-                    {
-                        if (ExistNode("c:ser/c:spPr/a:ln/noFill"))
-                        {
-                            return eChartType.XYScatter;
-                        }
-                        else
-                        {
-                            return eChartType.XYScatterLines;
-                        }
-                    }
-                }
-                else if (ScatterStyle == eScatterStyle.SmoothMarker)
-                {
-                    if (((ExcelScatterChartSerie)Series[0]).Marker == eMarkerStyle.None)
-                    {
+                    case eScatterStyle.LineMarker when ExistNode("c:ser/c:spPr/a:ln/noFill"):
+                        return eChartType.XYScatter;
+                    case eScatterStyle.LineMarker:
+                        return eChartType.XYScatterLines;
+                    case eScatterStyle.SmoothMarker when ((ExcelScatterChartSerie)Series[0]).Marker == eMarkerStyle.None:
                         return eChartType.XYScatterSmoothNoMarkers;
-                    }
-                    else
-                    {
+                    case eScatterStyle.SmoothMarker:
                         return eChartType.XYScatterSmooth;
-                    }
                 }
             }
             return base.GetChartType(name);

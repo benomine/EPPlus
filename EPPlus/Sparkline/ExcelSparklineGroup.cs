@@ -89,11 +89,9 @@ namespace OfficeOpenXml.Sparkline
                 {
                     return _ws.Cells[a.Address];
                 }
-                else
-                {
-                    var ws = _ws.Workbook.Worksheets[a.WorkSheet];
-                    return ws.Cells[a.Address];
-                }
+
+                var ws = _ws.Workbook.Worksheets[a.WorkSheet];
+                return ws.Cells[a.Address];
             }
             set
             {
@@ -104,11 +102,12 @@ namespace OfficeOpenXml.Sparkline
                 }
                 if (value.Worksheet.Workbook != _ws.Workbook)
                 {
-                    throw (new ArgumentException("Range must be in the same package"));
+                    throw new ArgumentException("Range must be in the same package");
                 }
-                else if (value.Rows != 1 && value.Columns != 1)
+
+                if (value.Rows != 1 && value.Columns != 1)
                 {
-                    throw (new ArgumentException("Range must only be 1 row or column"));
+                    throw new ArgumentException("Range must only be 1 row or column");
                 }
 
                 DateAxis = true;
@@ -131,11 +130,9 @@ namespace OfficeOpenXml.Sparkline
                 {
                     return null;
                 }
-                else
-                {
-                    var ws = _ws.Workbook.Worksheets[Sparklines[0].RangeAddress.WorkSheet];
-                    return _ws.Cells[Sparklines[0].RangeAddress._fromRow, Sparklines[0].RangeAddress._fromCol, Sparklines[Sparklines.Count - 1].RangeAddress._toRow, Sparklines[Sparklines.Count - 1].RangeAddress._toCol];
-                }
+
+                var ws = _ws.Workbook.Worksheets[Sparklines[0].RangeAddress.WorkSheet];
+                return _ws.Cells[Sparklines[0].RangeAddress._fromRow, Sparklines[0].RangeAddress._fromCol, Sparklines[Sparklines.Count - 1].RangeAddress._toRow, Sparklines[Sparklines.Count - 1].RangeAddress._toCol];
             }
         }
         /// <summary>
@@ -149,10 +146,8 @@ namespace OfficeOpenXml.Sparkline
                 {
                     return null;
                 }
-                else
-                {
-                    return _ws.Cells[Sparklines[0].Cell.Row, Sparklines[0].Cell.Column, Sparklines[Sparklines.Count - 1].Cell.Row, Sparklines[Sparklines.Count - 1].Cell.Column];
-                }
+
+                return _ws.Cells[Sparklines[0].Cell.Row, Sparklines[0].Cell.Column, Sparklines[Sparklines.Count - 1].Cell.Row, Sparklines[Sparklines.Count - 1].Cell.Column];
             }
         }
         /// <summary>
@@ -163,14 +158,8 @@ namespace OfficeOpenXml.Sparkline
         const string _dateAxisPath = "@dateAxis";
         internal bool DateAxis
         {
-            get
-            {
-                return GetXmlNodeBool(_dateAxisPath, false);
-            }
-            set
-            {
-                SetXmlNodeBool(_dateAxisPath, value);
-            }
+            get => GetXmlNodeBool(_dateAxisPath, false);
+            set => SetXmlNodeBool(_dateAxisPath, value);
         }
         const string _markersPath = "@markers";
         /// <summary>
@@ -179,14 +168,8 @@ namespace OfficeOpenXml.Sparkline
         /// </summary>
         public bool Markers
         {
-            get
-            {
-                return GetXmlNodeBool(_markersPath, false);
-            }
-            set
-            {
-                SetXmlNodeBool(_markersPath, value);
-            }
+            get => GetXmlNodeBool(_markersPath, false);
+            set => SetXmlNodeBool(_markersPath, value);
         }
         const string _highPath = "@high";
         /// <summary>
@@ -194,14 +177,8 @@ namespace OfficeOpenXml.Sparkline
         /// </summary>
         public bool High
         {
-            get
-            {
-                return GetXmlNodeBool(_highPath, false);
-            }
-            set
-            {
-                SetXmlNodeBool(_highPath, value);
-            }
+            get => GetXmlNodeBool(_highPath, false);
+            set => SetXmlNodeBool(_highPath, value);
         }
         const string _lowPath = "@low";
         /// <summary>
@@ -209,14 +186,8 @@ namespace OfficeOpenXml.Sparkline
         /// </summary>
         public bool Low
         {
-            get
-            {
-                return GetXmlNodeBool(_lowPath, false);
-            }
-            set
-            {
-                SetXmlNodeBool(_lowPath, value);
-            }
+            get => GetXmlNodeBool(_lowPath, false);
+            set => SetXmlNodeBool(_lowPath, value);
         }
         const string _firstPath = "@first";
         /// <summary>
@@ -224,14 +195,8 @@ namespace OfficeOpenXml.Sparkline
         /// </summary>
         public bool First
         {
-            get
-            {
-                return GetXmlNodeBool(_firstPath, false);
-            }
-            set
-            {
-                SetXmlNodeBool(_firstPath, value);
-            }
+            get => GetXmlNodeBool(_firstPath, false);
+            set => SetXmlNodeBool(_firstPath, value);
         }
         const string _lastPath = "@last";
         /// <summary>
@@ -239,14 +204,8 @@ namespace OfficeOpenXml.Sparkline
         /// </summary>
         public bool Last
         {
-            get
-            {
-                return GetXmlNodeBool(_lastPath, false);
-            }
-            set
-            {
-                SetXmlNodeBool(_lastPath, value);
-            }
+            get => GetXmlNodeBool(_lastPath, false);
+            set => SetXmlNodeBool(_lastPath, value);
         }
 
         const string _negativePath = "@negative";
@@ -255,53 +214,29 @@ namespace OfficeOpenXml.Sparkline
         /// </summary>
         public bool Negative
         {
-            get
-            {
-                return GetXmlNodeBool(_negativePath);
-            }
-            set
-            {
-                SetXmlNodeBool(_negativePath, value);
-            }
+            get => GetXmlNodeBool(_negativePath);
+            set => SetXmlNodeBool(_negativePath, value);
         }
 
 
         const string _displayXAxisPath = "@displayXAxis";
         public bool DisplayXAxis
         {
-            get
-            {
-                return GetXmlNodeBool(_displayXAxisPath);
-            }
-            set
-            {
-                SetXmlNodeBool(_displayXAxisPath, value);
-            }
+            get => GetXmlNodeBool(_displayXAxisPath);
+            set => SetXmlNodeBool(_displayXAxisPath, value);
         }
         const string _displayHiddenPath = "@displayHidden";
         public bool DisplayHidden
         {
-            get
-            {
-                return GetXmlNodeBool(_displayHiddenPath);
-            }
-            set
-            {
-                SetXmlNodeBool(_displayHiddenPath, value);
-            }
+            get => GetXmlNodeBool(_displayHiddenPath);
+            set => SetXmlNodeBool(_displayHiddenPath, value);
         }
         #endregion
         const string lineWidthPath = "x14:sparklineGroup/@lineWidth";
         public double LineWidth
         {
-            get
-            {
-                return GetXmlNodeDoubleNull(lineWidthPath)??0.75;
-            }
-            set
-            {
-                SetXmlNodeString(lineWidthPath, value.ToString(CultureInfo.InvariantCulture));
-            }
+            get => GetXmlNodeDoubleNull(lineWidthPath)??0.75;
+            set => SetXmlNodeString(lineWidthPath, value.ToString(CultureInfo.InvariantCulture));
         }
         const string _dispBlanksAsPath = "@displayEmptyCellsAs";
         public eDispBlanksAs DisplayEmptyCellsAs
@@ -313,15 +248,10 @@ namespace OfficeOpenXml.Sparkline
                 {
                     return eDispBlanksAs.Zero;
                 }
-                else
-                {
-                    return (eDispBlanksAs)Enum.Parse(typeof(eDispBlanksAs), s, true);
-                }
+
+                return (eDispBlanksAs)Enum.Parse(typeof(eDispBlanksAs), s, true);
             }
-            set
-            {
-                SetXmlNodeString(_dispBlanksAsPath, value.ToString().ToLower());
-            }
+            set => SetXmlNodeString(_dispBlanksAsPath, value.ToString().ToLower());
         }
         const string _typePath = "@type";
         /// <summary>
@@ -336,15 +266,10 @@ namespace OfficeOpenXml.Sparkline
                 {
                     return eSparklineType.Line;
                 }
-                else
-                {
-                    return (eSparklineType)Enum.Parse(typeof(eSparklineType), type, true);
-                }
+
+                return (eSparklineType)Enum.Parse(typeof(eSparklineType), type, true);
             }
-            set
-            {
-                SetXmlNodeString(_typePath, value.ToString().ToLower());
-            }
+            set => SetXmlNodeString(_typePath, value.ToString().ToLower());
         }
         #region Colors
         const string _colorSeriesPath = "x14:colorSeries";
@@ -435,10 +360,7 @@ namespace OfficeOpenXml.Sparkline
         public double ManualMin
         {
 
-            get
-            {
-                return GetXmlNodeDouble(_manualMinPath);
-            }
+            get => GetXmlNodeDouble(_manualMinPath);
             set
             {
                 SetXmlNodeString(_minAxisTypePath, "custom");
@@ -449,10 +371,7 @@ namespace OfficeOpenXml.Sparkline
         public double ManualMax
         {
 
-            get
-            {
-                return GetXmlNodeDouble(_manualMaxPath);
-            }
+            get => GetXmlNodeDouble(_manualMaxPath);
             set
             {
                 SetXmlNodeString(_maxAxisTypePath, "custom");
@@ -470,10 +389,8 @@ namespace OfficeOpenXml.Sparkline
                 {
                     return eSparklineAxisMinMax.Individual;
                 }
-                else
-                {
-                    return (eSparklineAxisMinMax)Enum.Parse(typeof(eSparklineAxisMinMax), s, true);
-                }
+
+                return (eSparklineAxisMinMax)Enum.Parse(typeof(eSparklineAxisMinMax), s, true);
             }
             set
             {
@@ -498,10 +415,8 @@ namespace OfficeOpenXml.Sparkline
                 {
                     return eSparklineAxisMinMax.Individual;
                 }
-                else
-                {
-                    return (eSparklineAxisMinMax)Enum.Parse(typeof(eSparklineAxisMinMax), s, true);
-                }
+
+                return (eSparklineAxisMinMax)Enum.Parse(typeof(eSparklineAxisMinMax), s, true);
             }
             set
             {
@@ -520,14 +435,8 @@ namespace OfficeOpenXml.Sparkline
         public bool RightToLeft
         {
 
-            get
-            {
-                return GetXmlNodeBool(_rightToLeftPath, false);
-            }
-            set
-            {
-                SetXmlNodeBool(_rightToLeftPath, value);
-            }
+            get => GetXmlNodeBool(_rightToLeftPath, false);
+            set => SetXmlNodeBool(_rightToLeftPath, value);
         }
         #endregion
     }

@@ -129,20 +129,14 @@ namespace OfficeOpenXml.Style.XmlAccess
             get;
             internal set;
         }
-        internal override string Id
-        {
-            get
-            {
-                return base.Id + Degree.ToString() + GradientColor1.Id + GradientColor2.Id + Type + Left.ToString() + Right.ToString() + Bottom.ToString() + Top.ToString();
-            }
-        }
+        internal override string Id => base.Id + Degree.ToString() + GradientColor1.Id + GradientColor2.Id + Type + Left.ToString() + Right.ToString() + Bottom.ToString() + Top.ToString();
 
         #region Public Properties
         #endregion
         internal override ExcelFillXml Copy()
         {
-            ExcelGradientFillXml newFill = new ExcelGradientFillXml(NameSpaceManager);
-            newFill.PatternType = base._fillPatternType;
+            var newFill = new ExcelGradientFillXml(NameSpaceManager);
+            newFill.PatternType = _fillPatternType;
             newFill.BackgroundColor = _backgroundColor.Copy();
             newFill.PatternColor = _patternColor.Copy();
 

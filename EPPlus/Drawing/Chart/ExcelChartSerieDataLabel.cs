@@ -52,45 +52,21 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public eLabelPosition Position
         {
-            get
-            {
-                return GetPosEnum(GetXmlNodeString(positionPath));
-            }
-            set
-            {
-                SetXmlNodeString(positionPath, GetPosText(value));
-            }
+            get => GetPosEnum(GetXmlNodeString(positionPath));
+            set => SetXmlNodeString(positionPath, GetPosText(value));
         }
         ExcelDrawingFill _fill = null;
         /// <summary>
         /// Access fill properties
         /// </summary>
-        public new ExcelDrawingFill Fill
-        {
-            get
-            {
-                if (_fill == null)
-                {
-                    _fill = new ExcelDrawingFill(NameSpaceManager, TopNode, "c:spPr");
-                }
-                return _fill;
-            }
-        }
+        public new ExcelDrawingFill Fill => _fill ??= new ExcelDrawingFill(NameSpaceManager, TopNode, "c:spPr");
+
         ExcelDrawingBorder _border = null;
         /// <summary>
         /// Access border properties
         /// </summary>
-        public new ExcelDrawingBorder Border
-        {
-            get
-            {
-                if (_border == null)
-                {
-                    _border = new ExcelDrawingBorder(NameSpaceManager, TopNode, "c:spPr/a:ln");
-                }
-                return _border;
-            }
-        }
+        public new ExcelDrawingBorder Border => _border ??= new ExcelDrawingBorder(NameSpaceManager, TopNode, "c:spPr/a:ln");
+
         ExcelTextFont _font = null;
         /// <summary>
         /// Access font properties

@@ -41,7 +41,7 @@ namespace OfficeOpenXml.Style
     {
         eStyleClass _cls;
         StyleBase _parent;
-        internal ExcelBorderItem(ExcelStyles styles, OfficeOpenXml.XmlHelper.ChangedEventHandler ChangedEvent, int worksheetID, string address, eStyleClass cls, StyleBase parent) :
+        internal ExcelBorderItem(ExcelStyles styles, XmlHelper.ChangedEventHandler ChangedEvent, int worksheetID, string address, eStyleClass cls, StyleBase parent) :
             base(styles, ChangedEvent, worksheetID, address)
         {
             _cls=cls;
@@ -52,14 +52,8 @@ namespace OfficeOpenXml.Style
         /// </summary>
         public ExcelBorderStyle Style
         {
-            get
-            {
-                return GetSource().Style;
-            }
-            set
-            {
-                _ChangedEvent(this, new StyleChangeEventArgs(_cls, eStyleProperty.Style, value, _positionID, _address));
-            }
+            get => GetSource().Style;
+            set => _ChangedEvent(this, new StyleChangeEventArgs(_cls, eStyleProperty.Style, value, _positionID, _address));
         }
         ExcelColor _color = null;
         /// <summary>
@@ -77,17 +71,15 @@ namespace OfficeOpenXml.Style
             }
         }
 
-        internal override string Id
-        {
-            get { return Style + Color.Id; }
-        }
+        internal override string Id => Style + Color.Id;
+
         internal override void SetIndex(int index)
         {
             _parent.Index = index;
         }
         private ExcelBorderItemXml GetSource()
         {
-            int ix = _parent.Index < 0 ? 0 : _parent.Index;
+            var ix = _parent.Index < 0 ? 0 : _parent.Index;
 
             switch (_cls)
             {

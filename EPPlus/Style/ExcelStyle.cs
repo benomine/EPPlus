@@ -39,7 +39,7 @@ namespace OfficeOpenXml.Style
     /// </summary>
     public sealed class ExcelStyle : StyleBase
     {
-        internal ExcelStyle(ExcelStyles styles, OfficeOpenXml.XmlHelper.ChangedEventHandler ChangedEvent, int positionID, string Address, int xfsId) :
+        internal ExcelStyle(ExcelStyles styles, XmlHelper.ChangedEventHandler ChangedEvent, int positionID, string Address, int xfsId) :
             base(styles, ChangedEvent, positionID, Address)
         {
             Index = xfsId;
@@ -80,85 +80,52 @@ namespace OfficeOpenXml.Style
         /// </summary>
         public ExcelHorizontalAlignment HorizontalAlignment
         {
-            get
-            {
-                return _styles.CellXfs[Index].HorizontalAlignment;
-            }
-            set
-            {
-                _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Style, eStyleProperty.HorizontalAlign, value, _positionID, _address));
-            }
+            get => _styles.CellXfs[Index].HorizontalAlignment;
+            set => _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Style, eStyleProperty.HorizontalAlign, value, _positionID, _address));
         }
         /// <summary>
         /// The vertical alignment in the cell
         /// </summary>
         public ExcelVerticalAlignment VerticalAlignment
         {
-            get
-            {
-                return _styles.CellXfs[Index].VerticalAlignment;
-            }
-            set
-            {
-                _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Style, eStyleProperty.VerticalAlign, value, _positionID, _address));
-            }
+            get => _styles.CellXfs[Index].VerticalAlignment;
+            set => _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Style, eStyleProperty.VerticalAlign, value, _positionID, _address));
         }
         /// <summary>
         /// Wrap the text
         /// </summary>
         public bool WrapText
         {
-            get
-            {
-                return _styles.CellXfs[Index].WrapText;
-            }
-            set
-            {
-                _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Style, eStyleProperty.WrapText, value, _positionID, _address));
-            }
+            get => _styles.CellXfs[Index].WrapText;
+            set => _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Style, eStyleProperty.WrapText, value, _positionID, _address));
         }
         /// <summary>
         /// Readingorder
         /// </summary>
         public ExcelReadingOrder ReadingOrder
         {
-            get
-            {
-                return _styles.CellXfs[Index].ReadingOrder;
-            }
-            set
-            {
-                _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Style, eStyleProperty.ReadingOrder, value, _positionID, _address));
-            }
+            get => _styles.CellXfs[Index].ReadingOrder;
+            set => _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Style, eStyleProperty.ReadingOrder, value, _positionID, _address));
         }
         /// <summary>
         /// Shrink the text to fit
         /// </summary>
         public bool ShrinkToFit
         {
-            get
-            {
-                return _styles.CellXfs[Index].ShrinkToFit;
-            }
-            set
-            {
-                _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Style, eStyleProperty.ShrinkToFit, value, _positionID, _address));
-            }
+            get => _styles.CellXfs[Index].ShrinkToFit;
+            set => _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Style, eStyleProperty.ShrinkToFit, value, _positionID, _address));
         }
         /// <summary>
         /// The margin between the border and the text
         /// </summary>
         public int Indent
         {
-            get
-            {
-                return _styles.CellXfs[Index].Indent;
-            }
+            get => _styles.CellXfs[Index].Indent;
             set
             {
                 if (value <0 || value > 250)
                 {
-                    throw (new ArgumentOutOfRangeException("Indent must be between 0 and 250"));
+                    throw new ArgumentOutOfRangeException("Indent must be between 0 and 250");
                 }
                 _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Style, eStyleProperty.Indent, value, _positionID, _address));
             }
@@ -168,10 +135,7 @@ namespace OfficeOpenXml.Style
         /// </summary>
         public int TextRotation
         {
-            get
-            {
-                return _styles.CellXfs[Index].TextRotation;
-            }
+            get => _styles.CellXfs[Index].TextRotation;
             set
             {
                 if (value < 0 || value > 180)
@@ -187,14 +151,8 @@ namespace OfficeOpenXml.Style
         /// </summary>
         public bool Locked
         {
-            get
-            {
-                return _styles.CellXfs[Index].Locked;
-            }
-            set
-            {
-                _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Style, eStyleProperty.Locked, value, _positionID, _address));
-            }
+            get => _styles.CellXfs[Index].Locked;
+            set => _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Style, eStyleProperty.Locked, value, _positionID, _address));
         }
         /// <summary>
         /// If true the formula is hidden when the sheet is protected.
@@ -202,14 +160,8 @@ namespace OfficeOpenXml.Style
         /// </summary>
         public bool Hidden
         {
-            get
-            {
-                return _styles.CellXfs[Index].Hidden;
-            }
-            set
-            {
-                _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Style, eStyleProperty.Hidden, value, _positionID, _address));
-            }
+            get => _styles.CellXfs[Index].Hidden;
+            set => _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Style, eStyleProperty.Hidden, value, _positionID, _address));
         }
 
         /// <summary>
@@ -217,14 +169,8 @@ namespace OfficeOpenXml.Style
         /// </summary>
         public bool QuotePrefix
         {
-            get
-            {
-                return _styles.CellXfs[Index].QuotePrefix;
-            }
-            set
-            {
-                _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Style, eStyleProperty.QuotePrefix, value, _positionID, _address));
-            }
+            get => _styles.CellXfs[Index].QuotePrefix;
+            set => _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Style, eStyleProperty.QuotePrefix, value, _positionID, _address));
         }
 
         const string xfIdPath = "@xfId";
@@ -233,14 +179,8 @@ namespace OfficeOpenXml.Style
         /// </summary>
         public int XfId
         {
-            get
-            {
-                return _styles.CellXfs[Index].XfId;
-            }
-            set
-            {
-                _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Style, eStyleProperty.XfId, value, _positionID, _address));
-            }
+            get => _styles.CellXfs[Index].XfId;
+            set => _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Style, eStyleProperty.XfId, value, _positionID, _address));
         }
         internal int PositionID
         {
@@ -252,13 +192,6 @@ namespace OfficeOpenXml.Style
             get;
             set;
         }
-        internal override string Id
-        {
-            get
-            {
-                return Numberformat.Id + "|" + Font.Id + "|" + Fill.Id + "|" + Border.Id + "|" + VerticalAlignment + "|" + HorizontalAlignment + "|" + WrapText.ToString() + "|" + ReadingOrder.ToString() + "|" + XfId.ToString() + "|" + QuotePrefix.ToString();
-            }
-        }
-
+        internal override string Id => Numberformat.Id + "|" + Font.Id + "|" + Fill.Id + "|" + Border.Id + "|" + VerticalAlignment + "|" + HorizontalAlignment + "|" + WrapText.ToString() + "|" + ReadingOrder.ToString() + "|" + XfId.ToString() + "|" + QuotePrefix.ToString();
     }
 }

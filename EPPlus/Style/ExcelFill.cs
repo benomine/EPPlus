@@ -37,7 +37,7 @@ namespace OfficeOpenXml.Style
     /// </summary>
     public class ExcelFill : StyleBase
     {
-        internal ExcelFill(ExcelStyles styles, OfficeOpenXml.XmlHelper.ChangedEventHandler ChangedEvent, int PositionID, string address, int index) :
+        internal ExcelFill(ExcelStyles styles, XmlHelper.ChangedEventHandler ChangedEvent, int PositionID, string address, int index) :
             base(styles, ChangedEvent, PositionID, address)
 
         {
@@ -54,10 +54,8 @@ namespace OfficeOpenXml.Style
                 {
                     return ExcelFillStyle.None;
                 }
-                else
-                {
-                    return _styles.Fills[Index].PatternType;
-                }
+
+                return _styles.Fills[Index].PatternType;
             }
             set
             {
@@ -123,10 +121,8 @@ namespace OfficeOpenXml.Style
                 {
                     return PatternType + PatternColor.Id + BackgroundColor.Id;
                 }
-                else
-                {
-                    return _gradient.Id;
-                }
+
+                return _gradient.Id;
             }
         }
     }

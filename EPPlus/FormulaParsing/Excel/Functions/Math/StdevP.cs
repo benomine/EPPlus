@@ -39,7 +39,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
 
         private static double StandardDeviation(IEnumerable<double> values)
         {
-            double avg = values.Average();
+            var avg = values.Average();
             return MathObj.Sqrt(values.Average(v => MathObj.Pow(v - avg, 2)));
         }
     }

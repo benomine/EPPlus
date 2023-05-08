@@ -58,14 +58,8 @@ namespace OfficeOpenXml.Packaging
         MemoryStream _stream = null;
         internal MemoryStream Stream
         {
-            get
-            {
-                return _stream;
-            }
-            set
-            {
-                _stream = value;
-            }
+            get => _stream;
+            set => _stream = value;
         }
         public override ZipPackageRelationship CreateRelationship(Uri targetUri, TargetMode targetMode, string relationshipType)
         {
@@ -98,10 +92,7 @@ namespace OfficeOpenXml.Packaging
         string _contentType = "";
         public string ContentType
         {
-            get
-            {
-                return _contentType;
-            }
+            get => _contentType;
             internal set
             {
                 if (!string.IsNullOrEmpty(_contentType))
@@ -118,8 +109,8 @@ namespace OfficeOpenXml.Packaging
         public Uri Uri { get; private set; }
         public Stream GetZipStream()
         {
-            MemoryStream ms = new MemoryStream();
-            ZipOutputStream os = new ZipOutputStream(ms);
+            var ms = new MemoryStream();
+            var os = new ZipOutputStream(ms);
             return os;
         }
         internal SaveHandlerDelegate SaveHandler
@@ -148,9 +139,9 @@ namespace OfficeOpenXml.Packaging
 
             if (_rels.Count > 0)
             {
-                string f = Uri.OriginalString;
+                var f = Uri.OriginalString;
                 var name = Path.GetFileName(f);
-                _rels.WriteZip(os, (string.Format("{0}_rels/{1}.rels", f.Substring(0, f.Length - name.Length), name)));
+                _rels.WriteZip(os, string.Format("{0}_rels/{1}.rels", f.Substring(0, f.Length - name.Length), name));
             }
             b = null;
         }

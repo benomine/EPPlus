@@ -43,7 +43,7 @@ namespace OfficeOpenXml.Drawing.Chart
         internal ExcelChartTitle(XmlNamespaceManager nameSpaceManager, XmlNode node) :
             base(nameSpaceManager, node)
         {
-            XmlNode topNode = node.SelectSingleNode("c:title", NameSpaceManager);
+            var topNode = node.SelectSingleNode("c:title", NameSpaceManager);
             if (topNode == null)
             {
                 topNode = node.OwnerDocument.CreateElement("c", "title", ExcelPackage.schemaChart);
@@ -59,45 +59,21 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public string Text
         {
-            get
-            {
-                return RichText.Text;
-            }
-            set
-            {
-                RichText.Text = value;
-            }
+            get => RichText.Text;
+            set => RichText.Text = value;
         }
         ExcelDrawingBorder _border = null;
         /// <summary>
         /// A reference to the border properties
         /// </summary>
-        public ExcelDrawingBorder Border
-        {
-            get
-            {
-                if (_border == null)
-                {
-                    _border = new ExcelDrawingBorder(NameSpaceManager, TopNode, "c:spPr/a:ln");
-                }
-                return _border;
-            }
-        }
+        public ExcelDrawingBorder Border => _border ??= new ExcelDrawingBorder(NameSpaceManager, TopNode, "c:spPr/a:ln");
+
         ExcelDrawingFill _fill = null;
         /// <summary>
         /// A reference to the fill properties
         /// </summary>
-        public ExcelDrawingFill Fill
-        {
-            get
-            {
-                if (_fill == null)
-                {
-                    _fill = new ExcelDrawingFill(NameSpaceManager, TopNode, "c:spPr");
-                }
-                return _fill;
-            }
-        }
+        public ExcelDrawingFill Fill => _fill ??= new ExcelDrawingFill(NameSpaceManager, TopNode, "c:spPr");
+
         //ExcelTextFont _font = null;
         /// <summary>
         /// A reference to the font properties
@@ -118,30 +94,17 @@ namespace OfficeOpenXml.Drawing.Chart
         /// <summary>
         /// Richtext
         /// </summary>
-        public ExcelParagraphCollection RichText
-        {
-            get
-            {
-                if (_richText == null)
-                {
-                    _richText = new ExcelParagraphCollection(NameSpaceManager, TopNode, "c:tx/c:rich/a:p", paragraphNodeOrder);
-                }
-                return _richText;
-            }
-        }
+        public ExcelParagraphCollection RichText =>
+            _richText ??= new ExcelParagraphCollection(NameSpaceManager, TopNode,
+                "c:tx/c:rich/a:p", paragraphNodeOrder);
+
         /// <summary>
         /// Show without overlaping the chart.
         /// </summary>
         public bool Overlay
         {
-            get
-            {
-                return GetXmlNodeBool("c:overlay/@val");
-            }
-            set
-            {
-                SetXmlNodeBool("c:overlay/@val", value);
-            }
+            get => GetXmlNodeBool("c:overlay/@val");
+            set => SetXmlNodeBool("c:overlay/@val", value);
         }
         /// <summary>
         /// Specifies the centering of the text box. 
@@ -152,25 +115,13 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public bool AnchorCtr
         {
-            get
-            {
-                return GetXmlNodeBool("c:tx/c:rich/a:bodyPr/@anchorCtr", false);
-            }
-            set
-            {
-                SetXmlNodeBool("c:tx/c:rich/a:bodyPr/@anchorCtr", value, false);
-            }
+            get => GetXmlNodeBool("c:tx/c:rich/a:bodyPr/@anchorCtr", false);
+            set => SetXmlNodeBool("c:tx/c:rich/a:bodyPr/@anchorCtr", value, false);
         }
         public eTextAnchoringType Anchor
         {
-            get
-            {
-                return ExcelDrawing.GetTextAchoringEnum(GetXmlNodeString("c:tx/c:rich/a:bodyPr/@anchor"));
-            }
-            set
-            {
-                SetXmlNodeString("c:tx/c:rich/a:bodyPr/@anchorCtr", ExcelDrawing.GetTextAchoringText(value));
-            }
+            get => ExcelDrawing.GetTextAchoringEnum(GetXmlNodeString("c:tx/c:rich/a:bodyPr/@anchor"));
+            set => SetXmlNodeString("c:tx/c:rich/a:bodyPr/@anchorCtr", ExcelDrawing.GetTextAchoringText(value));
         }
         const string TextVerticalPath = "xdr:sp/xdr:txBody/a:bodyPr/@vert";
         /// <summary>
@@ -178,14 +129,8 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public eTextVerticalType TextVertical
         {
-            get
-            {
-                return ExcelDrawing.GetTextVerticalEnum(GetXmlNodeString("c:tx/c:rich/a:bodyPr/@vert"));
-            }
-            set
-            {
-                SetXmlNodeString("c:tx/c:rich/a:bodyPr/@vert", ExcelDrawing.GetTextVerticalText(value));
-            }
+            get => ExcelDrawing.GetTextVerticalEnum(GetXmlNodeString("c:tx/c:rich/a:bodyPr/@vert"));
+            set => SetXmlNodeString("c:tx/c:rich/a:bodyPr/@vert", ExcelDrawing.GetTextVerticalText(value));
         }
         /// <summary>
         /// Rotation in degrees (0-360)
@@ -197,19 +142,17 @@ namespace OfficeOpenXml.Drawing.Chart
                 var i = GetXmlNodeInt("c:tx/c:rich/a:bodyPr/@rot");
                 if (i < 0)
                 {
-                    return 360 - (i / 60000);
+                    return 360 - i / 60000;
                 }
-                else
-                {
-                    return (i / 60000);
-                }
+
+                return i / 60000;
             }
             set
             {
                 int v;
-                if (value <0 || value > 360)
+                if (value is < 0 or > 360)
                 {
-                    throw (new ArgumentOutOfRangeException("Rotation must be between 0 and 360"));
+                    throw new ArgumentOutOfRangeException("Rotation must be between 0 and 360");
                 }
 
                 if (value > 180)

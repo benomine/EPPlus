@@ -57,32 +57,18 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions
 
         public DataType DataType { get; }
 
-        public Type Type
-        {
-            get { return Value != null ? Value.GetType() : null; }
-        }
+        public Type Type => Value != null ? Value.GetType() : null;
 
         public int ExcelAddressReferenceId { get; set; }
 
-        public bool IsExcelRange
-        {
-            get { return Value != null && Value is EpplusExcelDataProvider.IRangeInfo; }
-        }
+        public bool IsExcelRange => Value != null && Value is ExcelDataProvider.IRangeInfo;
 
-        public bool ValueIsExcelError
-        {
-            get { return ExcelErrorValue.Values.IsErrorValue(Value); }
-        }
+        public bool ValueIsExcelError => ExcelErrorValue.Values.IsErrorValue(Value);
 
-        public ExcelErrorValue ValueAsExcelErrorValue
-        {
-            get { return ExcelErrorValue.Parse(Value.ToString()); }
-        }
+        public ExcelErrorValue ValueAsExcelErrorValue => ExcelErrorValue.Parse(Value.ToString());
 
-        public EpplusExcelDataProvider.IRangeInfo ValueAsRangeInfo
-        {
-            get { return Value as EpplusExcelDataProvider.IRangeInfo; }
-        }
+        public ExcelDataProvider.IRangeInfo ValueAsRangeInfo => Value as ExcelDataProvider.IRangeInfo;
+
         public object ValueFirst
         {
             get
@@ -96,10 +82,8 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions
                 {
                     return Value;
                 }
-                else
-                {
-                    return v.GetValue(v.Address._fromRow, v.Address._fromCol);
-                }
+
+                return v.GetValue(v.Address._fromRow, v.Address._fromCol);
             }
         }
 

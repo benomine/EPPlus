@@ -36,7 +36,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
         {
             ValidateArguments(arguments, 2);
             var items = new List<object>();
-            for (int x = 0; x < arguments.Count(); x++)
+            for (var x = 0; x < arguments.Count(); x++)
             {
                 items.Add(arguments.ElementAt(x).ValueFirst);
             }
@@ -44,15 +44,13 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
             var chooseIndeces = arguments.ElementAt(0).ValueFirst as IEnumerable<FunctionArgument>;
             if (chooseIndeces != null && chooseIndeces.Count() > 1)
             {
-                IntArgumentParser intParser = new IntArgumentParser();
-                object[] values = chooseIndeces.Select(chosenIndex => items[(int)intParser.Parse(chosenIndex.ValueFirst)]).ToArray();
+                var intParser = new IntArgumentParser();
+                var values = chooseIndeces.Select(chosenIndex => items[(int)intParser.Parse(chosenIndex.ValueFirst)]).ToArray();
                 return CreateResult(values, DataType.Enumerable);
             }
-            else
-            {
-                var index = ArgToInt(arguments, 0);
-                return CreateResult(items[index].ToString(), DataType.String);
-            }
+
+            var index = ArgToInt(arguments, 0);
+            return CreateResult(items[index].ToString(), DataType.String);
         }
     }
 
@@ -65,25 +63,16 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
             this.chosenIndeces = chosenIndeces;
         }
 
-        public bool IsEmpty
-        {
-            get { return false; }
-        }
+        public bool IsEmpty => false;
 
-        public bool IsMulti
-        {
-            get { return true; }
-        }
+        public bool IsMulti => true;
 
         public int GetNCells()
         {
             return 0;
         }
 
-        public ExcelAddressBase Address
-        {
-            get { return null; }
-        }
+        public ExcelAddressBase Address => null;
 
         public object GetValue(int row, int col)
         {
@@ -95,24 +84,15 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
             return null;
         }
 
-        public ExcelWorksheet Worksheet
-        {
-            get { return null; }
-        }
+        public ExcelWorksheet Worksheet => null;
 
-        public ExcelDataProvider.ICellInfo Current
-        {
-            get { return null; }
-        }
+        public ExcelDataProvider.ICellInfo Current => null;
 
         public void Dispose()
         {
         }
 
-        object System.Collections.IEnumerator.Current
-        {
-            get { return chosenIndeces[0]; }
-        }
+        object System.Collections.IEnumerator.Current => chosenIndeces[0];
 
         public bool MoveNext()
         {

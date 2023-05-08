@@ -59,17 +59,8 @@ namespace OfficeOpenXml.Drawing.Chart
         /// <summary>
         /// Datalabel
         /// </summary>
-        public ExcelChartSerieDataLabel DataLabel
-        {
-            get
-            {
-                if (_DataLabel == null)
-                {
-                    _DataLabel = new ExcelChartSerieDataLabel(_ns, _node);
-                }
-                return _DataLabel;
-            }
-        }
+        public ExcelChartSerieDataLabel DataLabel => _DataLabel ??= new ExcelChartSerieDataLabel(_ns, _node);
+
         const string markerPath = "c:marker/c:symbol/@val";
         /// <summary>
         /// Marker symbol 
@@ -78,33 +69,25 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             get
             {
-                string marker = GetXmlNodeString(markerPath);
+                var marker = GetXmlNodeString(markerPath);
                 if (marker == "" || marker=="none")
                 {
                     return eMarkerStyle.None;
                 }
-                else
-                {
-                    return (eMarkerStyle)Enum.Parse(typeof(eMarkerStyle), marker, true);
-                }
+
+                return (eMarkerStyle)Enum.Parse(typeof(eMarkerStyle), marker, true);
             }
-            set
-            {
-                SetXmlNodeString(markerPath, value.ToString().ToLower(CultureInfo.InvariantCulture));
-            }
+            set => SetXmlNodeString(markerPath, value.ToString().ToLower(CultureInfo.InvariantCulture));
         }
         const string MARKERSIZE_PATH = "c:marker/c:size/@val";
         public int MarkerSize
         {
-            get
-            {
-                return GetXmlNodeInt(MARKERSIZE_PATH);
-            }
+            get => GetXmlNodeInt(MARKERSIZE_PATH);
             set
             {
-                if (value < 2 && value > 72)
+                if (value is < 2 or > 72)
                 {
-                    throw (new ArgumentOutOfRangeException("MarkerSize out of range. Range from 2-72 allowed."));
+                    throw new ArgumentOutOfRangeException("MarkerSize out of range. Range from 2-72 allowed.");
                 }
                 SetXmlNodeString(MARKERSIZE_PATH, value.ToString(CultureInfo.InvariantCulture));
             }

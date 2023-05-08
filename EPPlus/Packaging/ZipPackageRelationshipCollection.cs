@@ -61,13 +61,8 @@ namespace OfficeOpenXml.Packaging
         {
             return _rels.ContainsKey(id);
         }
-        internal ZipPackageRelationship this[string id]
-        {
-            get
-            {
-                return _rels[id];
-            }
-        }
+        internal ZipPackageRelationship this[string id] => _rels[id];
+
         internal ZipPackageRelationshipCollection GetRelationshipsByType(string relationshipType)
         {
             var ret = new ZipPackageRelationshipCollection();
@@ -83,7 +78,7 @@ namespace OfficeOpenXml.Packaging
 
         internal void WriteZip(ZipOutputStream os, string fileName)
         {
-            StringBuilder xml = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
+            var xml = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
             foreach (var rel in _rels.Values)
             {
                 xml.AppendFormat("<Relationship Id=\"{0}\" Type=\"{1}\" Target=\"{2}\"{3}/>", SecurityElement.Escape(rel.Id), rel.RelationshipType, SecurityElement.Escape(rel.TargetUri.OriginalString), rel.TargetMode == TargetMode.External ? " TargetMode=\"External\"" : "");
@@ -91,16 +86,10 @@ namespace OfficeOpenXml.Packaging
             xml.Append("</Relationships>");
 
             os.PutNextEntry(fileName);
-            byte[] b = Encoding.UTF8.GetBytes(xml.ToString());
+            var b = Encoding.UTF8.GetBytes(xml.ToString());
             os.Write(b, 0, b.Length);
         }
 
-        public int Count
-        {
-            get
-            {
-                return _rels.Count;
-            }
-        }
+        public int Count => _rels.Count;
     }
 }

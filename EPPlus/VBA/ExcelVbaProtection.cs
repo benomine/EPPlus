@@ -39,7 +39,7 @@ namespace OfficeOpenXml.VBA
     /// </summary>
     public class ExcelVbaProtection
     {
-        ExcelVbaProject _project;
+        private readonly ExcelVbaProject _project;
         internal ExcelVbaProtection(ExcelVbaProject project)
         {
             _project = project;
@@ -67,11 +67,10 @@ namespace OfficeOpenXml.VBA
         /// Password protect the VBA project.
         /// An empty string or null will remove the password protection
         /// </summary>
-        /// <param name="Password">The password</param>
-        public void SetPassword(string Password)
+        /// <param name="password">The password</param>
+        public void SetPassword(string password)
         {
-
-            if (string.IsNullOrEmpty(Password))
+            if (string.IsNullOrEmpty(password))
             {
                 PasswordHash = null;
                 PasswordKey = null;
@@ -84,14 +83,13 @@ namespace OfficeOpenXml.VBA
             else
             {
                 //Join Password and Key
-                byte[] data;
                 //Set the key
                 PasswordKey = new byte[4];
-                RandomNumberGenerator r = RandomNumberGenerator.Create();
+                var r = RandomNumberGenerator.Create();
                 r.GetBytes(PasswordKey);
 
-                data = new byte[Password.Length + 4];
-                Array.Copy(Encoding.GetEncoding(_project.CodePage).GetBytes(Password), data, Password.Length);
+                var data = new byte[password.Length + 4];
+                Array.Copy(Encoding.GetEncoding(_project.CodePage).GetBytes(password), data, password.Length);
                 VbeProtected = true;
                 VisibilityState = false;
                 Array.Copy(PasswordKey, 0, data, data.Length - 4, 4);
@@ -101,10 +99,6 @@ namespace OfficeOpenXml.VBA
                 PasswordHash = provider.ComputeHash(data);
                 _project.ProjectID = "{00000000-0000-0000-0000-000000000000}";
             }
-        }
-        //public void ValidatePassword(string Password)                     
-        //{
-
-        //}        
+        } 
     }
 }

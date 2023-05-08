@@ -36,7 +36,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
     {
         public virtual CompileResult Create(object obj)
         {
-            if ((obj is ExcelDataProvider.INameInfo))
+            if (obj is ExcelDataProvider.INameInfo)
             {
                 obj = ((ExcelDataProvider.INameInfo)obj).Value;
             }
@@ -65,9 +65,9 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             {
                 return new CompileResult(obj, DataType.ExcelError);
             }
-            if (obj.GetType().Equals(typeof(System.DateTime)))
+            if (obj.GetType().Equals(typeof(DateTime)))
             {
-                return new CompileResult(((System.DateTime)obj).ToOADate(), DataType.Date);
+                return new CompileResult(((DateTime)obj).ToOADate(), DataType.Date);
             }
             throw new ArgumentException("Non supported type " + obj.GetType().FullName);
         }

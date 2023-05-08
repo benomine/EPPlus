@@ -142,7 +142,7 @@ namespace OfficeOpenXml.Utils.CompundDocument
             var sz = br.ReadInt16();
             if (sz > 0)
             {
-                Name = UTF8Encoding.Unicode.GetString(s, 0, sz - 2);
+                Name = Encoding.Unicode.GetString(s, 0, sz - 2);
             }
             ObjectType = br.ReadByte();
             ColorFlag = br.ReadByte();
@@ -164,7 +164,7 @@ namespace OfficeOpenXml.Utils.CompundDocument
         {
             var name = Encoding.Unicode.GetBytes(Name);
             bw.Write(name);
-            bw.Write(new byte[0x40 - (name.Length)]);
+            bw.Write(new byte[0x40 - name.Length]);
             bw.Write((Int16)(name.Length + 2));
 
             bw.Write(ObjectType);
@@ -196,19 +196,21 @@ namespace OfficeOpenXml.Utils.CompundDocument
             {
                 return -1;
             }
-            else if (Name.Length > other.Name.Length)
+
+            if (Name.Length > other.Name.Length)
             {
                 return 1;
             }
             var n1 = Name.ToUpperInvariant();
             var n2 = other.Name.ToUpperInvariant();
-            for (int i = 0; i<n1.Length; i++)
+            for (var i = 0; i<n1.Length; i++)
             {
                 if (n1[i] < n2[i])
                 {
                     return -1;
                 }
-                else if (n1[i] > n2[i])
+
+                if (n1[i] > n2[i])
                 {
                     return 1;
                 }

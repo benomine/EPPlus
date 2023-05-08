@@ -32,10 +32,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions
 
         }
 
-        public static FunctionNameProvider Empty
-        {
-            get { return new FunctionNameProvider(); }
-        }
+        public static FunctionNameProvider Empty => new();
 
         public virtual bool IsFunctionName(string name)
         {

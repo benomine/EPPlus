@@ -5,60 +5,60 @@ namespace OfficeOpenXml
 {
     public class CellsStoreEnumerator<T> : IEnumerable<T>, IEnumerator<T>
     {
-        CellStore<T> _cellStore;
-        int row, colPos;
-        int[] pagePos, cellPos;
-        int _startRow, _startCol, _endRow, _endCol;
-        int minRow, minColPos, maxRow, maxColPos;
-        public CellsStoreEnumerator(CellStore<T> cellStore) :
-            this(cellStore, 0, 0, ExcelPackage.MaxRows, ExcelPackage.MaxColumns)
-        {
-        }
-        public CellsStoreEnumerator(CellStore<T> cellStore, int StartRow, int StartCol, int EndRow, int EndCol)
+        private readonly CellStore<T> _cellStore;
+        private int _row, _colPos;
+        private int[] _pagePos, _cellPos;
+        private readonly int _startRow;
+        private readonly int _startCol;
+        private readonly int _endRow;
+        private readonly int _endCol;
+        private int _minRow, _minColPos, _maxRow, _maxColPos;
+
+        public CellsStoreEnumerator(
+            CellStore<T> cellStore,
+            int startRow = 0,
+            int startCol = 0,
+            int endRow = ExcelPackage.MaxRows,
+            int endCol = ExcelPackage.MaxColumns)
         {
             _cellStore = cellStore;
-
-            _startRow=StartRow;
-            _startCol=StartCol;
-            _endRow=EndRow;
-            _endCol=EndCol;
+            _startRow=startRow;
+            _startCol=startCol;
+            _endRow=endRow;
+            _endCol=endCol;
 
             Init();
-
         }
 
         internal void Init()
         {
-            minRow = _startRow;
-            maxRow = _endRow;
+            _minRow = _startRow;
+            _maxRow = _endRow;
 
-            minColPos = _cellStore.GetPosition(_startCol);
-            if (minColPos < 0) minColPos = ~minColPos;
-            maxColPos = _cellStore.GetPosition(_endCol);
-            if (maxColPos < 0) maxColPos = ~maxColPos-1;
-            row = minRow;
-            colPos = minColPos - 1;
+            _minColPos = _cellStore.GetPosition(_startCol);
+            if (_minColPos < 0) _minColPos = ~_minColPos;
+            _maxColPos = _cellStore.GetPosition(_endCol);
+            if (_maxColPos < 0) _maxColPos = ~_maxColPos-1;
+            _row = _minRow;
+            _colPos = _minColPos - 1;
 
-            var cols = maxColPos - minColPos + 1;
-            pagePos = new int[cols];
-            cellPos = new int[cols];
-            for (int i = 0; i < cols; i++)
+            var cols = _maxColPos - _minColPos + 1;
+            _pagePos = new int[cols];
+            _cellPos = new int[cols];
+            for (var i = 0; i < cols; i++)
             {
-                pagePos[i] = -1;
-                cellPos[i] = -1;
+                _pagePos[i] = -1;
+                _cellPos[i] = -1;
             }
         }
-        internal int Row
-        {
-            get => row;
-        }
+        internal int Row => _row;
+
         internal int Column
         {
             get
             {
-                if (colPos == -1) MoveNext();
-                if (colPos == -1) return 0;
-                return _cellStore._columnIndex[colPos].Index;
+                if (_colPos == -1) MoveNext();
+                return _colPos == -1 ? 0 : _cellStore.ColumnIndex[_colPos].Index;
             }
         }
         internal T Value
@@ -67,36 +67,30 @@ namespace OfficeOpenXml
             {
                 lock (_cellStore)
                 {
-                    return _cellStore.GetValue(row, Column);
+                    return _cellStore.GetValue(_row, Column);
                 }
             }
             set
             {
                 lock (_cellStore)
                 {
-                    _cellStore.SetValue(row, Column, value);
+                    _cellStore.SetValue(_row, Column, value);
                 }
             }
         }
         internal bool Next()
         {
-            return _cellStore.GetNextCell(ref row, ref colPos, minColPos, maxRow, maxColPos);
+            return _cellStore.GetNextCell(ref _row, ref _colPos, _minColPos, _maxRow, _maxColPos);
         }
         internal bool Previous()
         {
             lock (_cellStore)
             {
-                return _cellStore.GetPrevCell(ref row, ref colPos, minRow, minColPos, maxColPos);
+                return _cellStore.GetPrevCell(ref _row, ref _colPos, _minRow, _minColPos, _maxColPos);
             }
         }
 
-        public string CellAddress
-        {
-            get
-            {
-                return ExcelAddressBase.GetAddress(Row, Column);
-            }
-        }
+        public string CellAddress => ExcelCellBase.GetAddress(Row, Column);
 
         public IEnumerator<T> GetEnumerator()
         {
@@ -110,13 +104,7 @@ namespace OfficeOpenXml
             return this;
         }
 
-        public T Current
-        {
-            get
-            {
-                return Value;
-            }
-        }
+        public T Current => Value;
 
         public void Dispose()
         {

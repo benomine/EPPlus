@@ -66,29 +66,24 @@ namespace OfficeOpenXml
 	/// </summary>
 	public class ExcelRow : IRangeID
     {
-        private ExcelWorksheet _worksheet;
-        private XmlElement _rowElement = null;
+        private readonly ExcelWorksheet _worksheet;
+        private readonly XmlElement _rowElement = null;
         /// <summary>
         /// Internal RowID.
         /// </summary>
         [Obsolete]
-        public ulong RowID
-        {
-            get
-            {
-                return GetRowID(_worksheet.SheetID, Row);
-            }
-        }
+        private ulong RowID => GetRowID(_worksheet.SheetID, Row);
+
         #region ExcelRow Constructor
         /// <summary>
         /// Creates a new instance of the ExcelRow class. 
         /// For internal use only!
         /// </summary>
-        /// <param name="Worksheet">The parent worksheet</param>
+        /// <param name="worksheet">The parent worksheet</param>
         /// <param name="row">The row number</param>
-        internal ExcelRow(ExcelWorksheet Worksheet, int row)
+        internal ExcelRow(ExcelWorksheet worksheet, int row)
         {
-            _worksheet = Worksheet;
+            _worksheet = worksheet;
             Row = row;
         }
         #endregion
@@ -96,7 +91,7 @@ namespace OfficeOpenXml
         /// <summary>
         /// Provides access to the node representing the row.
         /// </summary>
-        internal XmlNode Node { get { return (_rowElement); } }
+        internal XmlNode Node => _rowElement;
 
         #region ExcelRow Hidden
         /// <summary>
@@ -107,14 +102,7 @@ namespace OfficeOpenXml
             get
             {
                 var r = (RowInternal)_worksheet.GetValueInner(Row, 0);
-                if (r == null)
-                {
-                    return false;
-                }
-                else
-                {
-                    return r.Hidden;
-                }
+                return r is { Hidden: true };
             }
             set
             {
@@ -137,10 +125,8 @@ namespace OfficeOpenXml
                 {
                     return _worksheet.DefaultRowHeight;
                 }
-                else
-                {
-                    return r.Height;
-                }
+
+                return r.Height;
             }
             set
             {
@@ -171,14 +157,7 @@ namespace OfficeOpenXml
             get
             {
                 var r = (RowInternal)_worksheet.GetValueInner(Row, 0);
-                if (r == null)
-                {
-                    return false;
-                }
-                else
-                {
-                    return r.CustomHeight;
-                }
+                return r is { CustomHeight: true };
             }
             set
             {
@@ -194,10 +173,7 @@ namespace OfficeOpenXml
         /// </summary>
         public string StyleName
         {
-            get
-            {
-                return _styleName;
-            }
+            get => _styleName;
             set
             {
                 StyleID = _worksheet.Workbook.Styles.GetStyleIdFromName(value);
@@ -209,14 +185,8 @@ namespace OfficeOpenXml
         /// </summary>
         public int StyleID
         {
-            get
-            {
-                return _worksheet.GetStyleInner(Row, 0);
-            }
-            set
-            {
-                _worksheet.SetStyleInner(Row, 0, value);
-            }
+            get => _worksheet.GetStyleInner(Row, 0);
+            set => _worksheet.SetStyleInner(Row, 0, value);
         }
 
         /// <summary>
@@ -235,14 +205,7 @@ namespace OfficeOpenXml
             get
             {
                 var r = (RowInternal)_worksheet.GetValueInner(Row, 0);
-                if (r == null)
-                {
-                    return false;
-                }
-                else
-                {
-                    return r.Collapsed;
-                }
+                return r is { Collapsed: true };
             }
             set
             {
@@ -258,14 +221,7 @@ namespace OfficeOpenXml
             get
             {
                 var r = (RowInternal)_worksheet.GetValueInner(Row, 0);
-                if (r == null)
-                {
-                    return 0;
-                }
-                else
-                {
-                    return r.OutlineLevel;
-                }
+                return r?.OutlineLevel ?? 0;
             }
             set
             {
@@ -277,29 +233,20 @@ namespace OfficeOpenXml
         private RowInternal GetRowInternal()
         {
             var r = (RowInternal)_worksheet.GetValueInner(Row, 0);
-            if (r == null)
-            {
-                r = new RowInternal();
-                _worksheet.SetValueInner(Row, 0, r);
-            }
+            if (r != null) return r;
+            r = new RowInternal();
+            _worksheet.SetValueInner(Row, 0, r);
             return r;
         }
         /// <summary>
         /// Show phonetic Information
         /// </summary>
-        public bool Phonetic
+        private bool Phonetic
         {
             get
             {
                 var r = (RowInternal)_worksheet.GetValueInner(Row, 0);
-                if (r == null)
-                {
-                    return false;
-                }
-                else
-                {
-                    return r.Phonetic;
-                }
+                return r is { Phonetic: true };
             }
             set
             {
@@ -311,13 +258,8 @@ namespace OfficeOpenXml
         /// The Style applied to the whole row. Only effekt cells with no individual style set. 
         /// Use ExcelRange object if you want to set specific styles.
         /// </summary>
-        public ExcelStyle Style
-        {
-            get
-            {
-                return _worksheet.Workbook.Styles.GetStyleObject(StyleID, _worksheet.PositionID, Row.ToString() + ":" + Row.ToString());
-            }
-        }
+        public ExcelStyle Style => _worksheet.Workbook.Styles.GetStyleObject(StyleID, _worksheet.PositionID, Row.ToString() + ":" + Row.ToString());
+
         /// <summary>
         /// Adds a manual page break after the row.
         /// </summary>
@@ -326,14 +268,7 @@ namespace OfficeOpenXml
             get
             {
                 var r = (RowInternal)_worksheet.GetValueInner(Row, 0);
-                if (r == null)
-                {
-                    return false;
-                }
-                else
-                {
-                    return r.PageBreak;
-                }
+                return r is { PageBreak: true };
             }
             set
             {
@@ -343,18 +278,13 @@ namespace OfficeOpenXml
         }
         public bool Merged
         {
-            get
-            {
-                return _worksheet.MergedCells[Row, 0] != null;
-            }
-            set
-            {
-                _worksheet.MergedCells.Add(new ExcelAddressBase(Row, 1, Row, ExcelPackage.MaxColumns), true);
-            }
+            get => _worksheet.MergedCells[Row, 0] != null;
+            set => _worksheet.MergedCells.Add(new ExcelAddressBase(Row, 1, Row, ExcelPackage.MaxColumns), true);
         }
-        internal static ulong GetRowID(int sheetID, int row)
+
+        private static ulong GetRowID(int sheetID, int row)
         {
-            return ((ulong)sheetID) + (((ulong)row) << 29);
+            return (ulong)sheetID + ((ulong)row << 29);
 
         }
 
@@ -363,14 +293,8 @@ namespace OfficeOpenXml
         [Obsolete]
         ulong IRangeID.RangeID
         {
-            get
-            {
-                return RowID;
-            }
-            set
-            {
-                Row = ((int)(value >> 29));
-            }
+            get => RowID;
+            set => Row = (int)(value >> 29);
         }
 
         #endregion
@@ -380,7 +304,7 @@ namespace OfficeOpenXml
         /// <param name="added">The worksheet where the copy will be created</param>
         internal void Clone(ExcelWorksheet added)
         {
-            ExcelRow newRow = added.Row(Row);
+            var newRow = added.Row(Row);
             newRow.Collapsed = Collapsed;
             newRow.Height = Height;
             newRow.CustomHeight = newRow.CustomHeight;

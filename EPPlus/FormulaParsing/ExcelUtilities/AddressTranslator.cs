@@ -74,15 +74,15 @@ namespace OfficeOpenXml.FormulaParsing.ExcelUtilities
         /// <param name="behaviour"></param>
         public virtual void ToColAndRow(string address, out int col, out int row, RangeCalculationBehaviour behaviour)
         {
-            address = Utils.ConvertUtil._invariantTextInfo.ToUpper(address);
+            address = Utils.ConvertUtil.InvariantTextInfo.ToUpper(address);
             var alphaPart = GetAlphaPart(address);
             col = 0;
             var nLettersInAlphabet = 26;
-            for (int x = 0; x < alphaPart.Length; x++)
+            for (var x = 0; x < alphaPart.Length; x++)
             {
                 var pos = alphaPart.Length - x - 1;
                 var currentNumericValue = GetNumericAlphaValue(alphaPart[x]);
-                col += (nLettersInAlphabet * pos * currentNumericValue);
+                col += nLettersInAlphabet * pos * currentNumericValue;
                 if (pos == 0)
                 {
                     col += currentNumericValue;

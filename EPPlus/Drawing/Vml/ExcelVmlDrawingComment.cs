@@ -52,13 +52,7 @@ namespace OfficeOpenXml.Drawing.Vml
         /// <summary>
         /// Address in the worksheet
         /// </summary>
-        public string Address
-        {
-            get
-            {
-                return Range.Address;
-            }
-        }
+        public string Address => Range.Address;
 
         const string VERTICAL_ALIGNMENT_PATH = "x:ClientData/x:TextVAlign";
         /// <summary>
@@ -68,15 +62,12 @@ namespace OfficeOpenXml.Drawing.Vml
         {
             get
             {
-                switch (GetXmlNodeString(VERTICAL_ALIGNMENT_PATH))
+                return GetXmlNodeString(VERTICAL_ALIGNMENT_PATH) switch
                 {
-                    case "Center":
-                        return eTextAlignVerticalVml.Center;
-                    case "Bottom":
-                        return eTextAlignVerticalVml.Bottom;
-                    default:
-                        return eTextAlignVerticalVml.Top;
-                }
+                    "Center" => eTextAlignVerticalVml.Center,
+                    "Bottom" => eTextAlignVerticalVml.Bottom,
+                    _ => eTextAlignVerticalVml.Top
+                };
             }
             set
             {
@@ -102,15 +93,12 @@ namespace OfficeOpenXml.Drawing.Vml
         {
             get
             {
-                switch (GetXmlNodeString(HORIZONTAL_ALIGNMENT_PATH))
+                return GetXmlNodeString(HORIZONTAL_ALIGNMENT_PATH) switch
                 {
-                    case "Center":
-                        return eTextAlignHorizontalVml.Center;
-                    case "Right":
-                        return eTextAlignHorizontalVml.Right;
-                    default:
-                        return eTextAlignHorizontalVml.Left;
-                }
+                    "Center" => eTextAlignHorizontalVml.Center,
+                    "Right" => eTextAlignHorizontalVml.Right,
+                    _ => eTextAlignHorizontalVml.Left
+                };
             }
             set
             {
@@ -134,10 +122,7 @@ namespace OfficeOpenXml.Drawing.Vml
         /// </summary>
         public bool Visible
         {
-            get
-            {
-                return (TopNode.SelectSingleNode(VISIBLE_PATH, NameSpaceManager)!=null);
-            }
+            get => TopNode.SelectSingleNode(VISIBLE_PATH, NameSpaceManager)!=null;
             set
             {
                 if (value)
@@ -162,28 +147,23 @@ namespace OfficeOpenXml.Drawing.Vml
         {
             get
             {
-                string col = GetXmlNodeString(BACKGROUNDCOLOR_PATH);
+                var col = GetXmlNodeString(BACKGROUNDCOLOR_PATH);
                 if (col == "")
                 {
                     return SKColor.FromHsl(0xff, 0xff, 0xe1);
                 }
-                else
+
+                if (col.StartsWith("#")) col=col.Substring(1, col.Length-1);
+                if (int.TryParse(col, NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out var res))
                 {
-                    if (col.StartsWith("#")) col=col.Substring(1, col.Length-1);
-                    int res;
-                    if (int.TryParse(col, NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out res))
-                    {
-                        return SKColor.Parse(col);
-                    }
-                    else
-                    {
-                        return SKColors.Empty;
-                    }
+                    return SKColor.Parse(col);
                 }
+
+                return SKColors.Empty;
             }
             set
             {
-                string color = "#" + value.ToString().Substring(2, 6);
+                var color = "#" + value.ToString().Substring(2, 6);
                 SetXmlNodeString(BACKGROUNDCOLOR_PATH, color);
             }
         }
@@ -196,19 +176,16 @@ namespace OfficeOpenXml.Drawing.Vml
         {
             get
             {
-                string v = GetXmlNodeString(LINESTYLE_PATH);
-                if (v == "")
+                var v = GetXmlNodeString(LINESTYLE_PATH);
+                switch (v)
                 {
-                    return eLineStyleVml.Solid;
-                }
-                else if (v == "1 1")
-                {
-                    v = GetXmlNodeString(ENDCAP_PATH);
-                    return (eLineStyleVml)Enum.Parse(typeof(eLineStyleVml), v, true);
-                }
-                else
-                {
-                    return (eLineStyleVml)Enum.Parse(typeof(eLineStyleVml), v, true);
+                    case "":
+                        return eLineStyleVml.Solid;
+                    case "1 1":
+                        v = GetXmlNodeString(ENDCAP_PATH);
+                        return (eLineStyleVml)Enum.Parse(typeof(eLineStyleVml), v, true);
+                    default:
+                        return (eLineStyleVml)Enum.Parse(typeof(eLineStyleVml), v, true);
                 }
             }
             set
@@ -227,7 +204,7 @@ namespace OfficeOpenXml.Drawing.Vml
                 }
                 else
                 {
-                    string v = value.ToString();
+                    var v = value.ToString();
                     v = v.Substring(0, 1).ToLower(CultureInfo.InvariantCulture) + v.Substring(1, v.Length - 1);
                     SetXmlNodeString(LINESTYLE_PATH, v);
                     DeleteNode(ENDCAP_PATH);
@@ -242,28 +219,23 @@ namespace OfficeOpenXml.Drawing.Vml
         {
             get
             {
-                string col = GetXmlNodeString(LINECOLOR_PATH);
+                var col = GetXmlNodeString(LINECOLOR_PATH);
                 if (col == "")
                 {
                     return SKColors.Black;
                 }
-                else
+
+                if (col.StartsWith("#")) col = col.Substring(1, col.Length - 1);
+                if (int.TryParse(col, NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out var res))
                 {
-                    if (col.StartsWith("#")) col = col.Substring(1, col.Length - 1);
-                    int res;
-                    if (int.TryParse(col, NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out res))
-                    {
-                        return SKColor.Parse(col);
-                    }
-                    else
-                    {
-                        return SKColors.Empty;
-                    }
+                    return SKColor.Parse(col);
                 }
+
+                return SKColors.Empty;
             }
             set
             {
-                string color = "#" + value.ToString().Substring(2, 6);
+                var color = "#" + value.ToString().Substring(2, 6);
                 SetXmlNodeString(LINECOLOR_PATH, color);
             }
         }
@@ -275,24 +247,18 @@ namespace OfficeOpenXml.Drawing.Vml
         {
             get
             {
-                string wt = GetXmlNodeString(LINEWIDTH_PATH);
+                var wt = GetXmlNodeString(LINEWIDTH_PATH);
                 if (wt == "") return (Single).75;
                 if (wt.EndsWith("pt")) wt=wt.Substring(0, wt.Length-2);
 
-                Single ret;
-                if (Single.TryParse(wt, NumberStyles.Any, CultureInfo.InvariantCulture, out ret))
+                if (float.TryParse(wt, NumberStyles.Any, CultureInfo.InvariantCulture, out var ret))
                 {
                     return ret;
                 }
-                else
-                {
-                    return 0;
-                }
+
+                return 0;
             }
-            set
-            {
-                SetXmlNodeString(LINEWIDTH_PATH, value.ToString(CultureInfo.InvariantCulture) + "pt");
-            }
+            set => SetXmlNodeString(LINEWIDTH_PATH, value.ToString(CultureInfo.InvariantCulture) + "pt");
         }
 
         const string TEXTBOX_STYLE_PATH = "v:textbox/@style";
@@ -307,109 +273,59 @@ namespace OfficeOpenXml.Drawing.Vml
                 GetStyle(GetXmlNodeString(TEXTBOX_STYLE_PATH), "mso-fit-shape-to-text", out value);
                 return value=="t";
             }
-            set
-            {
-                SetXmlNodeString(TEXTBOX_STYLE_PATH, SetStyle(GetXmlNodeString(TEXTBOX_STYLE_PATH), "mso-fit-shape-to-text", value ? "t" : ""));
-            }
+            set => SetXmlNodeString(TEXTBOX_STYLE_PATH, SetStyle(GetXmlNodeString(TEXTBOX_STYLE_PATH), "mso-fit-shape-to-text", value ? "t" : ""));
         }
         const string LOCKED_PATH = "x:ClientData/x:Locked";
 
         public bool Locked
         {
-            get
-            {
-                return GetXmlNodeBool(LOCKED_PATH, false);
-            }
-            set
-            {
-                SetXmlNodeBool(LOCKED_PATH, value, false);
-            }
+            get => GetXmlNodeBool(LOCKED_PATH, false);
+            set => SetXmlNodeBool(LOCKED_PATH, value, false);
         }
         const string LOCK_TEXT_PATH = "x:ClientData/x:LockText";
 
         public bool LockText
         {
-            get
-            {
-                return GetXmlNodeBool(LOCK_TEXT_PATH, false);
-            }
-            set
-            {
-                SetXmlNodeBool(LOCK_TEXT_PATH, value, false);
-            }
+            get => GetXmlNodeBool(LOCK_TEXT_PATH, false);
+            set => SetXmlNodeBool(LOCK_TEXT_PATH, value, false);
         }
         ExcelVmlDrawingPosition _from = null;
 
-        public ExcelVmlDrawingPosition From
-        {
-            get
-            {
-                if (_from == null)
-                {
-                    _from = new ExcelVmlDrawingPosition(NameSpaceManager, TopNode.SelectSingleNode("x:ClientData", NameSpaceManager), 0);
-                }
-                return _from;
-            }
-        }
+        public ExcelVmlDrawingPosition From =>
+            _from ??= new ExcelVmlDrawingPosition(NameSpaceManager,
+                TopNode.SelectSingleNode("x:ClientData", NameSpaceManager), 0);
+
         ExcelVmlDrawingPosition _to = null;
 
-        public ExcelVmlDrawingPosition To
-        {
-            get
-            {
-                if (_to == null)
-                {
-                    _to = new ExcelVmlDrawingPosition(NameSpaceManager, TopNode.SelectSingleNode("x:ClientData", NameSpaceManager), 4);
-                }
-                return _to;
-            }
-        }
+        public ExcelVmlDrawingPosition To =>
+            _to ??= new ExcelVmlDrawingPosition(NameSpaceManager,
+                TopNode.SelectSingleNode("x:ClientData", NameSpaceManager), 4);
+
         const string ROW_PATH = "x:ClientData/x:Row";
 
         internal int Row
         {
-            get
-            {
-                return GetXmlNodeInt(ROW_PATH);
-            }
-            set
-            {
-                SetXmlNodeString(ROW_PATH, value.ToString(CultureInfo.InvariantCulture));
-            }
+            get => GetXmlNodeInt(ROW_PATH);
+            set => SetXmlNodeString(ROW_PATH, value.ToString(CultureInfo.InvariantCulture));
         }
         const string COLUMN_PATH = "x:ClientData/x:Column";
 
         internal int Column
         {
-            get
-            {
-                return GetXmlNodeInt(COLUMN_PATH);
-            }
-            set
-            {
-                SetXmlNodeString(COLUMN_PATH, value.ToString(CultureInfo.InvariantCulture));
-            }
+            get => GetXmlNodeInt(COLUMN_PATH);
+            set => SetXmlNodeString(COLUMN_PATH, value.ToString(CultureInfo.InvariantCulture));
         }
         const string STYLE_PATH = "@style";
         public string Style
         {
-            get
-            {
-                return GetXmlNodeString(STYLE_PATH);
-            }
-            set
-            {
-                SetXmlNodeString(STYLE_PATH, value);
-            }
+            get => GetXmlNodeString(STYLE_PATH);
+            set => SetXmlNodeString(STYLE_PATH, value);
         }
         #region IRangeID Members
 
         ulong IRangeID.RangeID
         {
-            get
-            {
-                return ExcelCellBase.GetCellID(Range.Worksheet.SheetID, Range.Start.Row, Range.Start.Column);
-            }
+            get => ExcelCellBase.GetCellID(Range.Worksheet.SheetID, Range.Start.Row, Range.Start.Column);
             set
             {
 

@@ -342,8 +342,8 @@ namespace OfficeOpenXml
     /// </summary>
     public sealed class ExcelPrinterSettings : XmlHelper
     {
-        ExcelWorksheet _ws;
-        bool _marginsCreated = false;
+        private readonly ExcelWorksheet _ws;
+        private bool _marginsCreated = false;
 
         internal ExcelPrinterSettings(XmlNamespaceManager ns, XmlNode topNode, ExcelWorksheet ws) :
             base(ns, topNode)
@@ -357,10 +357,7 @@ namespace OfficeOpenXml
         /// </summary>
         public decimal LeftMargin
         {
-            get
-            {
-                return GetXmlNodeDecimal(_leftMarginPath);
-            }
+            get => GetXmlNodeDecimal(_leftMarginPath);
             set
             {
                 CreateMargins();
@@ -373,10 +370,7 @@ namespace OfficeOpenXml
         /// </summary>
         public decimal RightMargin
         {
-            get
-            {
-                return GetXmlNodeDecimal(_rightMarginPath);
-            }
+            get => GetXmlNodeDecimal(_rightMarginPath);
             set
             {
                 CreateMargins();
@@ -389,10 +383,7 @@ namespace OfficeOpenXml
         /// </summary>
         public decimal TopMargin
         {
-            get
-            {
-                return GetXmlNodeDecimal(_topMarginPath);
-            }
+            get => GetXmlNodeDecimal(_topMarginPath);
             set
             {
                 CreateMargins();
@@ -405,10 +396,7 @@ namespace OfficeOpenXml
         /// </summary>
         public decimal BottomMargin
         {
-            get
-            {
-                return GetXmlNodeDecimal(_bottomMarginPath);
-            }
+            get => GetXmlNodeDecimal(_bottomMarginPath);
             set
             {
                 CreateMargins();
@@ -421,10 +409,7 @@ namespace OfficeOpenXml
         /// </summary>
         public decimal HeaderMargin
         {
-            get
-            {
-                return GetXmlNodeDecimal(_headerMarginPath);
-            }
+            get => GetXmlNodeDecimal(_headerMarginPath);
             set
             {
                 CreateMargins();
@@ -437,10 +422,7 @@ namespace OfficeOpenXml
         /// </summary>
         public decimal FooterMargin
         {
-            get
-            {
-                return GetXmlNodeDecimal(_footerMarginPath);
-            }
+            get => GetXmlNodeDecimal(_footerMarginPath);
             set
             {
                 CreateMargins();
@@ -454,14 +436,8 @@ namespace OfficeOpenXml
         /// </summary>
         public eOrientation Orientation
         {
-            get
-            {
-                return (eOrientation)Enum.Parse(typeof(eOrientation), GetXmlNodeString(_orientationPath), true);
-            }
-            set
-            {
-                SetXmlNodeString(_orientationPath, value.ToString().ToLower(CultureInfo.InvariantCulture));
-            }
+            get => (eOrientation)Enum.Parse(typeof(eOrientation), GetXmlNodeString(_orientationPath), true);
+            set => SetXmlNodeString(_orientationPath, value.ToString().ToLower(CultureInfo.InvariantCulture));
         }
         const string _fitToWidthPath = "d:pageSetup/@fitToWidth";
         /// <summary>
@@ -471,14 +447,8 @@ namespace OfficeOpenXml
         /// </summary>
         public int FitToWidth
         {
-            get
-            {
-                return GetXmlNodeInt(_fitToWidthPath);
-            }
-            set
-            {
-                SetXmlNodeString(_fitToWidthPath, value.ToString());
-            }
+            get => GetXmlNodeInt(_fitToWidthPath);
+            set => SetXmlNodeString(_fitToWidthPath, value.ToString());
         }
         const string _fitToHeightPath = "d:pageSetup/@fitToHeight";
         /// <summary>
@@ -488,14 +458,8 @@ namespace OfficeOpenXml
         /// </summary>
         public int FitToHeight
         {
-            get
-            {
-                return GetXmlNodeInt(_fitToHeightPath);
-            }
-            set
-            {
-                SetXmlNodeString(_fitToHeightPath, value.ToString());
-            }
+            get => GetXmlNodeInt(_fitToHeightPath);
+            set => SetXmlNodeString(_fitToHeightPath, value.ToString());
         }
         const string _scalePath = "d:pageSetup/@scale";
         /// <summary>
@@ -503,14 +467,8 @@ namespace OfficeOpenXml
         /// </summary>
         public int Scale
         {
-            get
-            {
-                return GetXmlNodeInt(_scalePath);
-            }
-            set
-            {
-                SetXmlNodeString(_scalePath, value.ToString());
-            }
+            get => GetXmlNodeInt(_scalePath);
+            set => SetXmlNodeString(_scalePath, value.ToString());
         }
         const string _fitToPagePath = "d:sheetPr/d:pageSetUpPr/@fitToPage";
         /// <summary>
@@ -518,14 +476,8 @@ namespace OfficeOpenXml
         /// </summary>
         public bool FitToPage
         {
-            get
-            {
-                return GetXmlNodeBool(_fitToPagePath);
-            }
-            set
-            {
-                SetXmlNodeString(_fitToPagePath, value ? "1" : "0");
-            }
+            get => GetXmlNodeBool(_fitToPagePath);
+            set => SetXmlNodeString(_fitToPagePath, value ? "1" : "0");
         }
         const string _headersPath = "d:printOptions/@headings";
         /// <summary>
@@ -533,14 +485,8 @@ namespace OfficeOpenXml
         /// </summary>
         public bool ShowHeaders
         {
-            get
-            {
-                return GetXmlNodeBool(_headersPath, false);
-            }
-            set
-            {
-                SetXmlNodeBool(_headersPath, value, false);
-            }
+            get => GetXmlNodeBool(_headersPath, false);
+            set => SetXmlNodeBool(_headersPath, value, false);
         }
         /// <summary>
         /// Print titles
@@ -553,28 +499,19 @@ namespace OfficeOpenXml
             {
                 if (_ws.Names.ContainsKey("_xlnm.Print_Titles"))
                 {
-                    ExcelRangeBase r = _ws.Names["_xlnm.Print_Titles"] as ExcelRangeBase;
+                    var r = _ws.Names["_xlnm.Print_Titles"] as ExcelRangeBase;
                     if (r.Start.Column == 1 && r.End.Column == ExcelPackage.MaxColumns)
                     {
                         return new ExcelAddress(r.FirstAddress);
                     }
-                    else if (r._addresses != null)
-                    {
-                        return r._addresses.FirstOrDefault(a => a.Start.Column == 1 && a.End.Column == ExcelPackage.MaxColumns);
-                    }
-                    else
-                    {
-                        return null;
-                    }
+
+                    return r._addresses?.FirstOrDefault(a => a.Start.Column == 1 && a.End.Column == ExcelPackage.MaxColumns);
                 }
-                else
-                {
-                    return null;
-                }
+
+                return null;
             }
             set
             {
-
                 //Must span entire columns
                 if (!(value.Start.Column == 1 && value.End.Column == ExcelPackage.MaxColumns))
                 {
@@ -613,25 +550,17 @@ namespace OfficeOpenXml
             {
                 if (_ws.Names.ContainsKey("_xlnm.Print_Titles"))
                 {
-                    ExcelRangeBase r = _ws.Names["_xlnm.Print_Titles"] as ExcelRangeBase;
+                    var r = _ws.Names["_xlnm.Print_Titles"] as ExcelRangeBase;
 
                     if (r.Start.Row == 1 && r.End.Row == ExcelPackage.MaxRows)
                     {
                         return new ExcelAddress(r.FirstAddress);
                     }
-                    else if (r._addresses != null)
-                    {
-                        return r._addresses.FirstOrDefault(a => a.Start.Row == 1 && a.End.Row == ExcelPackage.MaxRows);
-                    }
-                    else
-                    {
-                        return null;
-                    }
+
+                    return r._addresses?.FirstOrDefault(a => a.Start.Row == 1 && a.End.Row == ExcelPackage.MaxRows);
                 }
-                else
-                {
-                    return null;
-                }
+
+                return null;
             }
             set
             {
@@ -668,17 +597,7 @@ namespace OfficeOpenXml
         /// </summary>
         public ExcelRangeBase PrintArea
         {
-            get
-            {
-                if (_ws.Names.ContainsKey("_xlnm.Print_Area"))
-                {
-                    return _ws.Names["_xlnm.Print_Area"];
-                }
-                else
-                {
-                    return null;
-                }
-            }
+            get => _ws.Names.ContainsKey("_xlnm.Print_Area") ? _ws.Names["_xlnm.Print_Area"] : null;
             set
             {
                 if (value == null)
@@ -701,14 +620,8 @@ namespace OfficeOpenXml
         /// </summary>
         public bool ShowGridLines
         {
-            get
-            {
-                return GetXmlNodeBool(_gridLinesPath, false);
-            }
-            set
-            {
-                SetXmlNodeBool(_gridLinesPath, value, false);
-            }
+            get => GetXmlNodeBool(_gridLinesPath, false);
+            set => SetXmlNodeBool(_gridLinesPath, value, false);
         }
         const string _horizontalCenteredPath = "d:printOptions/@horizontalCentered";
         /// <summary>
@@ -716,14 +629,8 @@ namespace OfficeOpenXml
         /// </summary>w
         public bool HorizontalCentered
         {
-            get
-            {
-                return GetXmlNodeBool(_horizontalCenteredPath, false);
-            }
-            set
-            {
-                SetXmlNodeBool(_horizontalCenteredPath, value, false);
-            }
+            get => GetXmlNodeBool(_horizontalCenteredPath, false);
+            set => SetXmlNodeBool(_horizontalCenteredPath, value, false);
         }
         const string _verticalCenteredPath = "d:printOptions/@verticalCentered";
         /// <summary>
@@ -731,14 +638,8 @@ namespace OfficeOpenXml
         /// </summary>
         public bool VerticalCentered
         {
-            get
-            {
-                return GetXmlNodeBool(_verticalCenteredPath, false);
-            }
-            set
-            {
-                SetXmlNodeBool(_verticalCenteredPath, value, false);
-            }
+            get => GetXmlNodeBool(_verticalCenteredPath, false);
+            set => SetXmlNodeBool(_verticalCenteredPath, value, false);
         }
         const string _pageOrderPath = "d:pageSetup/@pageOrder";
         /// <summary>
@@ -746,17 +647,7 @@ namespace OfficeOpenXml
         /// </summary>
         public ePageOrder PageOrder
         {
-            get
-            {
-                if (GetXmlNodeString(_pageOrderPath) == "overThenDown")
-                {
-                    return ePageOrder.OverThenDown;
-                }
-                else
-                {
-                    return ePageOrder.DownThenOver;
-                }
-            }
+            get => GetXmlNodeString(_pageOrderPath) == "overThenDown" ? ePageOrder.OverThenDown : ePageOrder.DownThenOver;
             set
             {
                 if (value == ePageOrder.OverThenDown)
@@ -775,14 +666,8 @@ namespace OfficeOpenXml
         /// </summary>
         public bool BlackAndWhite
         {
-            get
-            {
-                return GetXmlNodeBool(_blackAndWhitePath, false);
-            }
-            set
-            {
-                SetXmlNodeBool(_blackAndWhitePath, value, false);
-            }
+            get => GetXmlNodeBool(_blackAndWhitePath, false);
+            set => SetXmlNodeBool(_blackAndWhitePath, value, false);
         }
         const string _draftPath = "d:pageSetup/@draft";
         /// <summary>
@@ -790,14 +675,8 @@ namespace OfficeOpenXml
         /// </summary>
         public bool Draft
         {
-            get
-            {
-                return GetXmlNodeBool(_draftPath, false);
-            }
-            set
-            {
-                SetXmlNodeBool(_draftPath, value, false);
-            }
+            get => GetXmlNodeBool(_draftPath, false);
+            set => SetXmlNodeBool(_draftPath, value, false);
         }
         const string _paperSizePath = "d:pageSetup/@paperSize";
         /// <summary>
@@ -807,21 +686,15 @@ namespace OfficeOpenXml
         {
             get
             {
-                string s = GetXmlNodeString(_paperSizePath);
+                var s = GetXmlNodeString(_paperSizePath);
                 if (s != "")
                 {
                     return (ePaperSize)int.Parse(s);
                 }
-                else
-                {
-                    return ePaperSize.Letter;
 
-                }
+                return ePaperSize.Letter;
             }
-            set
-            {
-                SetXmlNodeString(_paperSizePath, ((int)value).ToString());
-            }
+            set => SetXmlNodeString(_paperSizePath, ((int)value).ToString());
         }
         /// <summary>
         /// All or none of the margin attributes must exist. Create all att ones.

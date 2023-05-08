@@ -122,22 +122,22 @@ namespace OfficeOpenXml.Packaging.Ionic
 
         public override String ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.Append("size ").Append(EnumUtil.GetDescription(Operator)).Append(" ").Append(Size.ToString());
             return sb.ToString();
         }
 
         internal override bool Evaluate(string filename)
         {
-            System.IO.FileInfo fi = new System.IO.FileInfo(filename);
+            var fi = new FileInfo(filename);
             CriterionTrace("SizeCriterion::Evaluate('{0}' [{1}])",
-                           filename, this.ToString());
+                           filename, ToString());
             return _Evaluate(fi.Length);
         }
 
         private bool _Evaluate(Int64 Length)
         {
-            bool result = false;
+            var result = false;
             switch (Operator)
             {
                 case ComparisonOperator.GreaterThanOrEqualTo:
@@ -176,7 +176,7 @@ namespace OfficeOpenXml.Packaging.Ionic
 
         public override String ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.Append(Which.ToString()).Append(" ").Append(EnumUtil.GetDescription(Operator)).Append(" ").Append(Time.ToString("yyyy-MM-dd-HH:mm:ss"));
             return sb.ToString();
         }
@@ -187,13 +187,13 @@ namespace OfficeOpenXml.Packaging.Ionic
             switch (Which)
             {
                 case WhichTime.atime:
-                    x = System.IO.File.GetLastAccessTime(filename).ToUniversalTime();
+                    x = File.GetLastAccessTime(filename).ToUniversalTime();
                     break;
                 case WhichTime.mtime:
-                    x = System.IO.File.GetLastWriteTime(filename).ToUniversalTime();
+                    x = File.GetLastWriteTime(filename).ToUniversalTime();
                     break;
                 case WhichTime.ctime:
-                    x = System.IO.File.GetCreationTime(filename).ToUniversalTime();
+                    x = File.GetCreationTime(filename).ToUniversalTime();
                     break;
                 default:
                     throw new ArgumentException("Operator");
@@ -205,26 +205,26 @@ namespace OfficeOpenXml.Packaging.Ionic
 
         private bool _Evaluate(DateTime x)
         {
-            bool result = false;
+            var result = false;
             switch (Operator)
             {
                 case ComparisonOperator.GreaterThanOrEqualTo:
-                    result = (x >= Time);
+                    result = x >= Time;
                     break;
                 case ComparisonOperator.GreaterThan:
-                    result = (x > Time);
+                    result = x > Time;
                     break;
                 case ComparisonOperator.LesserThanOrEqualTo:
-                    result = (x <= Time);
+                    result = x <= Time;
                     break;
                 case ComparisonOperator.LesserThan:
-                    result = (x < Time);
+                    result = x < Time;
                     break;
                 case ComparisonOperator.EqualTo:
-                    result = (x == Time);
+                    result = x == Time;
                     break;
                 case ComparisonOperator.NotEqualTo:
-                    result = (x != Time);
+                    result = x != Time;
                     break;
                 default:
                     throw new ArgumentException("Operator");
@@ -275,7 +275,7 @@ namespace OfficeOpenXml.Packaging.Ionic
 
         public override String ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.Append("name ").Append(EnumUtil.GetDescription(Operator))
                 .Append(" '")
                 .Append(_MatchingFileSpec)
@@ -296,11 +296,11 @@ namespace OfficeOpenXml.Packaging.Ionic
             CriterionTrace("NameCriterion::Evaluate({0})", fullpath);
             // No slash in the pattern implicitly means recurse, which means compare to
             // filename only, not full path.
-            String f = (_MatchingFileSpec.IndexOf('\\') == -1)
-                ? System.IO.Path.GetFileName(fullpath)
+            var f = _MatchingFileSpec.IndexOf('\\') == -1
+                ? Path.GetFileName(fullpath)
                 : fullpath; // compare to fullpath
 
-            bool result = _re.IsMatch(f);
+            var result = _re.IsMatch(f);
 
             if (Operator != ComparisonOperator.EqualTo)
                 result = !result;
@@ -315,10 +315,7 @@ namespace OfficeOpenXml.Packaging.Ionic
         internal ComparisonOperator Operator;
         internal string AttributeString
         {
-            get
-            {
-                return ObjectType.ToString();
-            }
+            get => ObjectType.ToString();
             set
             {
                 if (value.Length != 1 ||
@@ -330,7 +327,7 @@ namespace OfficeOpenXml.Packaging.Ionic
 
         public override String ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.Append("type ").Append(EnumUtil.GetDescription(Operator)).Append(" ").Append(AttributeString);
             return sb.ToString();
         }
@@ -339,7 +336,7 @@ namespace OfficeOpenXml.Packaging.Ionic
         {
             CriterionTrace("TypeCriterion::Evaluate({0})", filename);
 
-            bool result = (ObjectType == 'D')
+            var result = ObjectType == 'D'
                 ? Directory.Exists(filename)
                 : File.Exists(filename);
 
@@ -359,7 +356,7 @@ namespace OfficeOpenXml.Packaging.Ionic
         {
             get
             {
-                string result = "";
+                var result = "";
                 if ((_Attributes & FileAttributes.Hidden) != 0)
                     result += "H";
                 if ((_Attributes & FileAttributes.System) != 0)
@@ -378,7 +375,7 @@ namespace OfficeOpenXml.Packaging.Ionic
             set
             {
                 _Attributes = FileAttributes.Normal;
-                foreach (char c in value.ToUpper(CultureInfo.InvariantCulture))
+                foreach (var c in value.ToUpper(CultureInfo.InvariantCulture))
                 {
                     switch (c)
                     {
@@ -428,16 +425,16 @@ namespace OfficeOpenXml.Packaging.Ionic
 
         public override String ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.Append("attributes ").Append(EnumUtil.GetDescription(Operator)).Append(" ").Append(AttributeString);
             return sb.ToString();
         }
 
         private bool _EvaluateOne(FileAttributes fileAttrs, FileAttributes criterionAttrs)
         {
-            bool result = false;
+            var result = false;
             if ((_Attributes & criterionAttrs) == criterionAttrs)
-                result = ((fileAttrs & criterionAttrs) == criterionAttrs);
+                result = (fileAttrs & criterionAttrs) == criterionAttrs;
             else
                 result = true;
             return result;
@@ -453,12 +450,12 @@ namespace OfficeOpenXml.Packaging.Ionic
                 // Directories don't have file attributes, so the result
                 // of an evaluation is always NO. This gets negated if
                 // the operator is NotEqualTo.
-                return (Operator != ComparisonOperator.EqualTo);
+                return Operator != ComparisonOperator.EqualTo;
             }
 #if NETCF
             FileAttributes fileAttrs = NetCfFile.GetAttributes(filename);
 #else
-            FileAttributes fileAttrs = System.IO.File.GetAttributes(filename);
+            var fileAttrs = File.GetAttributes(filename);
 #endif
 
             return _Evaluate(fileAttrs);
@@ -466,7 +463,7 @@ namespace OfficeOpenXml.Packaging.Ionic
 
         private bool _Evaluate(FileAttributes fileAttrs)
         {
-            bool result = _EvaluateOne(fileAttrs, FileAttributes.Hidden);
+            var result = _EvaluateOne(fileAttrs, FileAttributes.Hidden);
             if (result)
                 result = _EvaluateOne(fileAttrs, FileAttributes.System);
             if (result)
@@ -495,7 +492,7 @@ namespace OfficeOpenXml.Packaging.Ionic
         private SelectionCriterion _Right;
         internal SelectionCriterion Right
         {
-            get { return _Right; }
+            get => _Right;
             set
             {
                 _Right = value;
@@ -509,7 +506,7 @@ namespace OfficeOpenXml.Packaging.Ionic
 
         internal override bool Evaluate(string filename)
         {
-            bool result = Left.Evaluate(filename);
+            var result = Left.Evaluate(filename);
             switch (Conjunction)
             {
                 case LogicalConjunction.AND:
@@ -532,13 +529,13 @@ namespace OfficeOpenXml.Packaging.Ionic
 
         public override String ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.Append("(")
-            .Append((Left != null) ? Left.ToString() : "null")
+            .Append(Left != null ? Left.ToString() : "null")
             .Append(" ")
             .Append(Conjunction.ToString())
             .Append(" ")
-            .Append((Right != null) ? Right.ToString() : "null")
+            .Append(Right != null ? Right.ToString() : "null")
             .Append(")");
             return sb.ToString();
         }
@@ -958,14 +955,14 @@ namespace OfficeOpenXml.Packaging.Ionic
                     new string[] { @"/", "\\" },
                 };
 
-            string interim = source;
+            var interim = source;
 
-            for (int i = 0; i < prPairs.Length; i++)
+            for (var i = 0; i < prPairs.Length; i++)
             {
                 //char caseIdx = (char)('A' + i);
-                string pattern = RegexAssertions.PrecededByEvenNumberOfSingleQuotes +
-                    prPairs[i][0] +
-                    RegexAssertions.FollowedByEvenNumberOfSingleQuotesAndLineEnd;
+                var pattern = RegexAssertions.PrecededByEvenNumberOfSingleQuotes +
+                              prPairs[i][0] +
+                              RegexAssertions.FollowedByEvenNumberOfSingleQuotesAndLineEnd;
 
                 interim = Regex.Replace(interim, pattern, prPairs[i][1]);
             }
@@ -1006,22 +1003,22 @@ namespace OfficeOpenXml.Packaging.Ionic
                 s = "name = " + s;
 
             // split the expression into tokens
-            string[] tokens = s.Trim().Split(' ', '\t');
+            var tokens = s.Trim().Split(' ', '\t');
 
             if (tokens.Length < 3) throw new ArgumentException(s);
 
             SelectionCriterion current = null;
 
-            LogicalConjunction pendingConjunction = LogicalConjunction.NONE;
+            var pendingConjunction = LogicalConjunction.NONE;
 
             ParseState state;
-            var stateStack = new System.Collections.Generic.Stack<ParseState>();
-            var critStack = new System.Collections.Generic.Stack<SelectionCriterion>();
+            var stateStack = new Stack<ParseState>();
+            var critStack = new Stack<SelectionCriterion>();
             stateStack.Push(ParseState.Start);
 
-            for (int i = 0; i < tokens.Length; i++)
+            for (var i = 0; i < tokens.Length; i++)
             {
-                string tok1 = tokens[i].ToLower(CultureInfo.InvariantCulture);
+                var tok1 = tokens[i].ToLower(CultureInfo.InvariantCulture);
                 switch (tok1)
                 {
                     case "and":
@@ -1115,7 +1112,7 @@ namespace OfficeOpenXml.Packaging.Ionic
                             throw new ArgumentException(String.Join(" ", tokens, i, tokens.Length - i));
 
                         Int64 sz = 0;
-                        string v = tokens[i + 2];
+                        var v = tokens[i + 2];
                         if (v.EndsWith("K", StringComparison.OrdinalIgnoreCase))
                             sz = Int64.Parse(v.Substring(0, v.Length - 1)) * 1024;
                         else if (v.EndsWith("KB", StringComparison.OrdinalIgnoreCase))
@@ -1145,13 +1142,13 @@ namespace OfficeOpenXml.Packaging.Ionic
                             if (tokens.Length <= i + 2)
                                 throw new ArgumentException(String.Join(" ", tokens, i, tokens.Length - i));
 
-                            ComparisonOperator c =
+                            var c =
                                 (ComparisonOperator)EnumUtil.Parse(typeof(ComparisonOperator), tokens[i + 1]);
 
                             if (c != ComparisonOperator.NotEqualTo && c != ComparisonOperator.EqualTo)
                                 throw new ArgumentException(String.Join(" ", tokens, i, tokens.Length - i));
 
-                            string m = tokens[i + 2];
+                            var m = tokens[i + 2];
 
                             // handle single-quoted filespecs (used to include
                             // spaces in filename patterns)
@@ -1185,7 +1182,7 @@ namespace OfficeOpenXml.Packaging.Ionic
                             if (tokens.Length <= i + 2)
                                 throw new ArgumentException(String.Join(" ", tokens, i, tokens.Length - i));
 
-                            ComparisonOperator c =
+                            var c =
                                 (ComparisonOperator)EnumUtil.Parse(typeof(ComparisonOperator), tokens[i + 1]);
 
                             if (c != ComparisonOperator.NotEqualTo && c != ComparisonOperator.EqualTo)
@@ -1198,7 +1195,7 @@ namespace OfficeOpenXml.Packaging.Ionic
                                         Operator = c
                                     };
 #else
-                            current = (tok1 == "type")
+                            current = tok1 == "type"
                                 ? (SelectionCriterion)new TypeCriterion
                                 {
                                     AttributeString = tokens[i + 2],
@@ -1268,7 +1265,7 @@ namespace OfficeOpenXml.Packaging.Ionic
         {
             // dinoch - Thu, 11 Feb 2010  18:34
             SelectorTrace("Evaluate({0})", filename);
-            bool result = _Criterion.Evaluate(filename);
+            var result = _Criterion.Evaluate(filename);
             return result;
         }
 
@@ -1276,7 +1273,7 @@ namespace OfficeOpenXml.Packaging.Ionic
         private void SelectorTrace(string format, params object[] args)
         {
             if (_Criterion != null && _Criterion.Verbose)
-                System.Console.WriteLine(format, args);
+                Console.WriteLine(format, args);
         }
 
         /// <summary>
@@ -1298,7 +1295,7 @@ namespace OfficeOpenXml.Packaging.Ionic
         ///   A collection of strings containing fully-qualified pathnames of files
         ///   that match the criteria specified in the FileSelector instance.
         /// </returns>
-        public System.Collections.Generic.ICollection<String> SelectFiles(String directory)
+        public ICollection<String> SelectFiles(String directory)
         {
             return SelectFiles(directory, false);
         }
@@ -1342,10 +1339,10 @@ namespace OfficeOpenXml.Packaging.Ionic
             {
                 if (Directory.Exists(directory))
                 {
-                    String[] filenames = Directory.GetFiles(directory);
+                    var filenames = Directory.GetFiles(directory);
 
                     // add the files:
-                    foreach (String filename in filenames)
+                    foreach (var filename in filenames)
                     {
                         if (Evaluate(filename))
                             list.Add(filename);
@@ -1354,28 +1351,28 @@ namespace OfficeOpenXml.Packaging.Ionic
                     if (recurseDirectories)
                     {
                         // add the subdirectories:
-                        String[] dirnames = Directory.GetDirectories(directory);
-                        foreach (String dir in dirnames)
+                        var dirnames = Directory.GetDirectories(directory);
+                        foreach (var dir in dirnames)
                         {
-                            if (this.TraverseReparsePoints
+                            if (TraverseReparsePoints
 #if !SILVERLIGHT
-                                || ((File.GetAttributes(dir) & FileAttributes.ReparsePoint) == 0)
+                                || (File.GetAttributes(dir) & FileAttributes.ReparsePoint) == 0
 #endif
                                 )
                             {
                                 // workitem 10191
                                 if (Evaluate(dir)) list.Add(dir);
-                                list.AddRange(this.SelectFiles(dir, recurseDirectories));
+                                list.AddRange(SelectFiles(dir, recurseDirectories));
                             }
                         }
                     }
                 }
             }
             // can get System.UnauthorizedAccessException here
-            catch (System.UnauthorizedAccessException)
+            catch (UnauthorizedAccessException)
             {
             }
-            catch (System.IO.IOException)
+            catch (IOException)
             {
             }
 
@@ -1398,14 +1395,13 @@ namespace OfficeOpenXml.Packaging.Ionic
         /// </summary>
         /// <param name="value">The Enum to get the description for</param>
         /// <returns></returns>
-        internal static string GetDescription(System.Enum value)
+        internal static string GetDescription(Enum value)
         {
-            FieldInfo fi = value.GetType().GetField(value.ToString());
+            var fi = value.GetType().GetField(value.ToString());
             var attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
             if (attributes.Length > 0)
                 return attributes[0].Description;
-            else
-                return value.ToString();
+            return value.ToString();
         }
 
         /// <summary>
@@ -1472,17 +1468,17 @@ namespace OfficeOpenXml.Packaging.Ionic
 #if SILVERLIGHT
             foreach (System.Enum enumVal in GetEnumValues(enumType))
 #else
-            foreach (System.Enum enumVal in System.Enum.GetValues(enumType))
+            foreach (Enum enumVal in Enum.GetValues(enumType))
 #endif
             {
-                string description = GetDescription(enumVal);
+                var description = GetDescription(enumVal);
                 if (ignoreCase)
                     description = description.ToLower(CultureInfo.InvariantCulture);
                 if (description == stringRepresentation)
                     return enumVal;
             }
 
-            return System.Enum.Parse(enumType, stringRepresentation, ignoreCase);
+            return Enum.Parse(enumType, stringRepresentation, ignoreCase);
         }
     }
 

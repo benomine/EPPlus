@@ -82,17 +82,18 @@ namespace OfficeOpenXml.Table.PivotTable
             }
             if (Range.WorkSheet != _ws.Name)
             {
-                throw (new Exception("The Range must be in the current worksheet"));
+                throw new Exception("The Range must be in the current worksheet");
             }
-            else if (_ws.Workbook.ExistsTableName(Name))
+
+            if (_ws.Workbook.ExistsTableName(Name))
             {
-                throw (new ArgumentException("Tablename is not unique"));
+                throw new ArgumentException("Tablename is not unique");
             }
             foreach (var t in _pivotTables)
             {
                 if (t.Address.Collide(Range) != ExcelAddressBase.eAddressCollition.No)
                 {
-                    throw (new ArgumentException(string.Format("Table range collides with table {0}", t.Name)));
+                    throw new ArgumentException(string.Format("Table range collides with table {0}", t.Name));
                 }
             }
 
@@ -101,21 +102,16 @@ namespace OfficeOpenXml.Table.PivotTable
 
         internal string GetNewTableName()
         {
-            string name = "Pivottable1";
-            int i = 2;
+            var name = "Pivottable1";
+            var i = 2;
             while (_ws.Workbook.ExistsPivotTableName(name))
             {
                 name = string.Format("Pivottable{0}", i++);
             }
             return name;
         }
-        public int Count
-        {
-            get
-            {
-                return _pivotTables.Count;
-            }
-        }
+        public int Count => _pivotTables.Count;
+
         /// <summary>
         /// The pivottable Index. Base 0.
         /// </summary>
@@ -127,7 +123,7 @@ namespace OfficeOpenXml.Table.PivotTable
             {
                 if (Index < 0 || Index >= _pivotTables.Count)
                 {
-                    throw (new ArgumentOutOfRangeException("PivotTable index out of range"));
+                    throw new ArgumentOutOfRangeException("PivotTable index out of range");
                 }
                 return _pivotTables[Index];
             }
@@ -145,10 +141,8 @@ namespace OfficeOpenXml.Table.PivotTable
                 {
                     return _pivotTables[_pivotTableNames[Name]];
                 }
-                else
-                {
-                    return null;
-                }
+
+                return null;
             }
         }
         public IEnumerator<ExcelPivotTable> GetEnumerator()

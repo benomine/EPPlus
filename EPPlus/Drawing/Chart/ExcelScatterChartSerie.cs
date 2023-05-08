@@ -52,18 +52,16 @@ namespace OfficeOpenXml.Drawing.Chart
         internal ExcelScatterChartSerie(ExcelChartSeries chartSeries, XmlNamespaceManager ns, XmlNode node, bool isPivot) :
             base(chartSeries, ns, node, isPivot)
         {
-            if (chartSeries.Chart.ChartType == eChartType.XYScatterLines ||
-                chartSeries.Chart.ChartType == eChartType.XYScatterSmooth)
+            if (chartSeries.Chart.ChartType is eChartType.XYScatterLines or eChartType.XYScatterSmooth)
             {
                 Marker = eMarkerStyle.Square;
             }
 
-            if (chartSeries.Chart.ChartType == eChartType.XYScatterSmooth ||
-                chartSeries.Chart.ChartType == eChartType.XYScatterSmoothNoMarkers)
+            if (chartSeries.Chart.ChartType is eChartType.XYScatterSmooth or eChartType.XYScatterSmoothNoMarkers)
             {
                 Smooth = 1;
             }
-            else if (chartSeries.Chart.ChartType == eChartType.XYScatterLines || chartSeries.Chart.ChartType == eChartType.XYScatterLinesNoMarkers || chartSeries.Chart.ChartType == eChartType.XYScatter)
+            else if (chartSeries.Chart.ChartType is eChartType.XYScatterLines or eChartType.XYScatterLinesNoMarkers or eChartType.XYScatter)
 
             {
                 Smooth = 0;
@@ -73,31 +71,16 @@ namespace OfficeOpenXml.Drawing.Chart
         /// <summary>
         /// Datalabel
         /// </summary>
-        public ExcelChartSerieDataLabel DataLabel
-        {
-            get
-            {
-                if (_DataLabel == null)
-                {
-                    _DataLabel = new ExcelChartSerieDataLabel(_ns, _node);
-                }
-                return _DataLabel;
-            }
-        }
+        public ExcelChartSerieDataLabel DataLabel => _DataLabel ??= new ExcelChartSerieDataLabel(_ns, _node);
+
         const string smoothPath = "c:smooth/@val";
         /// <summary>
         /// Smooth for scattercharts
         /// </summary>
         public int Smooth
         {
-            get
-            {
-                return GetXmlNodeInt(smoothPath);
-            }
-            internal set
-            {
-                SetXmlNodeString(smoothPath, value.ToString());
-            }
+            get => GetXmlNodeInt(smoothPath);
+            internal set => SetXmlNodeString(smoothPath, value.ToString());
         }
         const string markerPath = "c:marker/c:symbol/@val";
         /// <summary>
@@ -107,20 +90,15 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             get
             {
-                string marker = GetXmlNodeString(markerPath);
+                var marker = GetXmlNodeString(markerPath);
                 if (marker == "")
                 {
                     return eMarkerStyle.None;
                 }
-                else
-                {
-                    return (eMarkerStyle)Enum.Parse(typeof(eMarkerStyle), marker, true);
-                }
+
+                return (eMarkerStyle)Enum.Parse(typeof(eMarkerStyle), marker, true);
             }
-            set
-            {
-                SetXmlNodeString(markerPath, value.ToString().ToLower(CultureInfo.InvariantCulture));
-            }
+            set => SetXmlNodeString(markerPath, value.ToString().ToLower(CultureInfo.InvariantCulture));
         }
 
         //new properties for excel scatter-plots: LineColor, MarkerSize, MarkerColor, LineWidth and MarkerLineColor
@@ -137,21 +115,19 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             get
             {
-                string color = GetXmlNodeString(LINECOLOR_PATH);
+                var color = GetXmlNodeString(LINECOLOR_PATH);
                 if (color == "")
                 {
                     return SKColors.Black;
                 }
-                else
+
+                var c = SKColor.Parse(color);
+                var a = getAlphaChannel(LINECOLOR_PATH);
+                if (a != 255)
                 {
-                    var c = SKColor.Parse(color);
-                    int a = getAlphaChannel(LINECOLOR_PATH);
-                    if (a != 255)
-                    {
-                        c = new SKColor(c.Red, c.Green, c.Blue, (byte)a);
-                    }
-                    return c;
+                    c = new SKColor(c.Red, c.Green, c.Blue, (byte)a);
                 }
+                return c;
             }
             set
             {
@@ -175,19 +151,12 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             get
             {
-                string size = GetXmlNodeString(MARKERSIZE_PATH);
-                if (size == "")
-                {
-                    return 5;
-                }
-                else
-                {
-                    return Int32.Parse(GetXmlNodeString(MARKERSIZE_PATH));
-                }
+                var size = GetXmlNodeString(MARKERSIZE_PATH);
+                return size == "" ? 5 : int.Parse(GetXmlNodeString(MARKERSIZE_PATH));
             }
             set
             {
-                int size = value;
+                var size = value;
                 size = Math.Max(2, size);
                 size = Math.Min(72, size);
                 SetXmlNodeString(MARKERSIZE_PATH, size.ToString(), true);
@@ -205,21 +174,19 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             get
             {
-                string color = GetXmlNodeString(MARKERCOLOR_PATH);
+                var color = GetXmlNodeString(MARKERCOLOR_PATH);
                 if (color == "")
                 {
                     return SKColors.Black;
                 }
-                else
+
+                var c = SKColor.Parse(color);
+                var a = getAlphaChannel(MARKERCOLOR_PATH);
+                if (a != 255)
                 {
-                    var c = SKColor.Parse(color);
-                    int a = getAlphaChannel(MARKERCOLOR_PATH);
-                    if (a != 255)
-                    {
-                        c = new SKColor(c.Red, c.Green, c.Blue, (byte)a);
-                    }
-                    return c;
+                    c = new SKColor(c.Red, c.Green, c.Blue, (byte)a);
                 }
+                return c;
             }
             set
             {
@@ -240,20 +207,15 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             get
             {
-                string size = GetXmlNodeString(LINEWIDTH_PATH);
+                var size = GetXmlNodeString(LINEWIDTH_PATH);
                 if (size == "")
                 {
                     return 2.25;
                 }
-                else
-                {
-                    return double.Parse(GetXmlNodeString(LINEWIDTH_PATH)) / 12700;
-                }
+
+                return double.Parse(GetXmlNodeString(LINEWIDTH_PATH)) / 12700;
             }
-            set
-            {
-                SetXmlNodeString(LINEWIDTH_PATH, ((int)(12700 * value)).ToString(), true);
-            }
+            set => SetXmlNodeString(LINEWIDTH_PATH, ((int)(12700 * value)).ToString(), true);
         }
         //marker line color
         string MARKERLINECOLOR_PATH = "c:marker/c:spPr/a:ln/a:solidFill/a:srgbClr/@val";
@@ -269,21 +231,19 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             get
             {
-                string color = GetXmlNodeString(MARKERLINECOLOR_PATH);
+                var color = GetXmlNodeString(MARKERLINECOLOR_PATH);
                 if (color == "")
                 {
                     return SKColors.Black;
                 }
-                else
+
+                var c = SKColor.Parse(color);
+                var a = getAlphaChannel(MARKERLINECOLOR_PATH);
+                if (a != 255)
                 {
-                    var c = SKColor.Parse(color);
-                    int a = getAlphaChannel(MARKERLINECOLOR_PATH);
-                    if (a != 255)
-                    {
-                        c = new SKColor(c.Red, c.Green, c.Blue, (byte)a);
-                    }
-                    return c;
+                    c = new SKColor(c.Red, c.Green, c.Blue, (byte)a);
                 }
+                return c;
             }
             set
             {
@@ -307,10 +267,10 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             if (c.Alpha != 255)
             {
-                string s = xPath4Alpha(xPath);
+                var s = xPath4Alpha(xPath);
                 if (s.Length > 0)
                 {
-                    string alpha = ((c.Alpha == 0) ? 0 : (100 - c.Alpha) * 1000).ToString(); //note: excel writes 100% transparency (alpha=0) as "0" and not as "100000"
+                    var alpha = (c.Alpha == 0 ? 0 : (100 - c.Alpha) * 1000).ToString(); //note: excel writes 100% transparency (alpha=0) as "0" and not as "100000"
                     SetXmlNodeString(s, alpha, true);
                 }
             }
@@ -322,14 +282,13 @@ namespace OfficeOpenXml.Drawing.Chart
         /// <returns>alpha or 255 if their is no such node</returns>
         private int getAlphaChannel(string xPath)
         {
-            int r = 255;
-            string s = xPath4Alpha(xPath);
+            var r = 255;
+            var s = xPath4Alpha(xPath);
             if (s.Length > 0)
             {
-                int i = 0;
-                if (int.TryParse(GetXmlNodeString(s), NumberStyles.Any, CultureInfo.InvariantCulture, out i))
+                if (int.TryParse(GetXmlNodeString(s), NumberStyles.Any, CultureInfo.InvariantCulture, out var i))
                 {
-                    r = (i == 0) ? 0 : 100 - (i / 1000);
+                    r = i == 0 ? 0 : 100 - i / 1000;
                 }
             }
             return r;
@@ -342,7 +301,7 @@ namespace OfficeOpenXml.Drawing.Chart
         /// <returns></returns>
         private string xPath4Alpha(string xPath)
         {
-            string s = string.Empty;
+            var s = string.Empty;
             if (xPath.EndsWith("@val"))
             {
                 xPath = xPath.Substring(0, xPath.IndexOf("@val"));
@@ -351,7 +310,7 @@ namespace OfficeOpenXml.Drawing.Chart
             {
                 xPath = xPath.Substring(0, xPath.Length - 1);
             }
-            List<string> colorDefs = new List<string>() { "a:prstClr", "a:hslClr", "a:schemeClr", "a:sysClr", "a:scrgbClr", "a:srgbClr" };
+            var colorDefs = new List<string>() { "a:prstClr", "a:hslClr", "a:schemeClr", "a:sysClr", "a:scrgbClr", "a:srgbClr" };
             if (colorDefs.Find(cd => xPath.EndsWith(cd, StringComparison.Ordinal)) != null)
             {
                 s = xPath + "/a:alpha/@val";

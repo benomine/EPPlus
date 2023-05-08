@@ -39,10 +39,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
     {
         private static CompileResult _empty = new CompileResult(null, DataType.Empty);
 
-        public static CompileResult Empty
-        {
-            get { return _empty; }
-        }
+        public static CompileResult Empty => _empty;
 
         private double? _ResultNumeric;
 
@@ -87,10 +84,8 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 {
                     return Result;
                 }
-                else
-                {
-                    return r.GetValue(r.Address._fromRow, r.Address._fromCol);
-                }
+
+                return r.GetValue(r.Address._fromRow, r.Address._fromCol);
             }
         }
 
@@ -120,10 +115,8 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                         {
                             return 0;
                         }
-                        else
-                        {
-                            return c.ValueDoubleLogical;
-                        }
+
+                        return c.ValueDoubleLogical;
                     }
                     // The IsNumericString and IsDateString properties will set _ResultNumeric for efficiency so we just need
                     // to check them here.
@@ -142,13 +135,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             private set;
         }
 
-        public bool IsNumeric
-        {
-            get
-            {
-                return DataType == DataType.Decimal || DataType == DataType.Integer || DataType == DataType.Empty || DataType == DataType.Boolean || DataType == DataType.Date;
-            }
-        }
+        public bool IsNumeric => DataType == DataType.Decimal || DataType == DataType.Integer || DataType == DataType.Empty || DataType == DataType.Boolean || DataType == DataType.Date;
 
         public bool IsNumericString
         {
@@ -184,9 +171,6 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 
         public int ExcelAddressReferenceId { get; set; }
 
-        public bool IsResultOfResolvedExcelRange
-        {
-            get { return ExcelAddressReferenceId > 0; }
-        }
+        public bool IsResultOfResolvedExcelRange => ExcelAddressReferenceId > 0;
     }
 }

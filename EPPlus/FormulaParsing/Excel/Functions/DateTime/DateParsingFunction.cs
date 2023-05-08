@@ -7,7 +7,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime
     {
         protected System.DateTime ParseDate(IEnumerable<FunctionArgument> arguments, object dateObj)
         {
-            System.DateTime date = System.DateTime.MinValue;
+            var date = System.DateTime.MinValue;
             if (dateObj is string)
             {
                 date = System.DateTime.Parse(dateObj.ToString(), CultureInfo.InvariantCulture);

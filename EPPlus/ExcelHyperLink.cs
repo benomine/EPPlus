@@ -87,14 +87,8 @@ namespace OfficeOpenXml
         /// </summary>
         public string ReferenceAddress
         {
-            get
-            {
-                return _referenceAddress;
-            }
-            set
-            {
-                _referenceAddress = value;
-            }
+            get => _referenceAddress;
+            set => _referenceAddress = value;
         }
         string _display = "";
         /// <summary>
@@ -102,14 +96,8 @@ namespace OfficeOpenXml
         /// </summary>
         public string Display
         {
-            get
-            {
-                return _display;
-            }
-            set
-            {
-                _display = value;
-            }
+            get => _display;
+            set => _display = value;
         }
         /// <summary>
         /// Tooltip
@@ -125,14 +113,8 @@ namespace OfficeOpenXml
         /// </summary>
         public int ColSpann
         {
-            get
-            {
-                return _colSpann;
-            }
-            set
-            {
-                _colSpann = value;
-            }
+            get => _colSpann;
+            set => _colSpann = value;
         }
         int _rowSpann = 0;
         /// <summary>
@@ -140,14 +122,8 @@ namespace OfficeOpenXml
         /// </summary>
         public int RowSpann
         {
-            get
-            {
-                return _rowSpann;
-            }
-            set
-            {
-                _rowSpann = value;
-            }
+            get => _rowSpann;
+            set => _rowSpann = value;
         }
         /// <summary>
         /// Used to handle non absolute URI's. 

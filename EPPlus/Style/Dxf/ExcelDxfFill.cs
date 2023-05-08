@@ -18,13 +18,8 @@
         /// </summary>
         public ExcelDxfColor BackgroundColor { get; internal set; }
 
-        protected internal override string Id
-        {
-            get
-            {
-                return GetAsString(PatternType) + "|" + (PatternColor == null ? "" : PatternColor.Id) + "|" + (BackgroundColor == null ? "" : BackgroundColor.Id);
-            }
-        }
+        protected internal override string Id => GetAsString(PatternType) + "|" + (PatternColor == null ? "" : PatternColor.Id) + "|" + (BackgroundColor == null ? "" : BackgroundColor.Id);
+
         protected internal override void CreateNodes(XmlHelper helper, string path)
         {
             helper.CreateNode(path);
@@ -33,15 +28,11 @@
             SetValueColor(helper, path + "/d:patternFill/d:bgColor", BackgroundColor);
         }
 
-        protected internal override bool HasValue
-        {
-            get
-            {
-                return PatternType != null ||
-                    PatternColor.HasValue ||
-                    BackgroundColor.HasValue;
-            }
-        }
+        protected internal override bool HasValue =>
+            PatternType != null ||
+            PatternColor.HasValue ||
+            BackgroundColor.HasValue;
+
         protected internal override ExcelDxfFill Clone()
         {
             return new ExcelDxfFill(_styles) { PatternType=PatternType, PatternColor=PatternColor.Clone(), BackgroundColor=BackgroundColor.Clone() };

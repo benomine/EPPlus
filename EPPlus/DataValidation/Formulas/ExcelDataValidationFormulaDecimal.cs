@@ -46,8 +46,7 @@ namespace OfficeOpenXml.DataValidation.Formulas
             var value = GetXmlNodeString(formulaPath);
             if (!string.IsNullOrEmpty(value))
             {
-                double dValue = default(double);
-                if (double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out dValue))
+                if (double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var dValue))
                 {
                     Value = dValue;
                 }

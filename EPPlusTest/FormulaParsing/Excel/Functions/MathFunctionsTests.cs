@@ -103,7 +103,7 @@ namespace EPPlusTest.Excel.Functions
             var func = new Ceiling();
             var args = FunctionsHelper.CreateArgs(-22.35d, -0.1);
             var result = func.Execute(args, _parsingContext);
-            Assert.AreEqual(expectedValue, System.Math.Round((double)result.Result, 2));
+            Assert.AreEqual(expectedValue, Math.Round((double)result.Result, 2));
         }
 
         [TestMethod]
@@ -248,7 +248,7 @@ namespace EPPlusTest.Excel.Functions
             var func = new Exp();
             var args = FunctionsHelper.CreateArgs(4);
             var result = func.Execute(args, _parsingContext);
-            Assert.AreEqual(54.59815003d, System.Math.Round((double)result.Result, 8));
+            Assert.AreEqual(54.59815003d, Math.Round((double)result.Result, 8));
         }
 
         [TestMethod]
@@ -483,10 +483,10 @@ namespace EPPlusTest.Excel.Functions
             var func = new Rand();
             var args = new FunctionArgument[0];
             var result1 = func.Execute(args, _parsingContext);
-            Assert.IsTrue(((double)result1.Result) > 0 && ((double)result1.Result) < 1);
+            Assert.IsTrue((double)result1.Result > 0 && (double)result1.Result < 1);
             var result2 = func.Execute(args, _parsingContext);
             Assert.AreNotEqual(result1.Result, result2.Result, "The two numbers were the same");
-            Assert.IsTrue(((double)result2.Result) > 0 && ((double)result2.Result) < 1);
+            Assert.IsTrue((double)result2.Result > 0 && (double)result2.Result < 1);
         }
 
         [TestMethod]
@@ -619,7 +619,7 @@ namespace EPPlusTest.Excel.Functions
             var func = new Var();
             var args = FunctionsHelper.CreateArgs(1, 2, 3, 4);
             var result = func.Execute(args, _parsingContext);
-            Assert.AreEqual(1.6667d, System.Math.Round((double)result.Result, 4));
+            Assert.AreEqual(1.6667d, Math.Round((double)result.Result, 4));
         }
 
         [TestMethod]
@@ -630,7 +630,7 @@ namespace EPPlusTest.Excel.Functions
             var args = FunctionsHelper.CreateArgs(1, 2, 3, 4, 9);
             args.Last().SetExcelStateFlag(ExcelCellState.HiddenCell);
             var result = func.Execute(args, _parsingContext);
-            Assert.AreEqual(1.6667d, System.Math.Round((double)result.Result, 4));
+            Assert.AreEqual(1.6667d, Math.Round((double)result.Result, 4));
         }
 
         [TestMethod]

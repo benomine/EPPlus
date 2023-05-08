@@ -49,14 +49,16 @@ namespace OfficeOpenXml.FormulaParsing.ExcelUtilities
             {
                 return CompareStringToString(o1.ToString().ToLower(), o2.ToString().ToLower());
             }
-            else if (o1.GetType() == typeof(string))
+
+            if (o1.GetType() == typeof(string))
             {
                 return CompareStringToObject(o1.ToString(), o2);
             }
-            else if (o2.GetType() == typeof(string))
+            if (o2.GetType() == typeof(string))
             {
                 return CompareObjectToString(o1, o2.ToString());
             }
+
             return Convert.ToDouble(o1).CompareTo(Convert.ToDouble(o2));
         }
 
@@ -64,7 +66,7 @@ namespace OfficeOpenXml.FormulaParsing.ExcelUtilities
         {
             if (v is ExcelDataProvider.IRangeInfo)
             {
-                var r = ((ExcelDataProvider.IRangeInfo)v);
+                var r = (ExcelDataProvider.IRangeInfo)v;
                 if (r.GetNCells() > 1)
                 {
                     v = ExcelErrorValue.Create(eErrorType.NA);
@@ -73,7 +75,7 @@ namespace OfficeOpenXml.FormulaParsing.ExcelUtilities
             }
             else if (v is ExcelDataProvider.INameInfo)
             {
-                var n = ((ExcelDataProvider.INameInfo)v);
+                var n = (ExcelDataProvider.INameInfo)v;
                 v = CheckGetRange(n);
             }
             return v;

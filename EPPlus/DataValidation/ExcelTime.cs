@@ -62,32 +62,33 @@ namespace OfficeOpenXml.DataValidation
         /// <param name="value">An existing time for initialization</param>
         public ExcelTime(decimal value)
         {
-            if (value < 0M)
+            switch (value)
             {
-                throw new ArgumentException("Value cannot be less than 0");
+                case < 0M:
+                    throw new ArgumentException("Value cannot be less than 0");
+                case >= 1M:
+                    throw new ArgumentException("Value cannot be greater or equal to 1");
+                default:
+                    Init(value);
+                    break;
             }
-            else if (value >= 1M)
-            {
-                throw new ArgumentException("Value cannot be greater or equal to 1");
-            }
-            Init(value);
         }
 
         private void Init(decimal value)
         {
             // handle hour
-            decimal totalSeconds = value * SecondsPerDay;
-            decimal hour = Math.Floor(totalSeconds / SecondsPerHour);
+            var totalSeconds = value * SecondsPerDay;
+            var hour = Math.Floor(totalSeconds / SecondsPerHour);
             Hour = (int)hour;
 
             // handle minute
-            decimal remainingSeconds = totalSeconds - (hour * SecondsPerHour);
-            decimal minute = Math.Floor(remainingSeconds / SecondsPerMinute);
+            var remainingSeconds = totalSeconds - hour * SecondsPerHour;
+            var minute = Math.Floor(remainingSeconds / SecondsPerMinute);
             Minute = (int)minute;
 
             // handle second
-            remainingSeconds = totalSeconds - (hour * SecondsPerHour) - (minute * SecondsPerMinute);
-            decimal second = Math.Round(remainingSeconds, MidpointRounding.AwayFromZero);
+            remainingSeconds = totalSeconds - hour * SecondsPerHour - minute * SecondsPerMinute;
+            var second = Math.Round(remainingSeconds, MidpointRounding.AwayFromZero);
             // Second might be rounded to 60... the SetSecond method handles that.
             SetSecond((int)second);
         }
@@ -134,16 +135,13 @@ namespace OfficeOpenXml.DataValidation
 
         internal event EventHandler TimeChanged
         {
-            add { _timeChanged += value; }
-            remove { _timeChanged -= value; }
+            add => _timeChanged += value;
+            remove => _timeChanged -= value;
         }
 
         private void OnTimeChanged()
         {
-            if (_timeChanged != null)
-            {
-                _timeChanged(this, EventArgs.Empty);
-            }
+            _timeChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private int _hour;
@@ -152,22 +150,20 @@ namespace OfficeOpenXml.DataValidation
         /// </summary>
         public int Hour
         {
-            get
-            {
-                return _hour;
-            }
+            get => _hour;
             set
             {
-                if (value < 0)
+                switch (value)
                 {
-                    throw new InvalidOperationException("Value for hour cannot be negative");
+                    case < 0:
+                        throw new InvalidOperationException("Value for hour cannot be negative");
+                    case > 23:
+                        throw new InvalidOperationException("Value for hour cannot be greater than 23");
+                    default:
+                        _hour = value;
+                        OnTimeChanged();
+                        break;
                 }
-                if (value > 23)
-                {
-                    throw new InvalidOperationException("Value for hour cannot be greater than 23");
-                }
-                _hour = value;
-                OnTimeChanged();
             }
         }
 
@@ -177,22 +173,20 @@ namespace OfficeOpenXml.DataValidation
         /// </summary>
         public int Minute
         {
-            get
-            {
-                return _minute;
-            }
+            get => _minute;
             set
             {
-                if (value < 0)
+                switch (value)
                 {
-                    throw new InvalidOperationException("Value for minute cannot be negative");
+                    case < 0:
+                        throw new InvalidOperationException("Value for minute cannot be negative");
+                    case > 59:
+                        throw new InvalidOperationException("Value for minute cannot be greater than 59");
+                    default:
+                        _minute = value;
+                        OnTimeChanged();
+                        break;
                 }
-                if (value > 59)
-                {
-                    throw new InvalidOperationException("Value for minute cannot be greater than 59");
-                }
-                _minute = value;
-                OnTimeChanged();
             }
         }
 
@@ -202,29 +196,24 @@ namespace OfficeOpenXml.DataValidation
         /// </summary>
         public int? Second
         {
-            get
-            {
-                return _second;
-            }
+            get => _second;
             set
             {
-                if (value < 0)
+                switch (value)
                 {
-                    throw new InvalidOperationException("Value for second cannot be negative");
+                    case < 0:
+                        throw new InvalidOperationException("Value for second cannot be negative");
+                    case > 59:
+                        throw new InvalidOperationException("Value for second cannot be greater than 59");
+                    default:
+                        _second = value;
+                        OnTimeChanged();
+                        break;
                 }
-                if (value > 59)
-                {
-                    throw new InvalidOperationException("Value for second cannot be greater than 59");
-                }
-                _second = value;
-                OnTimeChanged();
             }
         }
 
-        private decimal Round(decimal value)
-        {
-            return Math.Round(value, NumberOfDecimals);
-        }
+        private decimal Round(decimal value) => Math.Round(value, NumberOfDecimals);
 
         private decimal ToSeconds()
         {
@@ -248,10 +237,7 @@ namespace OfficeOpenXml.DataValidation
         /// Returns the excel decimal representation of a time as a string.
         /// </summary>
         /// <returns></returns>
-        public string ToExcelString()
-        {
-            return ToExcelTime().ToString(CultureInfo.InvariantCulture);
-        }
+        public string ToExcelString() => ToExcelTime().ToString(CultureInfo.InvariantCulture);
 
         public override string ToString()
         {

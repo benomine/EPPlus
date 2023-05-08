@@ -42,11 +42,13 @@ namespace OfficeOpenXml
     public class ExcelCommentCollection : IEnumerable, IDisposable
     {
         //internal RangeCollection _comments;
-        List<ExcelComment> _list = new List<ExcelComment>();
+        private readonly List<ExcelComment> _list = new List<ExcelComment>();
         internal ExcelCommentCollection(ExcelPackage pck, ExcelWorksheet ws, XmlNamespaceManager ns)
         {
-            CommentXml = new XmlDocument();
-            CommentXml.PreserveWhitespace = false;
+            CommentXml = new XmlDocument
+            {
+                PreserveWhitespace = false
+            };
             NameSpaceManager=ns;
             Worksheet=ws;
             CreateXml(pck);
@@ -55,7 +57,7 @@ namespace OfficeOpenXml
         private void CreateXml(ExcelPackage pck)
         {
             var commentParts = Worksheet.Part.GetRelationshipsByType(ExcelPackage.schemaComment);
-            bool isLoaded = false;
+            var isLoaded = false;
             CommentXml=new XmlDocument();
             foreach (var commentPart in commentParts)
             {
@@ -107,27 +109,22 @@ namespace OfficeOpenXml
         /// <summary>
         /// Number of comments in the collection
         /// </summary>
-        public int Count
-        {
-            get
-            {
-                return _list.Count;
-            }
-        }
+        public int Count => _list.Count;
+
         /// <summary>
         /// Indexer for the comments collection
         /// </summary>
-        /// <param name="Index">The index</param>
+        /// <param name="index">The index</param>
         /// <returns>The comment</returns>
-        public ExcelComment this[int Index]
+        public ExcelComment this[int index]
         {
             get
             {
-                if (Index < 0 || Index >= _list.Count)
+                if (index < 0 || index >= _list.Count)
                 {
-                    throw (new ArgumentOutOfRangeException("Comment index out of range"));
+                    throw new ArgumentOutOfRangeException("Comment index out of range");
                 }
-                return _list[Index] as ExcelComment;
+                return _list[index] as ExcelComment;
             }
         }
         /// <summary>
@@ -148,26 +145,18 @@ namespace OfficeOpenXml
                 //{
                 //    return null;
                 //}
-                int i = -1;
-                if (Worksheet._commentsStore.Exists(cell.Row, cell.Column, ref i))
-                {
-                    return _list[i];
-                }
-                else
-                {
-                    return null;
-                }
-
+                var i = -1;
+                return Worksheet._commentsStore.Exists(cell.Row, cell.Column, ref i) ? _list[i] : null;
             }
         }
         /// <summary>
         /// Adds a comment to the top left cell of the range
         /// </summary>
         /// <param name="cell">The cell</param>
-        /// <param name="Text">The comment text</param>
+        /// <param name="text">The comment text</param>
         /// <param name="author">Author</param>
         /// <returns>The comment</returns>
-        public ExcelComment Add(ExcelRangeBase cell, string Text, string author)
+        public ExcelComment Add(ExcelRangeBase cell, string text, string author)
         {
             var elem = CommentXml.CreateElement("comment", ExcelPackage.schemaMain);
             //int ix=_comments.IndexOf(ExcelAddress.GetCellID(Worksheet.SheetID, cell._fromRow, cell._fromCol));
@@ -184,11 +173,11 @@ namespace OfficeOpenXml
             }
             else
             {
-                nextComment._commentHelper.TopNode.ParentNode.InsertBefore(elem, nextComment._commentHelper.TopNode);
+                nextComment.CommentHelper.TopNode.ParentNode.InsertBefore(elem, nextComment.CommentHelper.TopNode);
             }
             elem.SetAttribute("ref", cell.Start.Address);
-            ExcelComment comment = new ExcelComment(NameSpaceManager, elem, cell);
-            comment.RichText.Add(Text);
+            var comment = new ExcelComment(NameSpaceManager, elem, cell);
+            comment.RichText.Add(text);
             if (author!="")
             {
                 comment.Author=author;
@@ -208,9 +197,9 @@ namespace OfficeOpenXml
         /// <param name="comment">The comment to remove</param>
         public void Remove(ExcelComment comment)
         {
-            ulong id = ExcelAddress.GetCellID(Worksheet.SheetID, comment.Range._fromRow, comment.Range._fromCol);
+            var id = ExcelCellBase.GetCellID(Worksheet.SheetID, comment.Range._fromRow, comment.Range._fromCol);
             //int ix=_comments.IndexOf(id);
-            int i = -1;
+            var i = -1;
             ExcelComment c = null;
             if (Worksheet._commentsStore.Exists(comment.Range._fromRow, comment.Range._fromCol, ref i))
             {
@@ -219,7 +208,7 @@ namespace OfficeOpenXml
             if (comment==c)
             {
                 comment.TopNode.ParentNode.RemoveChild(comment.TopNode); //Remove VML
-                comment._commentHelper.TopNode.ParentNode.RemoveChild(comment._commentHelper.TopNode); //Remove Comment
+                comment.CommentHelper.TopNode.ParentNode.RemoveChild(comment.CommentHelper.TopNode); //Remove Comment
 
                 Worksheet.VmlDrawingsComments._drawings.Delete(id);
                 _list.RemoveAt(i);
@@ -235,7 +224,7 @@ namespace OfficeOpenXml
             }
             else
             {
-                throw (new ArgumentException("Comment does not exist in the worksheet"));
+                throw new ArgumentException("Comment does not exist in the worksheet");
             }
         }
 
@@ -248,11 +237,10 @@ namespace OfficeOpenXml
         /// <param name="columns">The number of columns to insert.</param>
         internal void Delete(int fromRow, int fromCol, int rows, int columns)
         {
-            List<ExcelComment> deletedComments = new List<ExcelComment>();
-            ExcelAddressBase address = null;
-            foreach (ExcelComment comment in _list)
+            var deletedComments = new List<ExcelComment>();
+            foreach (var comment in _list)
             {
-                address = new ExcelAddressBase(comment.Address);
+                var address = new ExcelAddressBase(comment.Address);
                 if (fromCol>0 && address._fromCol >= fromCol)
                 {
                     address = address.DeleteColumn(fromCol, columns);
@@ -285,7 +273,7 @@ namespace OfficeOpenXml
         public void Insert(int fromRow, int fromCol, int rows, int columns)
         {
             //List<ExcelComment> commentsToShift = new List<ExcelComment>();
-            foreach (ExcelComment comment in _list)
+            foreach (var comment in _list)
             {
                 var address = new ExcelAddressBase(comment.Address);
                 if (rows > 0 && address._fromRow >= fromRow)
@@ -315,10 +303,10 @@ namespace OfficeOpenXml
         /// <summary>
         /// Removes the comment at the specified position
         /// </summary>
-        /// <param name="Index">The index</param>
-        public void RemoveAt(int Index)
+        /// <param name="index">The index</param>
+        public void RemoveAt(int index)
         {
-            Remove(this[Index]);
+            Remove(this[index]);
         }
         #region IEnumerable Members
 

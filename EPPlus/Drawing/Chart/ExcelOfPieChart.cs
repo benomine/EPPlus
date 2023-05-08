@@ -60,14 +60,7 @@ namespace OfficeOpenXml.Drawing.Chart
 
         private void SetTypeProperties()
         {
-            if (ChartType == eChartType.BarOfPie)
-            {
-                OfPieType = ePieType.Bar;
-            }
-            else
-            {
-                OfPieType = ePieType.Pie;
-            }
+            OfPieType = ChartType == eChartType.BarOfPie ? ePieType.Bar : ePieType.Pie;
         }
 
         const string pieTypePath = "c:ofPieType/@val";
@@ -76,15 +69,7 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public ePieType OfPieType
         {
-            get
-            {
-                if (_chartXmlHelper.GetXmlNodeString(pieTypePath) == "bar")
-                    return ePieType.Bar;
-                else
-                {
-                    return ePieType.Pie;
-                }
-            }
+            get => _chartXmlHelper.GetXmlNodeString(pieTypePath) == "bar" ? ePieType.Bar : ePieType.Pie;
             internal set
             {
                 _chartXmlHelper.CreateNode(pieTypePath, true);
@@ -97,27 +82,14 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public int GapWidth
         {
-            get
-            {
-                return _chartXmlHelper.GetXmlNodeInt(_gapWidthPath);
-            }
-            set
-            {
-                _chartXmlHelper.SetXmlNodeString(_gapWidthPath, value.ToString(CultureInfo.InvariantCulture));
-            }
+            get => _chartXmlHelper.GetXmlNodeInt(_gapWidthPath);
+            set => _chartXmlHelper.SetXmlNodeString(_gapWidthPath, value.ToString(CultureInfo.InvariantCulture));
         }
         internal override eChartType GetChartType(string name)
         {
             if (name == "ofPieChart")
             {
-                if (OfPieType==ePieType.Bar)
-                {
-                    return eChartType.BarOfPie;
-                }
-                else
-                {
-                    return eChartType.PieOfPie;
-                }
+                return OfPieType==ePieType.Bar ? eChartType.BarOfPie : eChartType.PieOfPie;
             }
             return base.GetChartType(name);
         }

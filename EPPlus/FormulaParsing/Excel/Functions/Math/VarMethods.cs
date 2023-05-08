@@ -46,9 +46,9 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
 
         public static double Var(IEnumerable<double> args)
         {
-            double avg = args.Select(x => (double)x).Average();
-            double d = args.Aggregate(0.0, (total, next) => total += System.Math.Pow(next - avg, 2));
-            return Divide(d, (args.Count() - 1));
+            var avg = args.Select(x => (double)x).Average();
+            var d = args.Aggregate(0.0, (total, next) => total += System.Math.Pow(next - avg, 2));
+            return Divide(d, args.Count() - 1);
         }
 
         public static double VarP(IEnumerable<ExcelDoubleCellValue> args)
@@ -58,8 +58,8 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
 
         public static double VarP(IEnumerable<double> args)
         {
-            double avg = args.Select(x => (double)x).Average();
-            double d = args.Aggregate(0.0, (total, next) => total += System.Math.Pow(next - avg, 2));
+            var avg = args.Select(x => (double)x).Average();
+            var d = args.Aggregate(0.0, (total, next) => total += System.Math.Pow(next - avg, 2));
             return Divide(d, args.Count());
         }
     }

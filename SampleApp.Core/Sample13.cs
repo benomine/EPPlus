@@ -56,10 +56,8 @@ namespace EPPlusSamples
                 {
                     return Name + "\t<Dir>";
                 }
-                else
-                {
-                    return Name + "\t" + Size.ToString("#,##0");
-                }
+
+                return Name + "\t" + Size.ToString("#,##0");
             }
         }
         public static void RunSample13()
@@ -77,7 +75,7 @@ namespace EPPlusSamples
             wsDt.Cells[2, 3, dt.Rows.Count + 1, 4].Style.Numberformat.Format = "mm-dd-yy";
             wsDt.Cells[wsDt.Dimension.Address].AutoFitColumns();
             //Select Name and Created-time...
-            var collection = (from row in dt.Select() select new { Name = row["Name"], Created_time = (DateTime)row["Created"] });
+            var collection = from row in dt.Select() select new { Name = row["Name"], Created_time = (DateTime)row["Created"] };
 
             var wsEnum = pck.Workbook.Worksheets.Add("FromAnonymous");
 
@@ -97,7 +95,7 @@ namespace EPPlusSamples
                                       Size = row["Size"].GetType() == typeof(long) ? (long)row["Size"] : 0,
                                       Created = (DateTime)row["Created"],
                                       LastModified = (DateTime)row["Modified"],
-                                      IsDirectory = (row["Size"] == DBNull.Value)
+                                      IsDirectory = row["Size"] == DBNull.Value
                                   }).ToList<FileDTO>();
 
             //Load files ordered by size...

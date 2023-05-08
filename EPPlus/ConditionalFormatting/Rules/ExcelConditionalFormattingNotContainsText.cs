@@ -63,7 +63,7 @@ namespace OfficeOpenXml.ConditionalFormatting
             priority,
             worksheet,
             itemElementNode,
-            (namespaceManager == null) ? worksheet.NameSpaceManager : namespaceManager)
+            namespaceManager == null ? worksheet.NameSpaceManager : namespaceManager)
         {
             if (itemElementNode==null) //Set default values and create attributes if needed
             {
@@ -121,11 +121,9 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// </summary>
         public string Text
         {
-            get
-            {
-                return GetXmlNodeString(
-                  ExcelConditionalFormattingConstants.Paths.TextAttribute);
-            }
+            get =>
+                GetXmlNodeString(
+                    ExcelConditionalFormattingConstants.Paths.TextAttribute);
             set
             {
                 SetXmlNodeString(

@@ -56,7 +56,7 @@ namespace OfficeOpenXml.ConditionalFormatting
                   ExcelConditionalFormattingConstants.Errors.CommaSeparatedAddresses);
             }
 
-            address = ConvertUtil._invariantTextInfo.ToUpper(address);
+            address = ConvertUtil.InvariantTextInfo.ToUpper(address);
 
             if (Regex.IsMatch(address, @"[A-Z]+:[A-Z]+"))
             {
@@ -98,7 +98,7 @@ namespace OfficeOpenXml.ConditionalFormatting
             try
             {
                 var value = node.Attributes[attribute].Value;
-                return (value == null) ? string.Empty : value;
+                return value == null ? string.Empty : value;
             }
             catch
             {
@@ -143,11 +143,9 @@ namespace OfficeOpenXml.ConditionalFormatting
                 {
                     return null;
                 }
-                else
-                {
-                    var value = node.Attributes[attribute].Value;
-                    return int.Parse(value, NumberStyles.Integer, CultureInfo.InvariantCulture);
-                }
+
+                var value = node.Attributes[attribute].Value;
+                return int.Parse(value, NumberStyles.Integer, CultureInfo.InvariantCulture);
             }
             catch
             {
@@ -168,7 +166,7 @@ namespace OfficeOpenXml.ConditionalFormatting
             try
             {
                 var value = node.Attributes[attribute].Value;
-                return (value == "1" || value == "-1" || value.Equals("TRUE", StringComparison.OrdinalIgnoreCase));
+                return value == "1" || value == "-1" || value.Equals("TRUE", StringComparison.OrdinalIgnoreCase);
             }
             catch
             {
@@ -192,11 +190,9 @@ namespace OfficeOpenXml.ConditionalFormatting
                 {
                     return null;
                 }
-                else
-                {
-                    var value = node.Attributes[attribute].Value;
-                    return (value == "1" || value == "-1" || value.Equals("TRUE", StringComparison.OrdinalIgnoreCase));
-                }
+
+                var value = node.Attributes[attribute].Value;
+                return value == "1" || value == "-1" || value.Equals("TRUE", StringComparison.OrdinalIgnoreCase);
             }
             catch
             {

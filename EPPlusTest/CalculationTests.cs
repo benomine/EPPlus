@@ -103,10 +103,8 @@ namespace EPPlusTest
                         {
                             continue;
                         }
-                        else
-                        {
-                            Assert.AreEqual(fr[adr], ws.Cells[adr].Value);
-                        }
+
+                        Assert.AreEqual(fr[adr], ws.Cells[adr].Value);
                     }
                     else
                     {
@@ -270,7 +268,7 @@ namespace EPPlusTest
             if (sb.Length > 0)
             {
                 File.WriteAllText(string.Format("TestAllWorkooks{0}.txt", DateTime.Now.ToString("d") + " " + DateTime.Now.ToString("t")), sb.ToString());
-                throw (new Exception("Test failed with\r\n\r\n" + sb.ToString()));
+                throw new Exception("Test failed with\r\n\r\n" + sb.ToString());
 
             }
         }
@@ -329,7 +327,7 @@ namespace EPPlusTest
                 var errors = new List<Tuple<string, object, object>>();
                 ExcelWorksheet sheet = null;
                 string adr = "";
-                var fileErr = new System.IO.StreamWriter(new FileStream("c:\\temp\\err.txt", FileMode.Append));
+                var fileErr = new StreamWriter(new FileStream("c:\\temp\\err.txt", FileMode.Append));
                 foreach (var cell in fr.Keys)
                 {
                     try
@@ -343,15 +341,13 @@ namespace EPPlusTest
                             var d1 = Convert.ToDouble(fr[cell]);
                             var d2 = Convert.ToDouble(sheet.Cells[adr].Value);
                             //if (Math.Abs(d1 - d2) < double.Epsilon)
-                            if (double.Equals(d1, d2))
+                            if (Equals(d1, d2))
                             {
                                 continue;
                             }
-                            else
-                            {
-                                //errors.Add(new Tuple<string, object, object>(adr, fr[cell], sheet.Cells[adr].Value));
-                                fileErr.WriteLine("Diff cell " + sheet.Name + "!" + adr +"\t" + d1.ToString("R15") + "\t" + d2.ToString("R15"));
-                            }
+
+                            //errors.Add(new Tuple<string, object, object>(adr, fr[cell], sheet.Cells[adr].Value));
+                            fileErr.WriteLine("Diff cell " + sheet.Name + "!" + adr +"\t" + d1.ToString("R15") + "\t" + d2.ToString("R15"));
                         }
                         else
                         {

@@ -24,7 +24,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Text
             var format = (noCommas ? "F" : "N") + nDecimals.ToString(CultureInfo.InvariantCulture);
             if (nDecimals < 0)
             {
-                number = number - (number % (System.Math.Pow(10, nDecimals * -1)));
+                number = number - number % System.Math.Pow(10, nDecimals * -1);
                 number = System.Math.Floor(number);
                 format = noCommas ? "F0" : "N0";
             }

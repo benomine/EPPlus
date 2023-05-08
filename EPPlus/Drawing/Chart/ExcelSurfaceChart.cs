@@ -68,44 +68,20 @@ namespace OfficeOpenXml.Drawing.Chart
 
 
         ExcelChartSurface _floor;
-        public ExcelChartSurface Floor
-        {
-            get
-            {
-                return _floor;
-            }
-        }
+        public ExcelChartSurface Floor => _floor;
         ExcelChartSurface _sideWall;
-        public ExcelChartSurface SideWall
-        {
-            get
-            {
-                return _sideWall;
-            }
-        }
+        public ExcelChartSurface SideWall => _sideWall;
         ExcelChartSurface _backWall;
-        public ExcelChartSurface BackWall
-        {
-            get
-            {
-                return _backWall;
-            }
-        }
+        public ExcelChartSurface BackWall => _backWall;
         const string WIREFRAME_PATH = "c:wireframe/@val";
         public bool Wireframe
         {
-            get
-            {
-                return _chartXmlHelper.GetXmlNodeBool(WIREFRAME_PATH);
-            }
-            set
-            {
-                _chartXmlHelper.SetXmlNodeBool(WIREFRAME_PATH, value);
-            }
+            get => _chartXmlHelper.GetXmlNodeBool(WIREFRAME_PATH);
+            set => _chartXmlHelper.SetXmlNodeBool(WIREFRAME_PATH, value);
         }
         internal void SetTypeProperties()
         {
-            if (ChartType==eChartType.SurfaceWireframe || ChartType==eChartType.SurfaceTopViewWireframe)
+            if (ChartType is eChartType.SurfaceWireframe or eChartType.SurfaceTopViewWireframe)
             {
                 Wireframe=true;
             }
@@ -114,7 +90,7 @@ namespace OfficeOpenXml.Drawing.Chart
                 Wireframe=false;
             }
 
-            if (ChartType==eChartType.SurfaceTopView || ChartType==eChartType.SurfaceTopViewWireframe)
+            if (ChartType is eChartType.SurfaceTopView or eChartType.SurfaceTopViewWireframe)
             {
                 View3D.RotY = 0;
                 View3D.RotX = 90;
@@ -132,26 +108,10 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             if (Wireframe)
             {
-                if (name == "surfaceChart")
-                {
-                    return eChartType.SurfaceTopViewWireframe;
-                }
-                else
-                {
-                    return eChartType.SurfaceWireframe;
-                }
+                return name == "surfaceChart" ? eChartType.SurfaceTopViewWireframe : eChartType.SurfaceWireframe;
             }
-            else
-            {
-                if (name == "surfaceChart")
-                {
-                    return eChartType.SurfaceTopView;
-                }
-                else
-                {
-                    return eChartType.Surface;
-                }
-            }
+
+            return name == "surfaceChart" ? eChartType.SurfaceTopView : eChartType.Surface;
         }
     }
 }

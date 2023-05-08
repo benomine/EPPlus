@@ -7,10 +7,7 @@ namespace EPPlusSamples
         static DirectoryInfo _outputDir = null;
         public static DirectoryInfo OutputDir
         {
-            get
-            {
-                return _outputDir;
-            }
+            get => _outputDir;
             set
             {
                 _outputDir = value;

@@ -33,7 +33,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
     internal enum ZlibStreamFlavor { ZLIB = 1950, DEFLATE = 1951, GZIP = 1952 }
 
-    internal class ZlibBaseStream : System.IO.Stream
+    internal class ZlibBaseStream : Stream
     {
         protected internal ZlibCodec _z = null; // deferred init... new ZlibCodec();
 
@@ -47,7 +47,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         protected internal int _bufferSize = ZlibConstants.WorkingBufferSizeDefault;
         protected internal byte[] _buf1 = new byte[1];
 
-        protected internal System.IO.Stream _stream;
+        protected internal Stream _stream;
         protected internal CompressionStrategy Strategy = CompressionStrategy.Default;
 
         // workitem 7159
@@ -59,35 +59,29 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
         internal int Crc32 { get { if (crc == null) return 0; return crc.Crc32Result; } }
 
-        public ZlibBaseStream(System.IO.Stream stream,
+        public ZlibBaseStream(Stream stream,
                               CompressionMode compressionMode,
                               CompressionLevel level,
                               ZlibStreamFlavor flavor,
                               bool leaveOpen)
             : base()
         {
-            this._flushMode = FlushType.None;
+            _flushMode = FlushType.None;
             //this._workingBuffer = new byte[WORKING_BUFFER_SIZE_DEFAULT];
-            this._stream = stream;
-            this._leaveOpen = leaveOpen;
-            this._compressionMode = compressionMode;
-            this._flavor = flavor;
-            this._level = level;
+            _stream = stream;
+            _leaveOpen = leaveOpen;
+            _compressionMode = compressionMode;
+            _flavor = flavor;
+            _level = level;
             // workitem 7159
             if (flavor == ZlibStreamFlavor.GZIP)
             {
-                this.crc = new Ionic.Crc.CRC32();
+                crc = new CRC32();
             }
         }
 
 
-        protected internal bool _wantCompress
-        {
-            get
-            {
-                return (this._compressionMode == CompressionMode.Compress);
-            }
-        }
+        protected internal bool _wantCompress => _compressionMode == CompressionMode.Compress;
 
         private ZlibCodec z
         {
@@ -95,16 +89,16 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
             {
                 if (_z == null)
                 {
-                    bool wantRfc1950Header = (this._flavor == ZlibStreamFlavor.ZLIB);
+                    var wantRfc1950Header = _flavor == ZlibStreamFlavor.ZLIB;
                     _z = new ZlibCodec();
-                    if (this._compressionMode == CompressionMode.Decompress)
+                    if (_compressionMode == CompressionMode.Decompress)
                     {
                         _z.InitializeInflate(wantRfc1950Header);
                     }
                     else
                     {
                         _z.Strategy = Strategy;
-                        _z.InitializeDeflate(this._level, wantRfc1950Header);
+                        _z.InitializeDeflate(_level, wantRfc1950Header);
                     }
                 }
                 return _z;
@@ -125,7 +119,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
 
 
-        public override void Write(System.Byte[] buffer, int offset, int count)
+        public override void Write(Byte[] buffer, int offset, int count)
         {
             // workitem 7159
             // calculate the CRC on the unccompressed data  (before writing)
@@ -144,13 +138,13 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
             z.InputBuffer = buffer;
             _z.NextIn = offset;
             _z.AvailableBytesIn = count;
-            bool done = false;
+            var done = false;
             do
             {
                 _z.OutputBuffer = workingBuffer;
                 _z.NextOut = 0;
                 _z.AvailableBytesOut = _workingBuffer.Length;
-                int rc = (_wantCompress)
+                var rc = _wantCompress
                     ? _z.Deflate(_flushMode)
                     : _z.Inflate(_flushMode);
                 if (rc != ZlibConstants.Z_OK && rc != ZlibConstants.Z_STREAM_END)
@@ -163,7 +157,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
                 // If GZIP and de-compress, we're done when 8 bytes remain.
                 if (_flavor == ZlibStreamFlavor.GZIP && !_wantCompress)
-                    done = (_z.AvailableBytesIn == 8 && _z.AvailableBytesOut != 0);
+                    done = _z.AvailableBytesIn == 8 && _z.AvailableBytesOut != 0;
 
             }
             while (!done);
@@ -177,23 +171,22 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
             if (_streamMode == StreamMode.Writer)
             {
-                bool done = false;
+                var done = false;
                 do
                 {
                     _z.OutputBuffer = workingBuffer;
                     _z.NextOut = 0;
                     _z.AvailableBytesOut = _workingBuffer.Length;
-                    int rc = (_wantCompress)
+                    var rc = _wantCompress
                         ? _z.Deflate(FlushType.Finish)
                         : _z.Inflate(FlushType.Finish);
 
                     if (rc != ZlibConstants.Z_STREAM_END && rc != ZlibConstants.Z_OK)
                     {
-                        string verb = (_wantCompress ? "de" : "in") + "flating";
+                        var verb = (_wantCompress ? "de" : "in") + "flating";
                         if (_z.Message == null)
                             throw new ZlibException(String.Format("{0}: (rc = {1})", verb, rc));
-                        else
-                            throw new ZlibException(verb + ": " + _z.Message);
+                        throw new ZlibException(verb + ": " + _z.Message);
                     }
 
                     if (_workingBuffer.Length - _z.AvailableBytesOut > 0)
@@ -204,7 +197,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                     done = _z.AvailableBytesIn == 0 && _z.AvailableBytesOut != 0;
                     // If GZIP and de-compress, we're done when 8 bytes remain.
                     if (_flavor == ZlibStreamFlavor.GZIP && !_wantCompress)
-                        done = (_z.AvailableBytesIn == 8 && _z.AvailableBytesOut != 0);
+                        done = _z.AvailableBytesIn == 8 && _z.AvailableBytesOut != 0;
 
                 }
                 while (!done);
@@ -217,9 +210,9 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                     if (_wantCompress)
                     {
                         // Emit the GZIP trailer: CRC32 and  size mod 2^32
-                        int c1 = crc.Crc32Result;
+                        var c1 = crc.Crc32Result;
                         _stream.Write(BitConverter.GetBytes(c1), 0, 4);
-                        int c2 = (Int32)(crc.TotalBytesRead & 0x00000000FFFFFFFF);
+                        var c2 = (Int32)(crc.TotalBytesRead & 0x00000000FFFFFFFF);
                         _stream.Write(BitConverter.GetBytes(c2), 0, 4);
                     }
                     else
@@ -241,15 +234,15 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
                         // Read and potentially verify the GZIP trailer:
                         // CRC32 and size mod 2^32
-                        byte[] trailer = new byte[8];
+                        var trailer = new byte[8];
 
                         // workitems 8679 & 12554
                         if (_z.AvailableBytesIn < 8)
                         {
                             // Make sure we have read to the end of the stream
                             Array.Copy(_z.InputBuffer, _z.NextIn, trailer, 0, _z.AvailableBytesIn);
-                            int bytesNeeded = 8 - _z.AvailableBytesIn;
-                            int bytesRead = _stream.Read(trailer,
+                            var bytesNeeded = 8 - _z.AvailableBytesIn;
+                            var bytesRead = _stream.Read(trailer,
                                                          _z.AvailableBytesIn,
                                                          bytesNeeded);
                             if (bytesNeeded != bytesRead)
@@ -263,10 +256,10 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                             Array.Copy(_z.InputBuffer, _z.NextIn, trailer, 0, trailer.Length);
                         }
 
-                        Int32 crc32_expected = BitConverter.ToInt32(trailer, 0);
-                        Int32 crc32_actual = crc.Crc32Result;
-                        Int32 isize_expected = BitConverter.ToInt32(trailer, 4);
-                        Int32 isize_actual = (Int32)(_z.TotalBytesOut & 0x00000000FFFFFFFF);
+                        var crc32_expected = BitConverter.ToInt32(trailer, 0);
+                        var crc32_actual = crc.Crc32Result;
+                        var isize_expected = BitConverter.ToInt32(trailer, 4);
+                        var isize_actual = (Int32)(_z.TotalBytesOut & 0x00000000FFFFFFFF);
 
                         if (crc32_actual != crc32_expected)
                             throw new ZlibException(String.Format("Bad CRC32 in GZIP trailer. (actual({0:X8})!=expected({1:X8}))", crc32_actual, crc32_expected));
@@ -320,12 +313,12 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
             _stream.Flush();
         }
 
-        public override System.Int64 Seek(System.Int64 offset, System.IO.SeekOrigin origin)
+        public override Int64 Seek(Int64 offset, SeekOrigin origin)
         {
             throw new NotImplementedException();
             //_outStream.Seek(offset, origin);
         }
-        public override void SetLength(System.Int64 value)
+        public override void SetLength(Int64 value)
         {
             _stream.SetLength(value);
         }
@@ -350,32 +343,29 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         private string ReadZeroTerminatedString()
         {
             var list = new System.Collections.Generic.List<byte>();
-            bool done = false;
+            var done = false;
             do
             {
                 // workitem 7740
-                int n = _stream.Read(_buf1, 0, 1);
+                var n = _stream.Read(_buf1, 0, 1);
                 if (n != 1)
                     throw new ZlibException("Unexpected EOF reading GZIP header.");
+                if (_buf1[0] == 0)
+                    done = true;
                 else
-                {
-                    if (_buf1[0] == 0)
-                        done = true;
-                    else
-                        list.Add(_buf1[0]);
-                }
+                    list.Add(_buf1[0]);
             } while (!done);
-            byte[] a = list.ToArray();
+            var a = list.ToArray();
             return GZipStream.iso8859dash1.GetString(a, 0, a.Length);
         }
 
 
         private int _ReadAndValidateGzipHeader()
         {
-            int totalBytesRead = 0;
+            var totalBytesRead = 0;
             // read the header on the first read
-            byte[] header = new byte[10];
-            int n = _stream.Read(header, 0, header.Length);
+            var header = new byte[10];
+            var n = _stream.Read(header, 0, header.Length);
 
             // workitem 8501: handle edge case (decompress empty stream)
             if (n == 0)
@@ -387,7 +377,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
             if (header[0] != 0x1F || header[1] != 0x8B || header[2] != 8)
                 throw new ZlibException("Bad GZIP header.");
 
-            Int32 timet = BitConverter.ToInt32(header, 4);
+            var timet = BitConverter.ToInt32(header, 4);
             _GzipMtime = GZipStream._unixEpoch.AddSeconds(timet);
             totalBytesRead += n;
             if ((header[3] & 0x04) == 0x04)
@@ -396,8 +386,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                 n = _stream.Read(header, 0, 2); // 2-byte length field
                 totalBytesRead += n;
 
-                Int16 extraLength = (Int16)(header[0] + header[1] * 256);
-                byte[] extra = new byte[extraLength];
+                var extraLength = (Int16)(header[0] + header[1] * 256);
+                var extra = new byte[extraLength];
                 n = _stream.Read(extra, 0, extra.Length);
                 if (n != extraLength)
                     throw new ZlibException("Unexpected end-of-file reading GZIP header.");
@@ -415,7 +405,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
 
 
-        public override System.Int32 Read(System.Byte[] buffer, System.Int32 offset, System.Int32 count)
+        public override Int32 Read(Byte[] buffer, Int32 offset, Int32 count)
         {
             // According to MS documentation, any implementation of the IO.Stream.Read function must:
             // (a) throw an exception if offset & count reference an invalid part of the buffer,
@@ -425,7 +415,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
             if (_streamMode == StreamMode.Undefined)
             {
-                if (!this._stream.CanRead) throw new ZlibException("The stream is not readable.");
+                if (!_stream.CanRead) throw new ZlibException("The stream is not readable.");
                 // for the first read, set up some controls.
                 _streamMode = StreamMode.Reader;
                 // (The first reference to _z goes through the private accessor which
@@ -448,9 +438,9 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
             if (buffer == null) throw new ArgumentNullException("buffer");
             if (count < 0) throw new ArgumentOutOfRangeException("count");
             if (offset < buffer.GetLowerBound(0)) throw new ArgumentOutOfRangeException("offset");
-            if ((offset + count) > buffer.GetLength(0)) throw new ArgumentOutOfRangeException("count");
+            if (offset + count > buffer.GetLength(0)) throw new ArgumentOutOfRangeException("count");
 
-            int rc = 0;
+            var rc = 0;
 
             // set up the output of the deflate/inflate codec:
             _z.OutputBuffer = buffer;
@@ -465,7 +455,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
             do
             {
                 // need data in _workingBuffer in order to deflate/inflate.  Here, we check if we have any.
-                if ((_z.AvailableBytesIn == 0) && (!nomoreinput))
+                if (_z.AvailableBytesIn == 0 && !nomoreinput)
                 {
                     // No data available, so try to Read data from the captive stream.
                     _z.NextIn = 0;
@@ -475,17 +465,17 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
                 }
                 // we have data in InputBuffer; now compress or decompress as appropriate
-                rc = (_wantCompress)
+                rc = _wantCompress
                     ? _z.Deflate(_flushMode)
                     : _z.Inflate(_flushMode);
 
-                if (nomoreinput && (rc == ZlibConstants.Z_BUF_ERROR))
+                if (nomoreinput && rc == ZlibConstants.Z_BUF_ERROR)
                     return 0;
 
                 if (rc != ZlibConstants.Z_OK && rc != ZlibConstants.Z_STREAM_END)
-                    throw new ZlibException(String.Format("{0}flating:  rc={1}  msg={2}", (_wantCompress ? "de" : "in"), rc, _z.Message));
+                    throw new ZlibException(String.Format("{0}flating:  rc={1}  msg={2}", _wantCompress ? "de" : "in", rc, _z.Message));
 
-                if ((nomoreinput || rc == ZlibConstants.Z_STREAM_END) && (_z.AvailableBytesOut == count))
+                if ((nomoreinput || rc == ZlibConstants.Z_STREAM_END) && _z.AvailableBytesOut == count)
                     break; // nothing more to read
             }
             //while (_z.AvailableBytesOut == count && rc == ZlibConstants.Z_OK);
@@ -518,7 +508,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
             }
 
 
-            rc = (count - _z.AvailableBytesOut);
+            rc = count - _z.AvailableBytesOut;
 
             // calculate CRC after reading
             if (crc != null)
@@ -529,30 +519,18 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
 
 
-        public override System.Boolean CanRead
-        {
-            get { return this._stream.CanRead; }
-        }
+        public override Boolean CanRead => _stream.CanRead;
 
-        public override System.Boolean CanSeek
-        {
-            get { return this._stream.CanSeek; }
-        }
+        public override Boolean CanSeek => _stream.CanSeek;
 
-        public override System.Boolean CanWrite
-        {
-            get { return this._stream.CanWrite; }
-        }
+        public override Boolean CanWrite => _stream.CanWrite;
 
-        public override System.Int64 Length
-        {
-            get { return _stream.Length; }
-        }
+        public override Int64 Length => _stream.Length;
 
         public override long Position
         {
-            get { throw new NotImplementedException(); }
-            set { throw new NotImplementedException(); }
+            get => throw new NotImplementedException();
+            set => throw new NotImplementedException();
         }
 
         internal enum StreamMode
@@ -565,7 +543,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
         public static void CompressString(String s, Stream compressor)
         {
-            byte[] uncompressed = System.Text.Encoding.UTF8.GetBytes(s);
+            var uncompressed = System.Text.Encoding.UTF8.GetBytes(s);
             using (compressor)
             {
                 compressor.Write(uncompressed, 0, uncompressed.Length);
@@ -584,7 +562,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         public static String UncompressString(byte[] compressed, Stream decompressor)
         {
             // workitem 8460
-            byte[] working = new byte[1024];
+            var working = new byte[1024];
             var encoding = System.Text.Encoding.UTF8;
             using (var output = new MemoryStream())
             {
@@ -607,7 +585,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         public static byte[] UncompressBuffer(byte[] compressed, Stream decompressor)
         {
             // workitem 8460
-            byte[] working = new byte[1024];
+            var working = new byte[1024];
             using (var output = new MemoryStream())
             {
                 using (decompressor)

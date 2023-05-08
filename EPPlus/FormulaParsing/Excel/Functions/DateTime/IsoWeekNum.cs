@@ -29,8 +29,8 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime
             // The first week of a year includes the first Thursday
             // DayOfWeek returns 0 for sunday up to 6 for saterday
             int[] iso8601Correction = { 6, 7, 8, 9, 10, 4, 5 };
-            int nds = fromDate.Subtract(startOfYear).Days + iso8601Correction[(int)startOfYear.DayOfWeek];
-            int wk = nds / 7;
+            var nds = fromDate.Subtract(startOfYear).Days + iso8601Correction[(int)startOfYear.DayOfWeek];
+            var wk = nds / 7;
             switch (wk)
             {
                 case 0:

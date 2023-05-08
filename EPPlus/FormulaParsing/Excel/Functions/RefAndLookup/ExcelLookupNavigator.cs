@@ -68,16 +68,11 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
             {
                 return _currentRow < _rangeAddress.ToRow;
             }
-            else
-            {
-                return _currentCol < _rangeAddress.ToCol;
-            }
+
+            return _currentCol < _rangeAddress.ToCol;
         }
 
-        public override int Index
-        {
-            get { return _index; }
-        }
+        public override int Index => _index;
 
         public override bool MoveNext()
         {
@@ -95,10 +90,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
             return true;
         }
 
-        public override object CurrentValue
-        {
-            get { return _currentValue; }
-        }
+        public override object CurrentValue => _currentValue;
 
         public override object GetLookupValue()
         {

@@ -35,7 +35,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
             var low = ArgToDecimal(arguments, 0);
             var high = ArgToDecimal(arguments, 1);
             var rand = new Rand().Execute(new FunctionArgument[0], context).Result;
-            var randPart = (CalulateDiff(high, low) * (double)rand) + 1;
+            var randPart = CalulateDiff(high, low) * (double)rand + 1;
             randPart = System.Math.Floor(randPart);
             return CreateResult(low + randPart, DataType.Integer);
         }
@@ -46,7 +46,8 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
             {
                 return high + low * -1;
             }
-            else if (high < 0 && low < 0)
+
+            if (high < 0 && low < 0)
             {
                 return high * -1 - low * -1;
             }

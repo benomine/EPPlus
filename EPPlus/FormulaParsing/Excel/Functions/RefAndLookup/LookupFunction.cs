@@ -44,13 +44,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
             _compileResultFactory = compileResultFactory;
         }
 
-        public override bool IsLookupFuction
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool IsLookupFuction => true;
 
         protected int IsMatch(object o1, object o2)
         {

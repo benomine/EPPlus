@@ -264,7 +264,7 @@ namespace EPPlusTest
         {
             var source = ws.Cells[1, column, ws.Dimension.End.Row, ws.Dimension.End.Column];
             var dest = ws.Cells[1, column + columns, ws.Dimension.End.Row, ws.Dimension.End.Column + columns];
-            source.Copy(dest);
+            source.Copy(dest, null);
         }
 
         [TestMethod]
@@ -314,8 +314,8 @@ namespace EPPlusTest
             ws.Cells["B1"].Value = 2;
             ws.Cells["B2"].Formula = "A1+$B$1";
             ws.Cells["C1"].Value = "Test";
-            ws.Cells["A1:B2"].Copy(ws.Cells["C1"]);
-            ws.Cells["B2"].Copy(ws.Cells["D1"]);
+            ws.Cells["A1:B2"].Copy(ws.Cells["C1"], null);
+            ws.Cells["B2"].Copy(ws.Cells["D1"], null);
             p.SaveAs(new FileInfo(@"c:\temp\bug\copy.xlsx"));
         }
 
@@ -661,15 +661,15 @@ namespace EPPlusTest
 
                 var sourceRange = sheet.Cells[1, 1, 1, 2];
                 var resultRange = sheet.Cells[3, 1, 3, 2];
-                sourceRange.Copy(resultRange);
+                sourceRange.Copy(resultRange, null);
 
                 sourceRange = sheet.Cells[1, 1, 1, 7];
                 resultRange = sheet.Cells[5, 1, 5, 7];
-                sourceRange.Copy(resultRange);  // This throws System.ArgumentException: Can't merge and already merged range
+                sourceRange.Copy(resultRange, null);  // This throws System.ArgumentException: Can't merge and already merged range
 
                 sourceRange = sheet.Cells[1, 1, 1, 7];
                 resultRange = sheet.Cells[7, 3, 7, 7];
-                sourceRange.Copy(resultRange);  // This throws System.ArgumentException: Can't merge and already merged range
+                sourceRange.Copy(resultRange, null);  // This throws System.ArgumentException: Can't merge and already merged range
 
                 p.Save();
             }
@@ -747,7 +747,7 @@ namespace EPPlusTest
                 sheet.InsertRow(5, 4);
 
                 var resultRange = sheet.Cells["5:8"];
-                sourceRange.Copy(resultRange);
+                sourceRange.Copy(resultRange, null);
 
                 p.Save();
             }
@@ -785,42 +785,42 @@ namespace EPPlusTest
                 //Add some items...
                 wsData.Cells["A2"].Value = Convert.ToDateTime("04/2/2012");
                 wsData.Cells["B2"].Value = 33.63;
-                wsData.Cells["C2"].Value = (-.87);
+                wsData.Cells["C2"].Value = -.87;
                 wsData.Cells["D2"].Value = "Unfavorable Price Variance";
                 wsData.Cells["E2"].Value = "Pending";
                 wsData.Cells["F2"].Value = 1;
 
                 wsData.Cells["A3"].Value = Convert.ToDateTime("04/2/2012");
                 wsData.Cells["B3"].Value = 43.14;
-                wsData.Cells["C3"].Value = (-1.29);
+                wsData.Cells["C3"].Value = -1.29;
                 wsData.Cells["D3"].Value = "Unfavorable Price Variance";
                 wsData.Cells["E3"].Value = "Pending";
                 wsData.Cells["F3"].Value = 1;
 
                 wsData.Cells["A4"].Value = Convert.ToDateTime("11/8/2011");
                 wsData.Cells["B4"].Value = 55;
-                wsData.Cells["C4"].Value = (-2.87);
+                wsData.Cells["C4"].Value = -2.87;
                 wsData.Cells["D4"].Value = "Unfavorable Price Variance";
                 wsData.Cells["E4"].Value = "Pending";
                 wsData.Cells["F4"].Value = 1;
 
                 wsData.Cells["A5"].Value = Convert.ToDateTime("11/8/2011");
                 wsData.Cells["B5"].Value = 38.72;
-                wsData.Cells["C5"].Value = (-5.00);
+                wsData.Cells["C5"].Value = -5.00;
                 wsData.Cells["D5"].Value = "Unfavorable Price Variance";
                 wsData.Cells["E5"].Value = "Pending";
                 wsData.Cells["F5"].Value = 1;
 
                 wsData.Cells["A6"].Value = Convert.ToDateTime("3/4/2011");
                 wsData.Cells["B6"].Value = 77.44;
-                wsData.Cells["C6"].Value = (-1.55);
+                wsData.Cells["C6"].Value = -1.55;
                 wsData.Cells["D6"].Value = "Unfavorable Price Variance";
                 wsData.Cells["E6"].Value = "Pending";
                 wsData.Cells["F6"].Value = 1;
 
                 wsData.Cells["A7"].Value = Convert.ToDateTime("3/4/2011");
                 wsData.Cells["B7"].Value = 127.55;
-                wsData.Cells["C7"].Value = (-10.50);
+                wsData.Cells["C7"].Value = -10.50;
                 wsData.Cells["D7"].Value = "Unfavorable Price Variance";
                 wsData.Cells["E7"].Value = "Pending";
                 wsData.Cells["F7"].Value = 1;
@@ -1562,7 +1562,7 @@ namespace EPPlusTest
 
             sheet.Cells[1, 1].CreateArrayFormula("IF(SUM(B1:J1)>0,SUM(B2:J2))"); //A1
             sheet.Cells[2, 1].Value = sheet.Cells[1, 1].IsArrayFormula; //A2
-            sheet.Cells[1, 1].Copy(sheet.Cells[3, 1]); //A3
+            sheet.Cells[1, 1].Copy(sheet.Cells[3, 1], null); //A3
 
             Assert.AreEqual(true, sheet.Cells[3, 1].IsArrayFormula);
         }
@@ -1667,11 +1667,11 @@ namespace EPPlusTest
 
                 ExcelRange cells = worksheetTo.Cells;
                 ExcelRange rangeTo = cells[1, 1, 1, 16384];
-                sourceRange.Copy(rangeTo);
+                sourceRange.Copy(rangeTo, null);
                 ExcelRange rangeTo2 = cells[2, 1, 2, 16384];
-                sourceRange2.Copy(rangeTo2);
+                sourceRange2.Copy(rangeTo2, null);
                 ExcelRange rangeTo3 = cells[4, 1, 4, 16384];
-                sourceRange3.Copy(rangeTo3);
+                sourceRange3.Copy(rangeTo3, null);
 
                 package.Save();
 
@@ -2408,7 +2408,7 @@ namespace EPPlusTest
             var p = OpenTemplatePackage("Issue460.xlsx");
             var ws = p.Workbook.Worksheets[0];
             var newWs = p.Workbook.Worksheets.Add("NewSheet");
-            ws.Cells.Copy(newWs.Cells);
+            ws.Cells.Copy(newWs.Cells, null);
             SaveWorksheet("Issue460_saved.xlsx");
         }
         [TestMethod]

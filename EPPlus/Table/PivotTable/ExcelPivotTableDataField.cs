@@ -66,29 +66,20 @@ namespace OfficeOpenXml.Table.PivotTable
         /// </summary>
         public int Index
         {
-            get
-            {
-                return GetXmlNodeInt("@fld");
-            }
-            internal set
-            {
-                SetXmlNodeString("@fld", value.ToString());
-            }
+            get => GetXmlNodeInt("@fld");
+            internal set => SetXmlNodeString("@fld", value.ToString());
         }
         /// <summary>
         /// The name of the datafield
         /// </summary>
         public string Name
         {
-            get
-            {
-                return GetXmlNodeString("@name");
-            }
+            get => GetXmlNodeString("@name");
             set
             {
                 if (Field._table.DataFields.ExistsDfName(value, this))
                 {
-                    throw (new InvalidOperationException("Duplicate datafield name"));
+                    throw new InvalidOperationException("Duplicate datafield name");
                 }
                 SetXmlNodeString("@name", value);
             }
@@ -98,42 +89,24 @@ namespace OfficeOpenXml.Table.PivotTable
         /// </summary>
         public int BaseField
         {
-            get
-            {
-                return GetXmlNodeInt("@baseField");
-            }
-            set
-            {
-                SetXmlNodeString("@baseField", value.ToString());
-            }
+            get => GetXmlNodeInt("@baseField");
+            set => SetXmlNodeString("@baseField", value.ToString());
         }
         /// <summary>
         /// Specifies the index to the base item when the ShowDataAs calculation is in use
         /// </summary>
         public int BaseItem
         {
-            get
-            {
-                return GetXmlNodeInt("@baseItem");
-            }
-            set
-            {
-                SetXmlNodeString("@baseItem", value.ToString());
-            }
+            get => GetXmlNodeInt("@baseItem");
+            set => SetXmlNodeString("@baseItem", value.ToString());
         }
         /// <summary>
         /// Number format id. 
         /// </summary>
         internal int NumFmtId
         {
-            get
-            {
-                return GetXmlNodeInt("@numFmtId");
-            }
-            set
-            {
-                SetXmlNodeString("@numFmtId", value.ToString());
-            }
+            get => GetXmlNodeInt("@numFmtId");
+            set => SetXmlNodeString("@numFmtId", value.ToString());
         }
         /// <summary>
         /// Number format for the data column
@@ -171,15 +144,13 @@ namespace OfficeOpenXml.Table.PivotTable
         {
             get
             {
-                string s = GetXmlNodeString("@subtotal");
+                var s = GetXmlNodeString("@subtotal");
                 if (s=="")
                 {
                     return DataFieldFunctions.None;
                 }
-                else
-                {
-                    return (DataFieldFunctions)Enum.Parse(typeof(DataFieldFunctions), s, true);
-                }
+
+                return (DataFieldFunctions)Enum.Parse(typeof(DataFieldFunctions), s, true);
             }
             set
             {

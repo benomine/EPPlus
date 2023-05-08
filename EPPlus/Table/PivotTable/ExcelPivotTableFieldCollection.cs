@@ -56,13 +56,8 @@ namespace OfficeOpenXml.Table.PivotTable
         {
             return _list.GetEnumerator();
         }
-        public int Count
-        {
-            get
-            {
-                return _list.Count;
-            }
-        }
+        public int Count => _list.Count;
+
         internal void AddInternal(T field)
         {
             _list.Add(field);
@@ -77,7 +72,7 @@ namespace OfficeOpenXml.Table.PivotTable
             {
                 if (Index < 0 || Index >= _list.Count)
                 {
-                    throw (new ArgumentOutOfRangeException("Index out of range"));
+                    throw new ArgumentOutOfRangeException("Index out of range");
                 }
                 return _list[Index];
             }
@@ -118,7 +113,7 @@ namespace OfficeOpenXml.Table.PivotTable
         {
             foreach (var fld in _list)
             {
-                if (fld.Grouping is ExcelPivotTableFieldDateGroup && (((ExcelPivotTableFieldDateGroup)fld.Grouping).GroupBy) == GroupBy)
+                if (fld.Grouping is ExcelPivotTableFieldDateGroup && ((ExcelPivotTableFieldDateGroup)fld.Grouping).GroupBy == GroupBy)
                 {
                     return fld;
                 }
@@ -183,7 +178,7 @@ namespace OfficeOpenXml.Table.PivotTable
                 case "rowFields":
                     if (field.IsColumnField || field.IsPageField)
                     {
-                        throw (new Exception("This field is a column or page field. Can't add it to the RowFields collection"));
+                        throw new Exception("This field is a column or page field. Can't add it to the RowFields collection");
                     }
                     field.IsRowField = value;
                     field.Axis = ePivotFieldAxis.Row;
@@ -191,7 +186,7 @@ namespace OfficeOpenXml.Table.PivotTable
                 case "colFields":
                     if (field.IsRowField || field.IsPageField)
                     {
-                        throw (new Exception("This field is a row or page field. Can't add it to the ColumnFields collection"));
+                        throw new Exception("This field is a row or page field. Can't add it to the ColumnFields collection");
                     }
                     field.IsColumnField = value;
                     field.Axis = ePivotFieldAxis.Column;
@@ -199,11 +194,11 @@ namespace OfficeOpenXml.Table.PivotTable
                 case "pageFields":
                     if (field.IsColumnField || field.IsRowField)
                     {
-                        throw (new Exception("Field is a column or row field. Can't add it to the PageFields collection"));
+                        throw new Exception("Field is a column or row field. Can't add it to the PageFields collection");
                     }
                     if (_table.Address._fromRow < 3)
                     {
-                        throw (new Exception(string.Format("A pivot table with page fields must be located above row 3. Currenct location is {0}", _table.Address.Address)));
+                        throw new Exception(string.Format("A pivot table with page fields must be located above row 3. Currenct location is {0}", _table.Address.Address));
                     }
                     field.IsPageField = value;
                     field.Axis = ePivotFieldAxis.Page;
@@ -234,7 +229,7 @@ namespace OfficeOpenXml.Table.PivotTable
         {
             if (Index > -1 && Index < _list.Count)
             {
-                throw (new IndexOutOfRangeException());
+                throw new IndexOutOfRangeException();
             }
             SetFlag(_list[Index], false);
             _list.RemoveAt(Index);
@@ -264,7 +259,7 @@ namespace OfficeOpenXml.Table.PivotTable
                 dataFieldsNode = field.TopNode.SelectSingleNode("../../d:dataFields", field.NameSpaceManager);
             }
 
-            XmlElement node = _table.PivotTableXml.CreateElement("dataField", ExcelPackage.schemaMain);
+            var node = _table.PivotTableXml.CreateElement("dataField", ExcelPackage.schemaMain);
             node.SetAttribute("fld", field.Index.ToString());
             dataFieldsNode.AppendChild(node);
 
@@ -296,8 +291,8 @@ namespace OfficeOpenXml.Table.PivotTable
         {
             foreach (var df in _list)
             {
-                if (((!string.IsNullOrEmpty(df.Name) && df.Name.Equals(name, StringComparison.OrdinalIgnoreCase) ||
-                     (string.IsNullOrEmpty(df.Name) && df.Field.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))) && datafield != df)
+                if ((!string.IsNullOrEmpty(df.Name) && df.Name.Equals(name, StringComparison.OrdinalIgnoreCase) ||
+                     (string.IsNullOrEmpty(df.Name) && df.Field.Name.Equals(name, StringComparison.OrdinalIgnoreCase))) && datafield != df)
                 {
                     return true;
                 }
@@ -310,7 +305,7 @@ namespace OfficeOpenXml.Table.PivotTable
         /// <param name="dataField"></param>
         public void Remove(ExcelPivotTableDataField dataField)
         {
-            XmlElement node = dataField.Field.TopNode.SelectSingleNode(string.Format("../../d:dataFields/d:dataField[@fld={0}]", dataField.Index), dataField.NameSpaceManager) as XmlElement;
+            var node = dataField.Field.TopNode.SelectSingleNode(string.Format("../../d:dataFields/d:dataField[@fld={0}]", dataField.Index), dataField.NameSpaceManager) as XmlElement;
             if (node != null)
             {
                 node.ParentNode.RemoveChild(node);

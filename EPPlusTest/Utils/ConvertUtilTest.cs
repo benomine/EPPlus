@@ -102,7 +102,7 @@ namespace EPPlusTest.Utils
         [TestMethod]
         public void StringToDecimal()
         {
-            var decimalSign = System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
+            var decimalSign = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
             var result = ConvertUtil.GetTypedCellValue<decimal>($"1{decimalSign}4");
 
             Assert.AreEqual((decimal)1.4, result);
@@ -195,7 +195,7 @@ namespace EPPlusTest.Utils
             Type fromType = v.GetType();
             Type toType = typeof(T);
 
-            Type toType2 = (TypeCompat.IsGenericType(toType) && toType.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
+            Type toType2 = TypeCompat.IsGenericType(toType) && toType.GetGenericTypeDefinition().Equals(typeof(Nullable<>))
                 ? Nullable.GetUnderlyingType(toType)
                 : null;
             if (fromType == toType || fromType == toType2)
@@ -207,106 +207,88 @@ namespace EPPlusTest.Utils
             {
                 if (fromType == typeof(TimeSpan))
                 {
-                    return ((T)(object)(new DateTime(((TimeSpan)v).Ticks)));
+                    return (T)(object)new DateTime(((TimeSpan)v).Ticks);
                 }
-                else if (fromType == typeof(string))
+
+                if (fromType == typeof(string))
                 {
                     DateTime dt;
                     if (DateTime.TryParse(v.ToString(), out dt))
                     {
-                        return (T)(object)(dt);
-                    }
-                    else
-                    {
-                        return default(T);
+                        return (T)(object)dt;
                     }
 
+                    return default(T);
+
                 }
-                else
+                if (cnv.CanConvertTo(typeof(double)))
                 {
-                    if (cnv.CanConvertTo(typeof(double)))
-                    {
-                        return (T)(object)(DateTime.FromOADate((double)cnv.ConvertTo(v, typeof(double))));
-                    }
-                    else
-                    {
-                        return default(T);
-                    }
+                    return (T)(object)DateTime.FromOADate((double)cnv.ConvertTo(v, typeof(double)));
                 }
+
+                return default(T);
             }
-            else if (toType == typeof(TimeSpan) || toType2 == typeof(TimeSpan))    //Handle timespan
+
+            if (toType == typeof(TimeSpan) || toType2 == typeof(TimeSpan))    //Handle timespan
             {
                 if (fromType == typeof(DateTime))
                 {
-                    return ((T)(object)(new TimeSpan(((DateTime)v).Ticks)));
+                    return (T)(object)new TimeSpan(((DateTime)v).Ticks);
                 }
-                else if (fromType == typeof(string))
+
+                if (fromType == typeof(string))
                 {
                     TimeSpan ts;
                     if (TimeSpan.TryParse(v.ToString(), out ts))
                     {
-                        return (T)(object)(ts);
+                        return (T)(object)ts;
                     }
-                    else
-                    {
-                        return default(T);
-                    }
-                }
-                else
-                {
-                    if (cnv.CanConvertTo(typeof(double)))
-                    {
 
-                        return (T)(object)(new TimeSpan(DateTime.FromOADate((double)cnv.ConvertTo(v, typeof(double))).Ticks));
-                    }
-                    else
-                    {
-                        try
-                        {
-                            // Issue 14682 -- "GetValue<decimal>() won't convert strings"
-                            // As suggested, after all special cases, all .NET to do it's 
-                            // preferred conversion rather than simply returning the default
-                            return (T)Convert.ChangeType(v, typeof(T));
-                        }
-                        catch (Exception)
-                        {
-                            // This was the previous behaviour -- no conversion is available.
-                            return default(T);
-                        }
-                    }
+                    return default(T);
+                }
+                if (cnv.CanConvertTo(typeof(double)))
+                {
+
+                    return (T)(object)new TimeSpan(DateTime.FromOADate((double)cnv.ConvertTo(v, typeof(double))).Ticks);
+                }
+
+                try
+                {
+                    // Issue 14682 -- "GetValue<decimal>() won't convert strings"
+                    // As suggested, after all special cases, all .NET to do it's 
+                    // preferred conversion rather than simply returning the default
+                    return (T)Convert.ChangeType(v, typeof(T));
+                }
+                catch (Exception)
+                {
+                    // This was the previous behaviour -- no conversion is available.
+                    return default(T);
                 }
             }
-            else
+            if (cnv.CanConvertTo(toType))
             {
+                return (T)cnv.ConvertTo(v, typeof(T));
+            }
+
+            if (toType2 != null)
+            {
+                toType = toType2;
                 if (cnv.CanConvertTo(toType))
                 {
-                    return (T)cnv.ConvertTo(v, typeof(T));
-                }
-                else
-                {
-                    if (toType2 != null)
-                    {
-                        toType = toType2;
-                        if (cnv.CanConvertTo(toType))
-                        {
-                            return (T)cnv.ConvertTo(v, toType); //Fixes issue 15377
-                        }
-                    }
-
-                    if (fromType == typeof(double) && toType == typeof(decimal))
-                    {
-                        return (T)(object)Convert.ToDecimal(v);
-                    }
-                    else if (fromType == typeof(decimal) && toType == typeof(double))
-                    {
-                        return (T)(object)Convert.ToDouble(v);
-                    }
-                    else
-                    {
-                        return default(T);
-                    }
+                    return (T)cnv.ConvertTo(v, toType); //Fixes issue 15377
                 }
             }
+
+            if (fromType == typeof(double) && toType == typeof(decimal))
+            {
+                return (T)(object)Convert.ToDecimal(v);
+            }
+
+            if (fromType == typeof(decimal) && toType == typeof(double))
+            {
+                return (T)(object)Convert.ToDouble(v);
+            }
+            return default(T);
         }
 
     }

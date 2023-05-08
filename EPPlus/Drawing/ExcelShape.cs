@@ -268,7 +268,7 @@ namespace OfficeOpenXml.Drawing
             base(drawings, node, "xdr:sp/xdr:nvSpPr/xdr:cNvPr/@name")
         {
             init();
-            XmlElement shapeNode = node.OwnerDocument.CreateElement("xdr", "sp", ExcelPackage.schemaSheetDrawings);
+            var shapeNode = node.OwnerDocument.CreateElement("xdr", "sp", ExcelPackage.schemaSheetDrawings);
             shapeNode.SetAttribute("macro", "");
             shapeNode.SetAttribute("textlink", "");
             node.AppendChild(shapeNode);
@@ -289,19 +289,19 @@ namespace OfficeOpenXml.Drawing
         {
             get
             {
-                string v = GetXmlNodeString(ShapeStylePath);
+                var v = GetXmlNodeString(ShapeStylePath);
                 try
                 {
                     return (eShapeStyle)Enum.Parse(typeof(eShapeStyle), v, true);
                 }
                 catch
                 {
-                    throw (new Exception(string.Format("Invalid shapetype {0}", v)));
+                    throw new Exception(string.Format("Invalid shapetype {0}", v));
                 }
             }
             set
             {
-                string v = value.ToString();
+                var v = value.ToString();
                 v = v.Substring(0, 1).ToLower(CultureInfo.InvariantCulture) + v.Substring(1, v.Length - 1);
                 SetXmlNodeString(ShapeStylePath, v);
             }
@@ -360,7 +360,7 @@ namespace OfficeOpenXml.Drawing
             {
                 if (_font == null)
                 {
-                    XmlNode node = TopNode.SelectSingleNode(PARAGRAPH_PATH, NameSpaceManager);
+                    var node = TopNode.SelectSingleNode(PARAGRAPH_PATH, NameSpaceManager);
                     if (node==null)
                     {
                         Text="";    //Creates the node p element
@@ -377,15 +377,8 @@ namespace OfficeOpenXml.Drawing
         /// </summary>
         public string Text
         {
-            get
-            {
-                return GetXmlNodeString(TextPath);
-            }
-            set
-            {
-                SetXmlNodeString(TextPath, value);
-            }
-
+            get => GetXmlNodeString(TextPath);
+            set => SetXmlNodeString(TextPath, value);
         }
         string lockTextPath = "xdr:sp/@fLocksText";
         /// <summary>
@@ -393,14 +386,8 @@ namespace OfficeOpenXml.Drawing
         /// </summary>
         public bool LockText
         {
-            get
-            {
-                return GetXmlNodeBool(lockTextPath, true);
-            }
-            set
-            {
-                SetXmlNodeBool(lockTextPath, value);
-            }
+            get => GetXmlNodeBool(lockTextPath, true);
+            set => SetXmlNodeBool(lockTextPath, value);
         }
         ExcelParagraphCollection _richText = null;
         /// <summary>
@@ -423,14 +410,8 @@ namespace OfficeOpenXml.Drawing
         /// </summary>
         public eTextAnchoringType TextAnchoring
         {
-            get
-            {
-                return GetTextAchoringEnum(GetXmlNodeString(TextAnchoringPath));
-            }
-            set
-            {
-                SetXmlNodeString(TextAnchoringPath, GetTextAchoringText(value));
-            }
+            get => GetTextAchoringEnum(GetXmlNodeString(TextAnchoringPath));
+            set => SetXmlNodeString(TextAnchoringPath, GetTextAchoringText(value));
         }
         const string TextAnchoringCtlPath = "xdr:sp/xdr:txBody/a:bodyPr/@anchorCtr";
         /// <summary>
@@ -438,10 +419,7 @@ namespace OfficeOpenXml.Drawing
         /// </summary>
         public bool TextAnchoringControl
         {
-            get
-            {
-                return GetXmlNodeBool(TextAnchoringCtlPath);
-            }
+            get => GetXmlNodeBool(TextAnchoringCtlPath);
             set
             {
                 if (value)
@@ -514,15 +492,12 @@ namespace OfficeOpenXml.Drawing
         /// </summary>
         public int Indent
         {
-            get
-            {
-                return GetXmlNodeInt(INDENT_ALIGN_PATH);
-            }
+            get => GetXmlNodeInt(INDENT_ALIGN_PATH);
             set
             {
                 if (value < 0 || value > 8)
                 {
-                    throw (new ArgumentOutOfRangeException("Indent level must be between 0 and 8"));
+                    throw new ArgumentOutOfRangeException("Indent level must be between 0 and 8");
                 }
                 SetXmlNodeString(INDENT_ALIGN_PATH, value.ToString());
             }
@@ -533,28 +508,19 @@ namespace OfficeOpenXml.Drawing
         /// </summary>
         public eTextVerticalType TextVertical
         {
-            get
-            {
-                return GetTextVerticalEnum(GetXmlNodeString(TextVerticalPath));
-            }
-            set
-            {
-                SetXmlNodeString(TextVerticalPath, GetTextVerticalText(value));
-            }
+            get => GetTextVerticalEnum(GetXmlNodeString(TextVerticalPath));
+            set => SetXmlNodeString(TextVerticalPath, GetTextVerticalText(value));
         }
 
         #endregion
         #region "Private Methods"
         private string ShapeStartXml()
         {
-            StringBuilder xml = new StringBuilder();
+            var xml = new StringBuilder();
             xml.AppendFormat("<xdr:nvSpPr><xdr:cNvPr id=\"{0}\" name=\"{1}\" /><xdr:cNvSpPr /></xdr:nvSpPr><xdr:spPr><a:prstGeom prst=\"rect\"><a:avLst /></a:prstGeom></xdr:spPr><xdr:style><a:lnRef idx=\"2\"><a:schemeClr val=\"accent1\"><a:shade val=\"50000\" /></a:schemeClr></a:lnRef><a:fillRef idx=\"1\"><a:schemeClr val=\"accent1\" /></a:fillRef><a:effectRef idx=\"0\"><a:schemeClr val=\"accent1\" /></a:effectRef><a:fontRef idx=\"minor\"><a:schemeClr val=\"lt1\" /></a:fontRef></xdr:style><xdr:txBody><a:bodyPr vertOverflow=\"clip\" rtlCol=\"0\" anchor=\"ctr\" /><a:lstStyle /><a:p></a:p></xdr:txBody>", _id, Name);
             return xml.ToString();
         }
         #endregion
-        internal new string Id
-        {
-            get { return Name + Text; }
-        }
+        internal new string Id => Name + Text;
     }
 }

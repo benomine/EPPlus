@@ -302,8 +302,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
         internal ZipProgressEventArgs(string archiveName, ZipProgressEventType flavor)
         {
-            this._archiveName = archiveName;
-            this._flavor = flavor;
+            _archiveName = archiveName;
+            _flavor = flavor;
         }
 
         /// <summary>
@@ -311,8 +311,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// </summary>
         public int EntriesTotal
         {
-            get { return _entriesTotal; }
-            set { _entriesTotal = value; }
+            get => _entriesTotal;
+            set => _entriesTotal = value;
         }
 
         /// <summary>
@@ -320,8 +320,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// </summary>
         public ZipEntry CurrentEntry
         {
-            get { return _latestEntry; }
-            set { _latestEntry = value; }
+            get => _latestEntry;
+            set => _latestEntry = value;
         }
 
         /// <summary>
@@ -330,8 +330,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// </summary>
         public bool Cancel
         {
-            get { return _cancel; }
-            set { _cancel = _cancel || value; }
+            get => _cancel;
+            set => _cancel = _cancel || value;
         }
 
         /// <summary>
@@ -339,8 +339,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// </summary>
         public ZipProgressEventType EventType
         {
-            get { return _flavor; }
-            set { _flavor = value; }
+            get => _flavor;
+            set => _flavor = value;
         }
 
         /// <summary>
@@ -348,8 +348,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// </summary>
         public String ArchiveName
         {
-            get { return _archiveName; }
-            set { _archiveName = value; }
+            get => _archiveName;
+            set => _archiveName = value;
         }
 
 
@@ -358,8 +358,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// </summary>
         public Int64 BytesTransferred
         {
-            get { return _bytesTransferred; }
-            set { _bytesTransferred = value; }
+            get => _bytesTransferred;
+            set => _bytesTransferred = value;
         }
 
 
@@ -370,8 +370,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// </summary>
         public Int64 TotalBytesToTransfer
         {
-            get { return _totalBytesToTransfer; }
-            set { _totalBytesToTransfer = value; }
+            get => _totalBytesToTransfer;
+            set => _totalBytesToTransfer = value;
         }
     }
 
@@ -477,11 +477,11 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// <param name="entriesSaved">Number of entries that have been saved.</param>
         /// <param name="entry">The entry involved in the event.</param>
         internal SaveProgressEventArgs(string archiveName, bool before, int entriesTotal, int entriesSaved, ZipEntry entry)
-            : base(archiveName, (before) ? ZipProgressEventType.Saving_BeforeWriteEntry : ZipProgressEventType.Saving_AfterWriteEntry)
+            : base(archiveName, before ? ZipProgressEventType.Saving_BeforeWriteEntry : ZipProgressEventType.Saving_AfterWriteEntry)
         {
-            this.EntriesTotal = entriesTotal;
-            this.CurrentEntry = entry;
-            this._entriesSaved = entriesSaved;
+            EntriesTotal = entriesTotal;
+            CurrentEntry = entry;
+            _entriesSaved = entriesSaved;
         }
 
         internal SaveProgressEventArgs() { }
@@ -516,10 +516,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// <summary>
         /// Number of entries saved so far.
         /// </summary>
-        public int EntriesSaved
-        {
-            get { return _entriesSaved; }
-        }
+        public int EntriesSaved => _entriesSaved;
     }
 
 
@@ -541,12 +538,12 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// <param name="entry">The entry involved in the event.</param>
         /// <param name="extractLocation">The location to which entries are extracted.</param>
         internal ExtractProgressEventArgs(string archiveName, bool before, int entriesTotal, int entriesExtracted, ZipEntry entry, string extractLocation)
-            : base(archiveName, (before) ? ZipProgressEventType.Extracting_BeforeExtractEntry : ZipProgressEventType.Extracting_AfterExtractEntry)
+            : base(archiveName, before ? ZipProgressEventType.Extracting_BeforeExtractEntry : ZipProgressEventType.Extracting_AfterExtractEntry)
         {
-            this.EntriesTotal = entriesTotal;
-            this.CurrentEntry = entry;
-            this._entriesExtracted = entriesExtracted;
-            this._target = extractLocation;
+            EntriesTotal = entriesTotal;
+            CurrentEntry = entry;
+            _entriesExtracted = entriesExtracted;
+            _target = extractLocation;
         }
 
         internal ExtractProgressEventArgs(string archiveName, ZipProgressEventType flavor)
@@ -625,19 +622,12 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// EventType is Extracting_BeforeExtractEntry or Extracting_AfterExtractEntry, and
         /// the Extract() is occurring witin the scope of a call to ExtractAll().
         /// </summary>
-        public int EntriesExtracted
-        {
-            get { return _entriesExtracted; }
-        }
+        public int EntriesExtracted => _entriesExtracted;
 
         /// <summary>
         /// Returns the extraction target location, a filesystem path.
         /// </summary>
-        public String ExtractLocation
-        {
-            get { return _target; }
-        }
-
+        public String ExtractLocation => _target;
     }
 
 
@@ -664,18 +654,12 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// <summary>
         /// Returns the exception that occurred, if any.
         /// </summary>
-        public Exception @Exception
-        {
-            get { return _exc; }
-        }
+        public Exception @Exception => _exc;
 
         /// <summary>
         /// Returns the name of the file that caused the exception, if any.
         /// </summary>
-        public String FileName
-        {
-            get { return CurrentEntry.LocalFileName; }
-        }
+        public String FileName => CurrentEntry.LocalFileName;
     }
 
 

@@ -51,15 +51,12 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public int Thickness
         {
-            get
-            {
-                return GetXmlNodeInt(THICKNESS_PATH);
-            }
+            get => GetXmlNodeInt(THICKNESS_PATH);
             set
             {
-                if (value < 0 && value > 9)
+                if (value is < 0 or > 9)
                 {
-                    throw (new ArgumentOutOfRangeException("Thickness out of range. (0-9)"));
+                    throw new ArgumentOutOfRangeException("Thickness out of range. (0-9)");
                 }
                 SetXmlNodeString(THICKNESS_PATH, value.ToString());
             }
@@ -68,32 +65,14 @@ namespace OfficeOpenXml.Drawing.Chart
         /// <summary>
         /// Access fill properties
         /// </summary>
-        public ExcelDrawingFill Fill
-        {
-            get
-            {
-                if (_fill == null)
-                {
-                    _fill = new ExcelDrawingFill(NameSpaceManager, TopNode, "c:spPr");
-                }
-                return _fill;
-            }
-        }
+        public ExcelDrawingFill Fill => _fill ??= new ExcelDrawingFill(NameSpaceManager, TopNode, "c:spPr");
+
         ExcelDrawingBorder _border = null;
         /// <summary>
         /// Access border properties
         /// </summary>
-        public ExcelDrawingBorder Border
-        {
-            get
-            {
-                if (_border == null)
-                {
-                    _border = new ExcelDrawingBorder(NameSpaceManager, TopNode, "c:spPr/a:ln");
-                }
-                return _border;
-            }
-        }
+        public ExcelDrawingBorder Border => _border ??= new ExcelDrawingBorder(NameSpaceManager, TopNode, "c:spPr/a:ln");
+
         #endregion
     }
 }

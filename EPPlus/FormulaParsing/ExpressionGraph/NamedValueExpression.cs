@@ -44,13 +44,13 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 
         public override CompileResult Compile()
         {
-            var c = this._parsingContext.Scopes.Current;
+            var c = _parsingContext.Scopes.Current;
             var name = _parsingContext.ExcelDataProvider.GetName(c.Address.Worksheet, ExpressionString);
             //var result = _parsingContext.Parser.Parse(value.ToString());
 
             if (name == null)
             {
-                throw (new Exceptions.ExcelErrorValueException(ExcelErrorValue.Create(eErrorType.Name)));
+                throw new Exceptions.ExcelErrorValueException(ExcelErrorValue.Create(eErrorType.Name));
             }
             if (name.Value==null)
             {
@@ -63,17 +63,15 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 {
                     return new CompileResult(name.Value, DataType.Enumerable);
                 }
-                else
+
+                if (range.IsEmpty)
                 {
-                    if (range.IsEmpty)
-                    {
-                        return null;
-                    }
-                    var factory = new CompileResultFactory();
-                    return factory.Create(range.First().Value);
+                    return null;
                 }
+                var factory = new CompileResultFactory();
+                return factory.Create(range.First().Value);
             }
-            else
+
             {
                 var factory = new CompileResultFactory();
                 return factory.Create(name.Value);

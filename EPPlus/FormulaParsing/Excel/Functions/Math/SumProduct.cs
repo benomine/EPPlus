@@ -35,8 +35,8 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
         public override CompileResult Execute(IEnumerable<FunctionArgument> arguments, ParsingContext context)
         {
             ValidateArguments(arguments, 1);
-            double result = 0d;
-            List<List<double>> results = new List<List<double>>();
+            var result = 0d;
+            var results = new List<List<double>>();
             foreach (var arg in arguments)
             {
                 results.Add(new List<double>());
@@ -55,9 +55,9 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
                 else if (arg.IsExcelRange)
                 {
                     var r = arg.ValueAsRangeInfo;
-                    for (int col = r.Address._fromCol; col <= r.Address._toCol; col++)
+                    for (var col = r.Address._fromCol; col <= r.Address._toCol; col++)
                     {
-                        for (int row = r.Address._fromRow; row <= r.Address._toRow; row++)
+                        for (var row = r.Address._fromRow; row <= r.Address._toRow; row++)
                         {
                             AddValue(r.GetValue(row, col), currentResult);
                         }
@@ -98,7 +98,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
             }
             else if (convertVal is ExcelErrorValue)
             {
-                throw (new ExcelErrorValueException((ExcelErrorValue)convertVal));
+                throw new ExcelErrorValueException((ExcelErrorValue)convertVal);
             }
             else
             {

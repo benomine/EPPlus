@@ -61,18 +61,12 @@ namespace OfficeOpenXml.Drawing.Chart
         #endregion
         private void SetTypeProperties()
         {
-            if (ChartType == eChartType.RadarFilled)
+            RadarStyle = ChartType switch
             {
-                RadarStyle = eRadarStyle.Filled;
-            }
-            else if (ChartType == eChartType.RadarMarkers)
-            {
-                RadarStyle =  eRadarStyle.Marker;
-            }
-            else
-            {
-                RadarStyle = eRadarStyle.Standard;
-            }
+                eChartType.RadarFilled => eRadarStyle.Filled,
+                eChartType.RadarMarkers => eRadarStyle.Marker,
+                _ => eRadarStyle.Standard
+            };
         }
 
         string STYLE_PATH = "c:radarStyle/@val";
@@ -88,46 +82,26 @@ namespace OfficeOpenXml.Drawing.Chart
                 {
                     return eRadarStyle.Standard;
                 }
-                else
-                {
-                    return (eRadarStyle)Enum.Parse(typeof(eRadarStyle), v, true);
-                }
+
+                return (eRadarStyle)Enum.Parse(typeof(eRadarStyle), v, true);
             }
-            set
-            {
-                _chartXmlHelper.SetXmlNodeString(STYLE_PATH, value.ToString().ToLower(CultureInfo.InvariantCulture));
-            }
+            set => _chartXmlHelper.SetXmlNodeString(STYLE_PATH, value.ToString().ToLower(CultureInfo.InvariantCulture));
         }
 
         ExcelChartDataLabel _DataLabel = null;
         /// <summary>
         /// Access to datalabel properties
         /// </summary>
-        public ExcelChartDataLabel DataLabel
-        {
-            get
-            {
-                if (_DataLabel == null)
-                {
-                    _DataLabel = new ExcelChartDataLabel(NameSpaceManager, ChartNode);
-                }
-                return _DataLabel;
-            }
-        }
+        public ExcelChartDataLabel DataLabel => _DataLabel ??= new ExcelChartDataLabel(NameSpaceManager, ChartNode);
+
         internal override eChartType GetChartType(string name)
         {
-            if (RadarStyle == eRadarStyle.Filled)
+            return RadarStyle switch
             {
-                return eChartType.RadarFilled;
-            }
-            else if (RadarStyle == eRadarStyle.Marker)
-            {
-                return eChartType.RadarMarkers;
-            }
-            else
-            {
-                return eChartType.Radar;
-            }
+                eRadarStyle.Filled => eChartType.RadarFilled,
+                eRadarStyle.Marker => eChartType.RadarMarkers,
+                _ => eChartType.Radar
+            };
         }
     }
 }

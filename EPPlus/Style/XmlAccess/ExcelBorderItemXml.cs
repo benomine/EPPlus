@@ -62,7 +62,7 @@ namespace OfficeOpenXml.Style.XmlAccess
         private ExcelBorderStyle GetBorderStyle(string style)
         {
             if (style=="") return ExcelBorderStyle.None;
-            string sInStyle = style.Substring(0, 1).ToUpper(CultureInfo.InvariantCulture) + style.Substring(1, style.Length - 1);
+            var sInStyle = style.Substring(0, 1).ToUpper(CultureInfo.InvariantCulture) + style.Substring(1, style.Length - 1);
             try
             {
                 return (ExcelBorderStyle)Enum.Parse(typeof(ExcelBorderStyle), sInStyle);
@@ -79,10 +79,7 @@ namespace OfficeOpenXml.Style.XmlAccess
         /// </summary>
         public ExcelBorderStyle Style
         {
-            get
-            {
-                return _borderStyle;
-            }
+            get => _borderStyle;
             set
             {
                 _borderStyle = value;
@@ -96,14 +93,8 @@ namespace OfficeOpenXml.Style.XmlAccess
         /// </summary>
         public ExcelColorXml Color
         {
-            get
-            {
-                return _color;
-            }
-            internal set
-            {
-                _color = value;
-            }
+            get => _color;
+            internal set => _color = value;
         }
         internal override string Id
         {
@@ -113,16 +104,14 @@ namespace OfficeOpenXml.Style.XmlAccess
                 {
                     return Style + Color.Id;
                 }
-                else
-                {
-                    return "None";
-                }
+
+                return "None";
             }
         }
 
         internal ExcelBorderItemXml Copy()
         {
-            ExcelBorderItemXml borderItem = new ExcelBorderItemXml(NameSpaceManager);
+            var borderItem = new ExcelBorderItemXml(NameSpaceManager);
             borderItem.Style = _borderStyle;
             borderItem.Color = _color.Copy();
             return borderItem;
@@ -146,7 +135,7 @@ namespace OfficeOpenXml.Style.XmlAccess
 
         private string SetBorderString(ExcelBorderStyle Style)
         {
-            string newName = Enum.GetName(typeof(ExcelBorderStyle), Style);
+            var newName = Enum.GetName(typeof(ExcelBorderStyle), Style);
             return newName.Substring(0, 1).ToLower(CultureInfo.InvariantCulture) + newName.Substring(1, newName.Length - 1);
         }
         public bool Exists { get; private set; }

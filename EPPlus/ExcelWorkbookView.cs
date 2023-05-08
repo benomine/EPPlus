@@ -59,14 +59,8 @@ namespace OfficeOpenXml
         /// </summary>
         public int Left
         {
-            get
-            {
-                return GetXmlNodeInt(LEFT_PATH);
-            }
-            set
-            {
-                SetXmlNodeString(LEFT_PATH, value.ToString());
-            }
+            get => GetXmlNodeInt(LEFT_PATH);
+            set => SetXmlNodeString(LEFT_PATH, value.ToString());
         }
         const string TOP_PATH = "d:bookViews/d:workbookView/@yWindow";
         /// <summary>
@@ -74,14 +68,8 @@ namespace OfficeOpenXml
         /// </summary>
         public int Top
         {
-            get
-            {
-                return GetXmlNodeInt(TOP_PATH);
-            }
-            set
-            {
-                SetXmlNodeString(TOP_PATH, value.ToString());
-            }
+            get => GetXmlNodeInt(TOP_PATH);
+            set => SetXmlNodeString(TOP_PATH, value.ToString());
         }
         const string WIDTH_PATH = "d:bookViews/d:workbookView/@windowWidth";
         /// <summary>
@@ -89,14 +77,8 @@ namespace OfficeOpenXml
         /// </summary>
         public int Width
         {
-            get
-            {
-                return GetXmlNodeInt(WIDTH_PATH);
-            }
-            set
-            {
-                SetXmlNodeString(WIDTH_PATH, value.ToString());
-            }
+            get => GetXmlNodeInt(WIDTH_PATH);
+            set => SetXmlNodeString(WIDTH_PATH, value.ToString());
         }
         const string HEIGHT_PATH = "d:bookViews/d:workbookView/@windowHeight";
         /// <summary>
@@ -104,14 +86,8 @@ namespace OfficeOpenXml
         /// </summary>
         public int Height
         {
-            get
-            {
-                return GetXmlNodeInt(HEIGHT_PATH);
-            }
-            set
-            {
-                SetXmlNodeString(HEIGHT_PATH, value.ToString());
-            }
+            get => GetXmlNodeInt(HEIGHT_PATH);
+            set => SetXmlNodeString(HEIGHT_PATH, value.ToString());
         }
         const string MINIMIZED_PATH = "d:bookViews/d:workbookView/@minimized";
         /// <summary>
@@ -119,14 +95,8 @@ namespace OfficeOpenXml
         /// </summary>
         public bool Minimized
         {
-            get
-            {
-                return GetXmlNodeBool(MINIMIZED_PATH);
-            }
-            set
-            {
-                SetXmlNodeString(MINIMIZED_PATH, value.ToString());
-            }
+            get => GetXmlNodeBool(MINIMIZED_PATH);
+            set => SetXmlNodeString(MINIMIZED_PATH, value.ToString());
         }
         const string SHOWVERTICALSCROLL_PATH = "d:bookViews/d:workbookView/@showVerticalScroll";
         /// <summary>
@@ -134,14 +104,8 @@ namespace OfficeOpenXml
         /// </summary>
         public bool ShowVerticalScrollBar
         {
-            get
-            {
-                return GetXmlNodeBool(SHOWVERTICALSCROLL_PATH, true);
-            }
-            set
-            {
-                SetXmlNodeBool(SHOWVERTICALSCROLL_PATH, value, true);
-            }
+            get => GetXmlNodeBool(SHOWVERTICALSCROLL_PATH, true);
+            set => SetXmlNodeBool(SHOWVERTICALSCROLL_PATH, value, true);
         }
         const string SHOWHORIZONTALSCR_PATH = "d:bookViews/d:workbookView/@showHorizontalScroll";
         /// <summary>
@@ -149,14 +113,8 @@ namespace OfficeOpenXml
         /// </summary>
         public bool ShowHorizontalScrollBar
         {
-            get
-            {
-                return GetXmlNodeBool(SHOWHORIZONTALSCR_PATH, true);
-            }
-            set
-            {
-                SetXmlNodeBool(SHOWHORIZONTALSCR_PATH, value, true);
-            }
+            get => GetXmlNodeBool(SHOWHORIZONTALSCR_PATH, true);
+            set => SetXmlNodeBool(SHOWHORIZONTALSCR_PATH, value, true);
         }
         const string SHOWSHEETTABS_PATH = "d:bookViews/d:workbookView/@showSheetTabs";
         /// <summary>
@@ -164,14 +122,8 @@ namespace OfficeOpenXml
         /// </summary>
         public bool ShowSheetTabs
         {
-            get
-            {
-                return GetXmlNodeBool(SHOWSHEETTABS_PATH, true);
-            }
-            set
-            {
-                SetXmlNodeBool(SHOWSHEETTABS_PATH, value, true);
-            }
+            get => GetXmlNodeBool(SHOWSHEETTABS_PATH, true);
+            set => SetXmlNodeBool(SHOWSHEETTABS_PATH, value, true);
         }
         /// <summary>
         /// Set the window position in twips
@@ -194,16 +146,9 @@ namespace OfficeOpenXml
             get
             {
                 var v = GetXmlNodeInt(ACTIVETAB_PATH);
-                if (v < 0)
-                    return 0;
-                else
-                    return v;
-
+                return v < 0 ? 0 : v;
             }
-            set
-            {
-                SetXmlNodeString(ACTIVETAB_PATH, value.ToString(CultureInfo.InvariantCulture));
-            }
+            set => SetXmlNodeString(ACTIVETAB_PATH, value.ToString(CultureInfo.InvariantCulture));
         }
     }
 }

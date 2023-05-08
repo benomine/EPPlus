@@ -30,13 +30,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 {
     internal partial class ZipFile
     {
-        private string ArchiveNameForEvent
-        {
-            get
-            {
-                return (_name != null) ? _name : "(stream)";
-            }
-        }
+        private string ArchiveNameForEvent => _name != null ? _name : "(stream)";
 
         #region Save
 
@@ -519,7 +513,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
         internal bool OnSaveBlock(ZipEntry entry, Int64 bytesXferred, Int64 totalBytesToXfer)
         {
-            EventHandler<SaveProgressEventArgs> sp = SaveProgress;
+            var sp = SaveProgress;
             if (sp != null)
             {
                 var e = SaveProgressEventArgs.ByteUpdate(ArchiveNameForEvent, entry,
@@ -533,7 +527,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
         private void OnSaveEntry(int current, ZipEntry entry, bool before)
         {
-            EventHandler<SaveProgressEventArgs> sp = SaveProgress;
+            var sp = SaveProgress;
             if (sp != null)
             {
                 var e = new SaveProgressEventArgs(ArchiveNameForEvent, before, _entries.Count, current, entry);
@@ -545,7 +539,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
         private void OnSaveEvent(ZipProgressEventType eventFlavor)
         {
-            EventHandler<SaveProgressEventArgs> sp = SaveProgress;
+            var sp = SaveProgress;
             if (sp != null)
             {
                 var e = new SaveProgressEventArgs(ArchiveNameForEvent, eventFlavor);
@@ -557,7 +551,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
         private void OnSaveStarted()
         {
-            EventHandler<SaveProgressEventArgs> sp = SaveProgress;
+            var sp = SaveProgress;
             if (sp != null)
             {
                 var e = SaveProgressEventArgs.Started(ArchiveNameForEvent);
@@ -568,7 +562,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         }
         private void OnSaveCompleted()
         {
-            EventHandler<SaveProgressEventArgs> sp = SaveProgress;
+            var sp = SaveProgress;
             if (sp != null)
             {
                 var e = SaveProgressEventArgs.Completed(ArchiveNameForEvent);
@@ -640,7 +634,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
         private void OnReadStarted()
         {
-            EventHandler<ReadProgressEventArgs> rp = ReadProgress;
+            var rp = ReadProgress;
             if (rp != null)
             {
                 var e = ReadProgressEventArgs.Started(ArchiveNameForEvent);
@@ -650,7 +644,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
         private void OnReadCompleted()
         {
-            EventHandler<ReadProgressEventArgs> rp = ReadProgress;
+            var rp = ReadProgress;
             if (rp != null)
             {
                 var e = ReadProgressEventArgs.Completed(ArchiveNameForEvent);
@@ -660,7 +654,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
         internal void OnReadBytes(ZipEntry entry)
         {
-            EventHandler<ReadProgressEventArgs> rp = ReadProgress;
+            var rp = ReadProgress;
             if (rp != null)
             {
                 var e = ReadProgressEventArgs.ByteUpdate(ArchiveNameForEvent,
@@ -673,10 +667,10 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
         internal void OnReadEntry(bool before, ZipEntry entry)
         {
-            EventHandler<ReadProgressEventArgs> rp = ReadProgress;
+            var rp = ReadProgress;
             if (rp != null)
             {
-                ReadProgressEventArgs e = (before)
+                var e = before
                     ? ReadProgressEventArgs.Before(ArchiveNameForEvent, _entries.Count)
                     : ReadProgressEventArgs.After(ArchiveNameForEvent, entry, _entries.Count);
                 rp(this, e);
@@ -690,7 +684,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
             {
                 if (_lengthOfReadStream == -99)
                 {
-                    _lengthOfReadStream = (_ReadStreamIsOurs)
+                    _lengthOfReadStream = _ReadStreamIsOurs
                         ? SharedUtilities.GetFileLength(_name)
                         : -1L;
                 }
@@ -856,7 +850,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
         private void OnExtractEntry(int current, bool before, ZipEntry currentEntry, string path)
         {
-            EventHandler<ExtractProgressEventArgs> ep = ExtractProgress;
+            var ep = ExtractProgress;
             if (ep != null)
             {
                 var e = new ExtractProgressEventArgs(ArchiveNameForEvent, before, _entries.Count, current, currentEntry, path);
@@ -870,7 +864,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         // Can be called from within ZipEntry._ExtractOne.
         internal bool OnExtractBlock(ZipEntry entry, Int64 bytesWritten, Int64 totalBytesToWrite)
         {
-            EventHandler<ExtractProgressEventArgs> ep = ExtractProgress;
+            var ep = ExtractProgress;
             if (ep != null)
             {
                 var e = ExtractProgressEventArgs.ByteUpdate(ArchiveNameForEvent, entry,
@@ -886,10 +880,10 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         // Can be called from within ZipEntry.InternalExtract.
         internal bool OnSingleEntryExtract(ZipEntry entry, string path, bool before)
         {
-            EventHandler<ExtractProgressEventArgs> ep = ExtractProgress;
+            var ep = ExtractProgress;
             if (ep != null)
             {
-                var e = (before)
+                var e = before
                     ? ExtractProgressEventArgs.BeforeExtractEntry(ArchiveNameForEvent, entry, path)
                     : ExtractProgressEventArgs.AfterExtractEntry(ArchiveNameForEvent, entry, path);
                 ep(this, e);
@@ -901,7 +895,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
         internal bool OnExtractExisting(ZipEntry entry, string path)
         {
-            EventHandler<ExtractProgressEventArgs> ep = ExtractProgress;
+            var ep = ExtractProgress;
             if (ep != null)
             {
                 var e = ExtractProgressEventArgs.ExtractExisting(ArchiveNameForEvent, entry, path);
@@ -915,7 +909,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
         private void OnExtractAllCompleted(string path)
         {
-            EventHandler<ExtractProgressEventArgs> ep = ExtractProgress;
+            var ep = ExtractProgress;
             if (ep != null)
             {
                 var e = ExtractProgressEventArgs.ExtractAllCompleted(ArchiveNameForEvent,
@@ -927,7 +921,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
         private void OnExtractAllStarted(string path)
         {
-            EventHandler<ExtractProgressEventArgs> ep = ExtractProgress;
+            var ep = ExtractProgress;
             if (ep != null)
             {
                 var e = ExtractProgressEventArgs.ExtractAllStarted(ArchiveNameForEvent,
@@ -1024,7 +1018,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
         private void OnAddStarted()
         {
-            EventHandler<AddProgressEventArgs> ap = AddProgress;
+            var ap = AddProgress;
             if (ap != null)
             {
                 var e = AddProgressEventArgs.Started(ArchiveNameForEvent);
@@ -1036,7 +1030,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
         private void OnAddCompleted()
         {
-            EventHandler<AddProgressEventArgs> ap = AddProgress;
+            var ap = AddProgress;
             if (ap != null)
             {
                 var e = AddProgressEventArgs.Completed(ArchiveNameForEvent);
@@ -1046,7 +1040,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
         internal void AfterAddEntry(ZipEntry entry)
         {
-            EventHandler<AddProgressEventArgs> ap = AddProgress;
+            var ap = AddProgress;
             if (ap != null)
             {
                 var e = AddProgressEventArgs.AfterEntry(ArchiveNameForEvent, entry, _entries.Count);
@@ -1204,7 +1198,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
             {
                 lock (LOCK)
                 {
-                    var e = ZipErrorEventArgs.Saving(this.Name, entry, exc);
+                    var e = ZipErrorEventArgs.Saving(Name, entry, exc);
                     ZipError(this, e);
                     if (e.Cancel)
                         _saveOperationCanceled = true;

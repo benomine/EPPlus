@@ -50,15 +50,9 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
         private List<Token> _result;
         private StringBuilder _currentToken;
 
-        public char[] FormulaChars
-        {
-            get { return _chars; }
-        }
+        public char[] FormulaChars => _chars;
 
-        public IList<Token> Result
-        {
-            get { return _result; }
-        }
+        public IList<Token> Result => _result;
 
         public bool IsInString
         {
@@ -88,15 +82,9 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
             set;
         }
 
-        public string CurrentToken
-        {
-            get { return _currentToken.ToString(); }
-        }
+        public string CurrentToken => _currentToken.ToString();
 
-        public bool CurrentTokenHasValue
-        {
-            get { return !string.IsNullOrEmpty(IsInString ? CurrentToken : CurrentToken.Trim()); }
-        }
+        public bool CurrentTokenHasValue => !string.IsNullOrEmpty(IsInString ? CurrentToken : CurrentToken.Trim());
 
         public void NewToken()
         {
@@ -133,10 +121,6 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
             _result.Add(newToken);
         }
 
-        public Token LastToken
-        {
-            get { return _result.Count > 0 ? _result.Last() : null; }
-        }
-
+        public Token LastToken => _result.Count > 0 ? _result.Last() : null;
     }
 }

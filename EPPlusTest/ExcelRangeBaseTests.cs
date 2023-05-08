@@ -19,7 +19,7 @@ namespace EPPlusTest
             Assert.AreEqual("Testing comment 1", sourceExcelRange.Comment.Text);
             var destinationExcelRange = ws1.Cells[5, 5];
             Assert.IsNull(destinationExcelRange.Comment);
-            sourceExcelRange.Copy(destinationExcelRange);
+            sourceExcelRange.Copy(destinationExcelRange, null);
             // Assert the original comment is intact.
             Assert.AreEqual("test1", sourceExcelRange.Comment.Author);
             Assert.AreEqual("Testing comment 1", sourceExcelRange.Comment.Text);
@@ -53,7 +53,7 @@ namespace EPPlusTest
             Assert.IsNull(ws1.Cells[5, 3].Comment);
             Assert.IsNull(ws1.Cells[5, 4].Comment);
             Assert.IsNull(ws1.Cells[5, 5].Comment);
-            ws1.Cells["3:3"].Copy(ws1.Cells["5:5"]);
+            ws1.Cells["3:3"].Copy(ws1.Cells["5:5"], null);
             // Assert the original comments are intact.
             Assert.AreEqual("test1", sourceExcelRangeC3.Comment.Author);
             Assert.AreEqual("Testing comment 1", sourceExcelRangeC3.Comment.Text);

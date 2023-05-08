@@ -26,7 +26,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
 
         private bool Evaluate(object obj, string expression)
         {
-            double? candidate = default(double?);
+            var candidate = default(double?);
             if (IsNumeric(obj))
             {
                 candidate = ConvertUtil.GetValueDouble(obj);
@@ -44,13 +44,13 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
             ValidateArguments(functionArguments, 2);
             var range = functionArguments.ElementAt(0);
             var criteria = functionArguments.ElementAt(1).ValueFirst != null ? ArgToString(functionArguments, 1) : null;
-            double result = 0d;
+            var result = 0d;
             if (range.IsExcelRange)
             {
-                ExcelDataProvider.IRangeInfo rangeInfo = range.ValueAsRangeInfo;
-                for (int row = rangeInfo.Address.Start.Row; row < rangeInfo.Address.End.Row + 1; row++)
+                var rangeInfo = range.ValueAsRangeInfo;
+                for (var row = rangeInfo.Address.Start.Row; row < rangeInfo.Address.End.Row + 1; row++)
                 {
-                    for (int col = rangeInfo.Address.Start.Column; col < rangeInfo.Address.End.Column + 1; col++)
+                    for (var col = rangeInfo.Address.Start.Column; col < rangeInfo.Address.End.Column + 1; col++)
                     {
                         if (criteria != null && Evaluate(rangeInfo.Worksheet.GetValue(row, col), criteria))
                         {

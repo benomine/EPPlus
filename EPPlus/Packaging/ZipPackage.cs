@@ -87,7 +87,7 @@ namespace OfficeOpenXml.Packaging
 
         internal ZipPackage(Stream stream)
         {
-            bool hasContentTypeXml = false;
+            var hasContentTypeXml = false;
             if (stream == null || stream.Length == 0)
             {
                 AddNew();
@@ -96,12 +96,12 @@ namespace OfficeOpenXml.Packaging
             {
                 var rels = new Dictionary<string, string>();
                 stream.Seek(0, SeekOrigin.Begin);
-                using (ZipInputStream zip = new ZipInputStream(stream))
+                using (var zip = new ZipInputStream(stream))
                 {
                     var e = zip.GetNextEntry();
                     if (e==null)
                     {
-                        throw (new InvalidDataException("The file is not an valid Package file. If the file is encrypted, please supply the password in the constructor."));
+                        throw new InvalidDataException("The file is not an valid Package file. If the file is encrypted, please supply the password in the constructor.");
                     }
                     if (e.FileName.Contains("\\"))
                     {
@@ -141,17 +141,15 @@ namespace OfficeOpenXml.Packaging
                                 }
                             }
                         }
-                        else
-                        {
-                        }
+
                         e = zip.GetNextEntry();
                     }
 
                     foreach (var p in Parts)
                     {
-                        string name = Path.GetFileName(p.Key);
-                        string extension = Path.GetExtension(p.Key);
-                        string relFile = string.Format("{0}_rels/{1}.rels", p.Key.Substring(0, p.Key.Length - name.Length), name);
+                        var name = Path.GetFileName(p.Key);
+                        var extension = Path.GetExtension(p.Key);
+                        var relFile = string.Format("{0}_rels/{1}.rels", p.Key.Substring(0, p.Key.Length - name.Length), name);
                         if (rels.ContainsKey(relFile))
                         {
                             p.Value.ReadRelation(rels[relFile], p.Value.Uri.OriginalString);
@@ -167,11 +165,11 @@ namespace OfficeOpenXml.Packaging
                     }
                     if (!hasContentTypeXml)
                     {
-                        throw (new InvalidDataException("The file is not an valid Package file. If the file is encrypted, please supply the password in the constructor."));
+                        throw new InvalidDataException("The file is not an valid Package file. If the file is encrypted, please supply the password in the constructor.");
                     }
                     if (!hasContentTypeXml)
                     {
-                        throw (new InvalidDataException("The file is not an valid Package file. If the file is encrypted, please supply the password in the constructor."));
+                        throw new InvalidDataException("The file is not an valid Package file. If the file is encrypted, please supply the password in the constructor.");
                     }
                     zip.Close();
                     zip.Dispose();
@@ -208,7 +206,7 @@ namespace OfficeOpenXml.Packaging
         {
             if (PartExists(partUri))
             {
-                throw (new InvalidOperationException("Part already exist"));
+                throw new InvalidOperationException("Part already exist");
             }
 
             var part = new ZipPackagePart(this, partUri, contentType, compressionLevel);
@@ -222,15 +220,13 @@ namespace OfficeOpenXml.Packaging
             {
                 return Parts.Single(x => x.Key.Equals(GetUriKey(partUri.OriginalString), StringComparison.OrdinalIgnoreCase)).Value;
             }
-            else
-            {
-                throw (new InvalidOperationException("Part does not exist."));
-            }
+
+            throw new InvalidOperationException("Part does not exist.");
         }
 
         public string GetUriKey(string uri)
         {
-            string ret = uri.Replace('\\', '/');
+            var ret = uri.Replace('\\', '/');
             if (ret[0] != '/')
             {
                 ret = '/' + ret;
@@ -276,11 +272,11 @@ namespace OfficeOpenXml.Packaging
         internal void Save(Stream stream)
         {
             var enc = Encoding.UTF8;
-            ZipOutputStream os = new ZipOutputStream(stream, true);
+            var os = new ZipOutputStream(stream, true);
             os.CompressionLevel = (OfficeOpenXml.Packaging.Ionic.Zlib.CompressionLevel)_compression;
             /**** ContentType****/
             var entry = os.PutNextEntry("[Content_Types].xml");
-            byte[] b = enc.GetBytes(GetContentTypeXml());
+            var b = enc.GetBytes(GetContentTypeXml());
             os.Write(b, 0, b.Length);
             /**** Top Rels ****/
             _rels.WriteZip(os, $"_rels/.rels");
@@ -311,8 +307,8 @@ namespace OfficeOpenXml.Packaging
 
         private string GetContentTypeXml()
         {
-            StringBuilder xml = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">");
-            foreach (ContentType ct in _contentTypes.Values)
+            var xml = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">");
+            foreach (var ct in _contentTypes.Values)
             {
                 if (ct.IsExtension)
                 {
@@ -337,10 +333,7 @@ namespace OfficeOpenXml.Packaging
         CompressionLevel _compression = CompressionLevel.Default;
         public CompressionLevel Compression
         {
-            get
-            {
-                return _compression;
-            }
+            get => _compression;
             set
             {
                 foreach (var part in Parts.Values)

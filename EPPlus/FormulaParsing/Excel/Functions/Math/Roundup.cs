@@ -34,7 +34,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
             ValidateArguments(arguments, 2);
             var number = ArgToDecimal(arguments, 0);
             var nDigits = ArgToInt(arguments, 1);
-            double result = (number >= 0)
+            var result = number >= 0
                 ? System.Math.Ceiling(number * System.Math.Pow(10, nDigits)) / System.Math.Pow(10, nDigits)
                 : System.Math.Floor(number * System.Math.Pow(10, nDigits)) / System.Math.Pow(10, nDigits);
             return CreateResult(result, DataType.Decimal);

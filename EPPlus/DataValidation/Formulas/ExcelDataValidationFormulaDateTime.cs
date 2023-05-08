@@ -43,8 +43,7 @@ namespace OfficeOpenXml.DataValidation.Formulas
             var value = GetXmlNodeString(formulaPath);
             if (!string.IsNullOrEmpty(value))
             {
-                double oADate = default(double);
-                if (double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out oADate))
+                if (double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var oADate))
                 {
                     Value = DateTime.FromOADate(oADate);
                 }
@@ -59,6 +58,5 @@ namespace OfficeOpenXml.DataValidation.Formulas
         {
             return Value.HasValue ? Value.Value.ToOADate().ToString(CultureInfo.InvariantCulture) : string.Empty;
         }
-
     }
 }

@@ -63,7 +63,7 @@ namespace OfficeOpenXml.Drawing.Chart
                 _serie._chartSeries._chart.IsTypeStacked() ||
                 _serie._chartSeries._chart.IsTypePieDoughnut())
             {
-                throw (new ArgumentException("Trendlines don't apply to 3d-charts, stacked charts, pie charts or doughnut charts"));
+                throw new ArgumentException("Trendlines don't apply to 3d-charts, stacked charts, pie charts or doughnut charts");
             }
             ExcelChartTrendline tl;
             XmlNode insertAfter;
@@ -119,21 +119,15 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             get
             {
-                switch (GetXmlNodeString(TRENDLINEPATH).ToLower(CultureInfo.InvariantCulture))
+                return GetXmlNodeString(TRENDLINEPATH).ToLower(CultureInfo.InvariantCulture) switch
                 {
-                    case "exp":
-                        return eTrendLine.Exponential;
-                    case "log":
-                        return eTrendLine.Logarithmic;
-                    case "poly":
-                        return eTrendLine.Polynomial;
-                    case "movingavg":
-                        return eTrendLine.MovingAvgerage;
-                    case "power":
-                        return eTrendLine.Power;
-                    default:
-                        return eTrendLine.Linear;
-                }
+                    "exp" => eTrendLine.Exponential,
+                    "log" => eTrendLine.Logarithmic,
+                    "poly" => eTrendLine.Polynomial,
+                    "movingavg" => eTrendLine.MovingAvgerage,
+                    "power" => eTrendLine.Power,
+                    _ => eTrendLine.Linear
+                };
             }
             set
             {
@@ -168,14 +162,8 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public string Name
         {
-            get
-            {
-                return GetXmlNodeString(NAMEPATH);
-            }
-            set
-            {
-                SetXmlNodeString(NAMEPATH, value, true);
-            }
+            get => GetXmlNodeString(NAMEPATH);
+            set => SetXmlNodeString(NAMEPATH, value, true);
         }
         const string ORDERPATH = "c:order/@val";
         /// <summary>
@@ -183,15 +171,12 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public decimal Order
         {
-            get
-            {
-                return GetXmlNodeDecimal(ORDERPATH);
-            }
+            get => GetXmlNodeDecimal(ORDERPATH);
             set
             {
                 if (Type == eTrendLine.MovingAvgerage)
                 {
-                    throw (new ArgumentException("Can't set period for trendline type MovingAvgerage"));
+                    throw new ArgumentException("Can't set period for trendline type MovingAvgerage");
                 }
                 DeleteAllNode(PERIODPATH);
                 SetXmlNodeString(ORDERPATH, value.ToString(CultureInfo.InvariantCulture));
@@ -203,15 +188,12 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public decimal Period
         {
-            get
-            {
-                return GetXmlNodeDecimal(PERIODPATH);
-            }
+            get => GetXmlNodeDecimal(PERIODPATH);
             set
             {
                 if (Type == eTrendLine.Polynomial)
                 {
-                    throw (new ArgumentException("Can't set period for trendline type Polynomial"));
+                    throw new ArgumentException("Can't set period for trendline type Polynomial");
                 }
                 DeleteAllNode(ORDERPATH);
                 SetXmlNodeString(PERIODPATH, value.ToString(CultureInfo.InvariantCulture));
@@ -223,14 +205,8 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public decimal Forward
         {
-            get
-            {
-                return GetXmlNodeDecimal(FORWARDPATH);
-            }
-            set
-            {
-                SetXmlNodeString(FORWARDPATH, value.ToString(CultureInfo.InvariantCulture));
-            }
+            get => GetXmlNodeDecimal(FORWARDPATH);
+            set => SetXmlNodeString(FORWARDPATH, value.ToString(CultureInfo.InvariantCulture));
         }
         const string BACKWARDPATH = "c:backward/@val";
         /// <summary>
@@ -238,14 +214,8 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public decimal Backward
         {
-            get
-            {
-                return GetXmlNodeDecimal(BACKWARDPATH);
-            }
-            set
-            {
-                SetXmlNodeString(BACKWARDPATH, value.ToString(CultureInfo.InvariantCulture));
-            }
+            get => GetXmlNodeDecimal(BACKWARDPATH);
+            set => SetXmlNodeString(BACKWARDPATH, value.ToString(CultureInfo.InvariantCulture));
         }
         const string INTERCEPTPATH = "c:intercept/@val";
         /// <summary>
@@ -253,14 +223,8 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public decimal Intercept
         {
-            get
-            {
-                return GetXmlNodeDecimal(INTERCEPTPATH);
-            }
-            set
-            {
-                SetXmlNodeString(INTERCEPTPATH, value.ToString(CultureInfo.InvariantCulture));
-            }
+            get => GetXmlNodeDecimal(INTERCEPTPATH);
+            set => SetXmlNodeString(INTERCEPTPATH, value.ToString(CultureInfo.InvariantCulture));
         }
         const string DISPLAYRSQUAREDVALUEPATH = "c:dispRSqr/@val";
         /// <summary>
@@ -268,14 +232,8 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public bool DisplayRSquaredValue
         {
-            get
-            {
-                return GetXmlNodeBool(DISPLAYRSQUAREDVALUEPATH, true);
-            }
-            set
-            {
-                SetXmlNodeBool(DISPLAYRSQUAREDVALUEPATH, value, true);
-            }
+            get => GetXmlNodeBool(DISPLAYRSQUAREDVALUEPATH, true);
+            set => SetXmlNodeBool(DISPLAYRSQUAREDVALUEPATH, value, true);
         }
         const string DISPLAYEQUATIONPATH = "c:dispEq/@val";
         /// <summary>
@@ -283,14 +241,8 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public bool DisplayEquation
         {
-            get
-            {
-                return GetXmlNodeBool(DISPLAYEQUATIONPATH, true);
-            }
-            set
-            {
-                SetXmlNodeBool(DISPLAYEQUATIONPATH, value, true);
-            }
+            get => GetXmlNodeBool(DISPLAYEQUATIONPATH, true);
+            set => SetXmlNodeBool(DISPLAYEQUATIONPATH, value, true);
         }
     }
 }

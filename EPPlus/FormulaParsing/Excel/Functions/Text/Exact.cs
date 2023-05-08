@@ -41,7 +41,8 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Text
             {
                 return CreateResult(true, DataType.Boolean);
             }
-            else if ((val1 == null && val2 != null) || (val1 != null && val2 == null))
+
+            if ((val1 == null && val2 != null) || (val1 != null && val2 == null))
             {
                 return CreateResult(false, DataType.Boolean);
             }

@@ -50,82 +50,47 @@ namespace OfficeOpenXml.Drawing.Vml
         /// <summary>
         /// Position ID
         /// </summary>
-        public string Position
-        {
-            get
-            {
-                return GetXmlNodeString("@id");
-            }
-        }
+        public string Position => GetXmlNodeString("@id");
+
         /// <summary>
         /// The width in points
         /// </summary>
         public double Width
         {
-            get
-            {
-                return GetStyleProp("width");
-            }
-            set
-            {
-                SetStyleProp("width", value.ToString(CultureInfo.InvariantCulture) + "pt");
-            }
+            get => GetStyleProp("width");
+            set => SetStyleProp("width", value.ToString(CultureInfo.InvariantCulture) + "pt");
         }
         /// <summary>
         /// The height in points
         /// </summary>
         public double Height
         {
-            get
-            {
-                return GetStyleProp("height");
-            }
-            set
-            {
-                SetStyleProp("height", value.ToString(CultureInfo.InvariantCulture) + "pt");
-            }
+            get => GetStyleProp("height");
+            set => SetStyleProp("height", value.ToString(CultureInfo.InvariantCulture) + "pt");
         }
         /// <summary>
         /// Margin Left in points
         /// </summary>
         public double Left
         {
-            get
-            {
-                return GetStyleProp("left");
-            }
-            set
-            {
-                SetStyleProp("left", value.ToString(CultureInfo.InvariantCulture));
-            }
+            get => GetStyleProp("left");
+            set => SetStyleProp("left", value.ToString(CultureInfo.InvariantCulture));
         }
         /// <summary>
         /// Margin top in points
         /// </summary>
         public double Top
         {
-            get
-            {
-                return GetStyleProp("top");
-            }
-            set
-            {
-                SetStyleProp("top", value.ToString(CultureInfo.InvariantCulture));
-            }
+            get => GetStyleProp("top");
+            set => SetStyleProp("top", value.ToString(CultureInfo.InvariantCulture));
         }
         /// <summary>
         /// The Title of the image
         /// </summary>
         public string Title
         {
-            get
-            {
-                return GetXmlNodeString("v:imagedata/@o:title");
-            }
-            set
-            {
-                SetXmlNodeString("v:imagedata/@o:title", value);
-            }
+            get => GetXmlNodeString("v:imagedata/@o:title");
+            set => SetXmlNodeString("v:imagedata/@o:title", value);
         }
         /// <summary>
         /// The image
@@ -140,10 +105,8 @@ namespace OfficeOpenXml.Drawing.Vml
                     var part = pck.GetPart(ImageUri);
                     return SKImage.FromEncodedData(part.GetStream());
                 }
-                else
-                {
-                    return null;
-                }
+
+                return null;
             }
         }
         internal Uri ImageUri
@@ -153,24 +116,15 @@ namespace OfficeOpenXml.Drawing.Vml
         }
         internal string RelId
         {
-            get
-            {
-                return GetXmlNodeString("v:imagedata/@o:relid");
-            }
-            set
-            {
-                SetXmlNodeString("v:imagedata/@o:relid", value);
-            }
+            get => GetXmlNodeString("v:imagedata/@o:relid");
+            set => SetXmlNodeString("v:imagedata/@o:relid", value);
         }
         /// <summary>
         /// Determines whether an image will be displayed in black and white
         /// </summary>
         public bool BiLevel
         {
-            get
-            {
-                return GetXmlNodeString("v:imagedata/@bilevel")=="t";
-            }
+            get => GetXmlNodeString("v:imagedata/@bilevel")=="t";
             set
             {
                 if (value)
@@ -188,10 +142,7 @@ namespace OfficeOpenXml.Drawing.Vml
         /// </summary>
         public bool GrayScale
         {
-            get
-            {
-                return GetXmlNodeString("v:imagedata/@grayscale")=="t";
-            }
+            get => GetXmlNodeString("v:imagedata/@grayscale")=="t";
             set
             {
                 if (value)
@@ -212,14 +163,14 @@ namespace OfficeOpenXml.Drawing.Vml
         {
             get
             {
-                string v = GetXmlNodeString("v:imagedata/@gain");
+                var v = GetXmlNodeString("v:imagedata/@gain");
                 return GetFracDT(v, 1);
             }
             set
             {
                 if (value < 0)
                 {
-                    throw (new ArgumentOutOfRangeException("Value must be positive"));
+                    throw new ArgumentOutOfRangeException("Value must be positive");
                 }
                 if (value == 1)
                 {
@@ -239,7 +190,7 @@ namespace OfficeOpenXml.Drawing.Vml
         {
             get
             {
-                string v = GetXmlNodeString("v:imagedata/@gamma");
+                var v = GetXmlNodeString("v:imagedata/@gamma");
                 return GetFracDT(v, 0);
             }
             set
@@ -262,7 +213,7 @@ namespace OfficeOpenXml.Drawing.Vml
         {
             get
             {
-                string v = GetXmlNodeString("v:imagedata/@blacklevel");
+                var v = GetXmlNodeString("v:imagedata/@blacklevel");
                 return GetFracDT(v, 0);
             }
             set
@@ -285,7 +236,7 @@ namespace OfficeOpenXml.Drawing.Vml
             if (v.EndsWith("f"))
             {
                 v = v.Substring(0, v.Length - 1);
-                if (double.TryParse(v, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out d))
+                if (double.TryParse(v, NumberStyles.Any, CultureInfo.InvariantCulture, out d))
                 {
                     d /= 65535;
                 }
@@ -296,7 +247,7 @@ namespace OfficeOpenXml.Drawing.Vml
             }
             else
             {
-                if (!double.TryParse(v, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out d))
+                if (!double.TryParse(v, NumberStyles.Any, CultureInfo.InvariantCulture, out d))
                 {
                     d = def;
                 }
@@ -305,12 +256,12 @@ namespace OfficeOpenXml.Drawing.Vml
         }
         private void SetStyleProp(string propertyName, string value)
         {
-            string style = GetXmlNodeString("@style");
-            string newStyle = "";
-            bool found = false;
-            foreach (string prop in style.Split(';'))
+            var style = GetXmlNodeString("@style");
+            var newStyle = "";
+            var found = false;
+            foreach (var prop in style.Split(';'))
             {
-                string[] split = prop.Split(':');
+                var split = prop.Split(':');
                 if (split[0] == propertyName)
                 {
                     newStyle += propertyName + ":" + value + ";";
@@ -329,22 +280,20 @@ namespace OfficeOpenXml.Drawing.Vml
         }
         private double GetStyleProp(string propertyName)
         {
-            string style = GetXmlNodeString("@style");
-            foreach (string prop in style.Split(';'))
+            var style = GetXmlNodeString("@style");
+            foreach (var prop in style.Split(';'))
             {
-                string[] split = prop.Split(':');
+                var split = prop.Split(':');
                 if (split[0] == propertyName && split.Length > 1)
                 {
-                    string value = split[1].EndsWith("pt") ? split[1].Substring(0, split[1].Length - 2) : split[1];
+                    var value = split[1].EndsWith("pt") ? split[1].Substring(0, split[1].Length - 2) : split[1];
                     double ret;
                     if (double.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out ret))
                     {
                         return ret;
                     }
-                    else
-                    {
-                        return 0;
-                    }
+
+                    return 0;
                 }
             }
             return 0;

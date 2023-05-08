@@ -62,14 +62,8 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public bool Marker
         {
-            get
-            {
-                return _chartXmlHelper.GetXmlNodeBool(MARKER_PATH, false);
-            }
-            set
-            {
-                _chartXmlHelper.SetXmlNodeBool(MARKER_PATH, value, false);
-            }
+            get => _chartXmlHelper.GetXmlNodeBool(MARKER_PATH, false);
+            set => _chartXmlHelper.SetXmlNodeBool(MARKER_PATH, value, false);
         }
 
         string SMOOTH_PATH = "c:smooth/@val";
@@ -78,71 +72,40 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public bool Smooth
         {
-            get
-            {
-                return _chartXmlHelper.GetXmlNodeBool(SMOOTH_PATH, false);
-            }
-            set
-            {
-                _chartXmlHelper.SetXmlNodeBool(SMOOTH_PATH, value);
-            }
+            get => _chartXmlHelper.GetXmlNodeBool(SMOOTH_PATH, false);
+            set => _chartXmlHelper.SetXmlNodeBool(SMOOTH_PATH, value);
         }
 
         ExcelChartDataLabel _DataLabel = null;
         /// <summary>
         /// Access to datalabel properties
         /// </summary>
-        public ExcelChartDataLabel DataLabel
-        {
-            get
-            {
-                if (_DataLabel == null)
-                {
-                    _DataLabel = new ExcelChartDataLabel(NameSpaceManager, ChartNode);
-                }
-                return _DataLabel;
-            }
-        }
+        public ExcelChartDataLabel DataLabel => _DataLabel ??= new ExcelChartDataLabel(NameSpaceManager, ChartNode);
+
         internal override eChartType GetChartType(string name)
         {
-            if (name=="lineChart")
+            switch (name)
             {
-                if (Marker)
+                case "lineChart" when Marker:
                 {
-                    if (Grouping==eGrouping.Stacked)
+                    return Grouping switch
                     {
-                        return eChartType.LineMarkersStacked;
-                    }
-                    else if (Grouping == eGrouping.PercentStacked)
-                    {
-                        return eChartType.LineMarkersStacked100;
-                    }
-                    else
-                    {
-                        return eChartType.LineMarkers;
-                    }
+                        eGrouping.Stacked => eChartType.LineMarkersStacked,
+                        eGrouping.PercentStacked => eChartType.LineMarkersStacked100,
+                        _ => eChartType.LineMarkers
+                    };
                 }
-                else
-                {
-                    if (Grouping==eGrouping.Stacked)
-                    {
-                        return eChartType.LineStacked;
-                    }
-                    else if (Grouping == eGrouping.PercentStacked)
-                    {
-                        return eChartType.LineStacked100;
-                    }
-                    else
-                    {
-                        return eChartType.Line;
-                    }
-                }
+                case "lineChart" when Grouping==eGrouping.Stacked:
+                    return eChartType.LineStacked;
+                case "lineChart" when Grouping == eGrouping.PercentStacked:
+                    return eChartType.LineStacked100;
+                case "lineChart":
+                    return eChartType.Line;
+                case "line3DChart":
+                    return eChartType.Line3D;
+                default:
+                    return base.GetChartType(name);
             }
-            else if (name=="line3DChart")
-            {
-                return eChartType.Line3D;
-            }
-            return base.GetChartType(name);
         }
     }
 }

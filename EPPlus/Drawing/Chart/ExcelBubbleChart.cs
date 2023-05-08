@@ -40,15 +40,12 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public int BubbleScale
         {
-            get
-            {
-                return _chartXmlHelper.GetXmlNodeInt(BUBBLESCALE_PATH);
-            }
+            get => _chartXmlHelper.GetXmlNodeInt(BUBBLESCALE_PATH);
             set
             {
-                if (value < 0 && value > 300)
+                if (value is < 0 or > 300)
                 {
-                    throw (new ArgumentOutOfRangeException("Bubblescale out of range. 0-300 allowed"));
+                    throw new ArgumentOutOfRangeException("Bubblescale out of range. 0-300 allowed");
                 }
                 _chartXmlHelper.SetXmlNodeString(BUBBLESCALE_PATH, value.ToString());
             }
@@ -59,14 +56,8 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public bool ShowNegativeBubbles
         {
-            get
-            {
-                return _chartXmlHelper.GetXmlNodeBool(SHOWNEGBUBBLES_PATH);
-            }
-            set
-            {
-                _chartXmlHelper.SetXmlNodeBool(BUBBLESCALE_PATH, value, true);
-            }
+            get => _chartXmlHelper.GetXmlNodeBool(SHOWNEGBUBBLES_PATH);
+            set => _chartXmlHelper.SetXmlNodeBool(BUBBLESCALE_PATH, value, true);
         }
         string BUBBLE3D_PATH = "c:bubble3D/@val";
         /// <summary>
@@ -74,10 +65,7 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public bool Bubble3D
         {
-            get
-            {
-                return _chartXmlHelper.GetXmlNodeBool(BUBBLE3D_PATH);
-            }
+            get => _chartXmlHelper.GetXmlNodeBool(BUBBLE3D_PATH);
             set
             {
                 _chartXmlHelper.SetXmlNodeBool(BUBBLE3D_PATH, value);
@@ -93,38 +81,15 @@ namespace OfficeOpenXml.Drawing.Chart
             get
             {
                 var v = _chartXmlHelper.GetXmlNodeString(SIZEREPRESENTS_PATH).ToLower(CultureInfo.InvariantCulture);
-                if (v == "w")
-                {
-                    return eSizeRepresents.Width;
-                }
-                else
-                {
-                    return eSizeRepresents.Area;
-                }
+                return v == "w" ? eSizeRepresents.Width : eSizeRepresents.Area;
             }
-            set
-            {
-                _chartXmlHelper.SetXmlNodeString(SIZEREPRESENTS_PATH, value == eSizeRepresents.Width ? "w" : "area");
-            }
+            set => _chartXmlHelper.SetXmlNodeString(SIZEREPRESENTS_PATH, value == eSizeRepresents.Width ? "w" : "area");
         }
-        public new ExcelBubbleChartSeries Series
-        {
-            get
-            {
+        public new ExcelBubbleChartSeries Series => (ExcelBubbleChartSeries)_chartSeries;
 
-                return (ExcelBubbleChartSeries)_chartSeries;
-            }
-        }
         internal override eChartType GetChartType(string name)
         {
-            if (Bubble3D)
-            {
-                return eChartType.Bubble3DEffect;
-            }
-            else
-            {
-                return eChartType.Bubble;
-            }
+            return Bubble3D ? eChartType.Bubble3DEffect : eChartType.Bubble;
         }
     }
 }

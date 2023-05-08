@@ -46,53 +46,28 @@ namespace OfficeOpenXml.Style
         /// <summary>
         /// Left border style
         /// </summary>
-        public ExcelBorderItem Left
-        {
-            get
-            {
-                return new ExcelBorderItem(_styles, _ChangedEvent, _positionID, _address, eStyleClass.BorderLeft, this);
-            }
-        }
+        public ExcelBorderItem Left => new(_styles, _ChangedEvent, _positionID, _address, eStyleClass.BorderLeft, this);
+
         /// <summary>
         /// Right border style
         /// </summary>
-        public ExcelBorderItem Right
-        {
-            get
-            {
-                return new ExcelBorderItem(_styles, _ChangedEvent, _positionID, _address, eStyleClass.BorderRight, this);
-            }
-        }
+        public ExcelBorderItem Right => new(_styles, _ChangedEvent, _positionID, _address, eStyleClass.BorderRight, this);
+
         /// <summary>
         /// Top border style
         /// </summary>
-        public ExcelBorderItem Top
-        {
-            get
-            {
-                return new ExcelBorderItem(_styles, _ChangedEvent, _positionID, _address, eStyleClass.BorderTop, this);
-            }
-        }
+        public ExcelBorderItem Top => new(_styles, _ChangedEvent, _positionID, _address, eStyleClass.BorderTop, this);
+
         /// <summary>
         /// Bottom border style
         /// </summary>
-        public ExcelBorderItem Bottom
-        {
-            get
-            {
-                return new ExcelBorderItem(_styles, _ChangedEvent, _positionID, _address, eStyleClass.BorderBottom, this);
-            }
-        }
+        public ExcelBorderItem Bottom => new(_styles, _ChangedEvent, _positionID, _address, eStyleClass.BorderBottom, this);
+
         /// <summary>
         /// 0Diagonal border style
         /// </summary>
-        public ExcelBorderItem Diagonal
-        {
-            get
-            {
-                return new ExcelBorderItem(_styles, _ChangedEvent, _positionID, _address, eStyleClass.BorderDiagonal, this);
-            }
-        }
+        public ExcelBorderItem Diagonal => new(_styles, _ChangedEvent, _positionID, _address, eStyleClass.BorderDiagonal, this);
+
         /// <summary>
         /// A diagonal from the bottom left to top right of the cell
         /// </summary>
@@ -104,15 +79,10 @@ namespace OfficeOpenXml.Style
                 {
                     return _styles.Borders[Index].DiagonalUp;
                 }
-                else
-                {
-                    return false;
-                }
+
+                return false;
             }
-            set
-            {
-                _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Border, eStyleProperty.BorderDiagonalUp, value, _positionID, _address));
-            }
+            set => _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Border, eStyleProperty.BorderDiagonalUp, value, _positionID, _address));
         }
         /// <summary>
         /// A diagonal from the top left to bottom right of the cell
@@ -125,20 +95,13 @@ namespace OfficeOpenXml.Style
                 {
                     return _styles.Borders[Index].DiagonalDown;
                 }
-                else
-                {
-                    return false;
-                }
+
+                return false;
             }
-            set
-            {
-                _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Border, eStyleProperty.BorderDiagonalDown, value, _positionID, _address));
-            }
+            set => _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Border, eStyleProperty.BorderDiagonalDown, value, _positionID, _address));
         }
-        internal override string Id
-        {
-            get { return Top.Id + Bottom.Id +Left.Id + Right.Id + Diagonal.Id + DiagonalUp + DiagonalDown; }
-        }
+        internal override string Id => Top.Id + Bottom.Id +Left.Id + Right.Id + Diagonal.Id + DiagonalUp + DiagonalDown;
+
         /// <summary>
         /// Set the border style around the range.
         /// </summary>

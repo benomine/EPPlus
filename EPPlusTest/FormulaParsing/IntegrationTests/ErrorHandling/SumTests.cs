@@ -28,14 +28,8 @@ namespace EPPlusTest.FormulaParsing.IntegrationTests.ErrorHandling
         ///</summary>
         public TestContext TestContext
         {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
+            get => testContextInstance;
+            set => testContextInstance = value;
         }
         [TestMethod]
         public void SingleCell()

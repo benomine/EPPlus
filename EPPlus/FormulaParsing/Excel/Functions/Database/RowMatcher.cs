@@ -71,7 +71,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Database
         private bool Evaluate(object obj, string expression)
         {
             if (obj == null) return false;
-            double? candidate = default(double?);
+            var candidate = default(double?);
             if (ConvertUtil.IsNumeric(obj))
             {
                 candidate = ConvertUtil.GetValueDouble(obj);

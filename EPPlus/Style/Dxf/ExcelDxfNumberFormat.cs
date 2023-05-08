@@ -43,22 +43,13 @@
         /// </summary>            
         public int NumFmtID
         {
-            get
-            {
-                return _numFmtID;
-            }
-            internal set
-            {
-                _numFmtID = value;
-            }
+            get => _numFmtID;
+            internal set => _numFmtID = value;
         }
         string _format = "";
         public string Format
         {
-            get
-            {
-                return _format;
-            }
+            get => _format;
             set
             {
                 _format = value;
@@ -66,13 +57,7 @@
             }
         }
 
-        protected internal override string Id
-        {
-            get
-            {
-                return Format;
-            }
-        }
+        protected internal override string Id => Format;
 
         protected internal override void CreateNodes(XmlHelper helper, string path)
         {
@@ -84,13 +69,8 @@
             SetValue(helper, path + "/@numFmtId", NumFmtID);
             SetValue(helper, path + "/@formatCode", Format);
         }
-        protected internal override bool HasValue
-        {
-            get
-            {
-                return !string.IsNullOrEmpty(Format);
-            }
-        }
+        protected internal override bool HasValue => !string.IsNullOrEmpty(Format);
+
         protected internal override ExcelDxfNumberFormat Clone()
         {
             return new ExcelDxfNumberFormat(_styles) { NumFmtID = NumFmtID, Format = Format };

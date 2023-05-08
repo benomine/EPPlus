@@ -48,7 +48,7 @@ namespace OfficeOpenXml.FormulaParsing.ExcelUtilities
         private readonly FormulaDependencyFactory _formulaDependencyFactory;
         private readonly Dictionary<string, FormulaDependency> _dependencies = new Dictionary<string, FormulaDependency>();
 
-        public IEnumerable<KeyValuePair<string, FormulaDependency>> Dependencies { get { return _dependencies; } }
+        public IEnumerable<KeyValuePair<string, FormulaDependency>> Dependencies => _dependencies;
 
         public void AddFormulaScope(ParsingScope parsingScope)
         {

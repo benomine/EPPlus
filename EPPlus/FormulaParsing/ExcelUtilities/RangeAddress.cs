@@ -56,10 +56,7 @@ namespace OfficeOpenXml.FormulaParsing.ExcelUtilities
         }
 
         private static RangeAddress _empty = new RangeAddress();
-        public static RangeAddress Empty
-        {
-            get { return _empty; }
-        }
+        public static RangeAddress Empty => _empty;
 
         /// <summary>
         /// Returns true if this range collides (full or partly) with the supplied range

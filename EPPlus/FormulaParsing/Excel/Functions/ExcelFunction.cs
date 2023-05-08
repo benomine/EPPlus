@@ -72,21 +72,9 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions
         /// <param name="context"></param>
         public virtual void BeforeInvoke(ParsingContext context) { }
 
-        public virtual bool IsLookupFuction
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public virtual bool IsLookupFuction => false;
 
-        public virtual bool IsErrorHandlingFunction
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public virtual bool IsErrorHandlingFunction => false;
 
         /// <summary>
         /// Used for some Lookupfunctions to indicate that function arguments should
@@ -102,10 +90,8 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions
                 var r = arg.ValueAsRangeInfo;
                 return r.GetValue(r.Address._fromRow, r.Address._fromCol);
             }
-            else
-            {
-                return arg==null ? null : arg.Value;
-            }
+
+            return arg==null ? null : arg.Value;
         }
         /// <summary>
         /// This functions validates that the supplied <paramref name="arguments"/> contains at least
@@ -318,7 +304,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions
         protected bool IsNumeric(object val)
         {
             if (val == null) return false;
-            return (TypeCompat.IsPrimitive(val) || val is double || val is decimal  || val is System.DateTime || val is TimeSpan);
+            return TypeCompat.IsPrimitive(val) || val is double || val is decimal  || val is System.DateTime || val is TimeSpan;
         }
 
         /// <summary>
@@ -441,7 +427,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions
         {
             if (arg.ValueIsExcelError)
             {
-                throw (new ExcelErrorValueException(arg.ValueAsExcelErrorValue));
+                throw new ExcelErrorValueException(arg.ValueAsExcelErrorValue);
             }
         }
 
@@ -454,7 +440,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions
         {
             if (cell.IsExcelError)
             {
-                throw (new ExcelErrorValueException(ExcelErrorValue.Parse(cell.Value.ToString())));
+                throw new ExcelErrorValueException(ExcelErrorValue.Parse(cell.Value.ToString()));
             }
         }
 

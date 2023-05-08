@@ -23,8 +23,8 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers
             try
             {
                 var result = firstChild.Compile();
-                if (result.DataType == DataType.ExcelError && (Equals(result.Result,
-                    ExcelErrorValue.Create(eErrorType.NA))))
+                if (result.DataType == DataType.ExcelError && Equals(result.Result,
+                        ExcelErrorValue.Create(eErrorType.NA)))
                 {
                     args.Add(new FunctionArgument(lastChild.Compile().Result));
                 }

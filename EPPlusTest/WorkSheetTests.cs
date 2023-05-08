@@ -356,7 +356,7 @@ namespace EPPlusTest
                 Assert.AreEqual(r1.Bold, true);
 
                 ws = pck.Workbook.Worksheets["Pic URL"];
-                Assert.AreEqual(((ExcelPicture)ws.Drawings["Pic URI"]).Hyperlink, "http://epplus.codeplex.com");
+                Assert.AreEqual<Uri>(((ExcelPicture)ws.Drawings["Pic URI"]).Hyperlink, new Uri("http://epplus.codeplex.com"));
 
                 Assert.AreEqual(pck.Workbook.Worksheets["Address"].GetValue<string>(40, 1), "\b\t");
 
@@ -810,7 +810,7 @@ namespace EPPlusTest
             ws.Cells["A1:A4,B5:B7"].Style.Font.Color.SetColor(SKColors.Red);
             ws.Cells["A2:A3,B4:B8"].Style.Fill.PatternType = ExcelFillStyle.LightUp;
             ws.Cells["A2:A3,B4:B8"].Style.Fill.BackgroundColor.SetColor(SKColors.LightGreen);
-            ws.Cells["2:2"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            ws.Cells["2:2"].Style.Fill.PatternType = ExcelFillStyle.Solid;
             ws.Cells["2:2"].Style.Fill.BackgroundColor.SetColor(SKColors.LightGreen);
             ws.Cells["B:B"].Style.Font.Name = "Times New Roman";
 
@@ -820,13 +820,13 @@ namespace EPPlusTest
             ws.Cells["G1,G3"].Style.Font.Color.SetColor(SKColors.Blue);
             ws.Cells["G1,G3"].Style.Font.UnderLine = true;
 
-            ws.Cells["A1:G5"].Copy(ws.Cells["A50"]);
+            ws.Cells["A1:G5"].Copy(ws.Cells["A50"], null);
 
             var ws2 = _pck.Workbook.Worksheets.Add("Copy Cells");
-            ws.Cells["1:4"].Copy(ws2.Cells["1:1"]);
+            ws.Cells["1:4"].Copy(ws2.Cells["1:1"], null);
 
             ws.Cells["H1:J5"].Merge = true;
-            ws.Cells["2:3"].Copy(ws.Cells["50:51"]);
+            ws.Cells["2:3"].Copy(ws.Cells["50:51"], null);
 
             ws.Cells["A40"].Value = new string(new char[] { (char)8, (char)9 });
 
@@ -890,10 +890,10 @@ namespace EPPlusTest
             list.Add(new TestDTO() { Id = 9, Name = "Item9", Boolean = false, Date = new DateTime(2010, 2, 1), dto = null, NameVar = "Field 9" });
 
             ws.Cells["A1"].LoadFromCollection(list, true);
-            ws.Cells["A30"].LoadFromCollection(list, true, OfficeOpenXml.Table.TableStyles.Medium9, BindingFlags.Instance | BindingFlags.Instance, typeof(TestDTO).GetFields());
+            ws.Cells["A30"].LoadFromCollection(list, true, TableStyles.Medium9, BindingFlags.Instance | BindingFlags.Instance, typeof(TestDTO).GetFields());
 
-            ws.Cells["A45"].LoadFromCollection(list, true, OfficeOpenXml.Table.TableStyles.Light1, BindingFlags.Instance | BindingFlags.Instance, new MemberInfo[] { typeof(TestDTO).GetMethod("GetNameID"), typeof(TestDTO).GetField("NameVar") });
-            ws.Cells["J1"].LoadFromCollection(from l in list where l.Boolean orderby l.Date select new { Name = l.Name, Id = l.Id, Date = l.Date, NameVariable = l.NameVar }, true, OfficeOpenXml.Table.TableStyles.Dark4);
+            ws.Cells["A45"].LoadFromCollection(list, true, TableStyles.Light1, BindingFlags.Instance | BindingFlags.Instance, new MemberInfo[] { typeof(TestDTO).GetMethod("GetNameID"), typeof(TestDTO).GetField("NameVar") });
+            ws.Cells["J1"].LoadFromCollection(from l in list where l.Boolean orderby l.Date select new { Name = l.Name, Id = l.Id, Date = l.Date, NameVariable = l.NameVar }, true, TableStyles.Dark4);
 
             var ints = new int[] { 1, 3, 4, 76, 2, 5 };
             ws.Cells["A15"].Value = ints;
@@ -918,10 +918,10 @@ namespace EPPlusTest
             //List<int> list = new List<int>(0);
 
             ws.Cells["A1"].LoadFromCollection(listDTO, true);
-            ws.Cells["A5"].LoadFromCollection(listDTO, true, OfficeOpenXml.Table.TableStyles.Medium9, BindingFlags.Instance | BindingFlags.Instance, typeof(TestDTO).GetFields());
+            ws.Cells["A5"].LoadFromCollection(listDTO, true, TableStyles.Medium9, BindingFlags.Instance | BindingFlags.Instance, typeof(TestDTO).GetFields());
 
-            ws.Cells["A10"].LoadFromCollection(listDTO, true, OfficeOpenXml.Table.TableStyles.Light1, BindingFlags.Instance | BindingFlags.Instance, new MemberInfo[] { typeof(TestDTO).GetMethod("GetNameID"), typeof(TestDTO).GetField("NameVar") });
-            ws.Cells["A15"].LoadFromCollection(from l in listDTO where l.Boolean orderby l.Date select new { Name = l.Name, Id = l.Id, Date = l.Date, NameVariable = l.NameVar }, true, OfficeOpenXml.Table.TableStyles.Dark4);
+            ws.Cells["A10"].LoadFromCollection(listDTO, true, TableStyles.Light1, BindingFlags.Instance | BindingFlags.Instance, new MemberInfo[] { typeof(TestDTO).GetMethod("GetNameID"), typeof(TestDTO).GetField("NameVar") });
+            ws.Cells["A15"].LoadFromCollection(from l in listDTO where l.Boolean orderby l.Date select new { Name = l.Name, Id = l.Id, Date = l.Date, NameVariable = l.NameVar }, true, TableStyles.Dark4);
 
             ws.Cells["A20"].LoadFromCollection(listDTO, false);
         }
@@ -1220,7 +1220,7 @@ namespace EPPlusTest
                 sheet1.Row(7).OutlineLevel = 25;
                 sheet1.Row(8).OutlineLevel = 29;
 
-                sheet1.Cells["2:4"].Copy(sheet1.Cells["A6"]);
+                sheet1.Cells["2:4"].Copy(sheet1.Cells["A6"], null);
                 Assert.AreEqual(1, sheet1.Row(2).OutlineLevel);
                 Assert.AreEqual(1, sheet1.Row(3).OutlineLevel);
                 Assert.AreEqual(0, sheet1.Row(4).OutlineLevel);
@@ -1247,7 +1247,7 @@ namespace EPPlusTest
                 sheet2.Row(7).OutlineLevel = 25;
                 sheet2.Row(8).OutlineLevel = 29;
 
-                sheet1.Cells["2:4"].Copy(sheet2.Cells["A6"]);
+                sheet1.Cells["2:4"].Copy(sheet2.Cells["A6"], null);
                 Assert.AreEqual(1, sheet1.Row(2).OutlineLevel);
                 Assert.AreEqual(1, sheet1.Row(3).OutlineLevel);
                 Assert.AreEqual(0, sheet1.Row(4).OutlineLevel);
@@ -1273,7 +1273,7 @@ namespace EPPlusTest
                 sheet1.Column(7).OutlineLevel = 25;
                 sheet1.Column(8).OutlineLevel = 29;
 
-                sheet1.Cells["B:D"].Copy(sheet1.Cells["F1"]);
+                sheet1.Cells["B:D"].Copy(sheet1.Cells["F1"], null);
                 Assert.AreEqual(1, sheet1.Column(2).OutlineLevel);
                 Assert.AreEqual(1, sheet1.Column(3).OutlineLevel);
                 Assert.AreEqual(0, sheet1.Column(4).OutlineLevel);
@@ -1291,7 +1291,7 @@ namespace EPPlusTest
             var ws = _pck.Workbook.Worksheets.Add("Table");
             ws.Cells["B1"].Value = 123;
             var tbl = ws.Tables.Add(ws.Cells["B1:P12"], "TestTable");
-            tbl.TableStyle = OfficeOpenXml.Table.TableStyles.Custom;
+            tbl.TableStyle = TableStyles.Custom;
 
             tbl.ShowFirstColumn = true;
             tbl.ShowTotal = true;
@@ -1302,7 +1302,7 @@ namespace EPPlusTest
             ws.Cells["K2"].Value = 5;
             ws.Cells["J3"].Value = 4;
 
-            tbl.Columns[8].TotalsRowFunction = OfficeOpenXml.Table.RowFunctions.Sum;
+            tbl.Columns[8].TotalsRowFunction = RowFunctions.Sum;
             tbl.Columns[9].TotalsRowFormula = string.Format("SUM([{0}])", tbl.Columns[9].Name);
             tbl.Columns[14].CalculatedColumnFormula = "TestTable[[#This Row],[123]]+TestTable[[#This Row],[Column2]]";
             ws.Cells["B2"].Value = 1;
@@ -1323,7 +1323,7 @@ namespace EPPlusTest
             tbl = ws.Tables.Add(ws.Cells["a12:a13"], "");
 
             tbl = ws.Tables.Add(ws.Cells["C16:Y35"], "");
-            tbl.TableStyle = OfficeOpenXml.Table.TableStyles.Medium14;
+            tbl.TableStyle = TableStyles.Medium14;
             tbl.ShowFirstColumn = true;
             tbl.ShowLastColumn = true;
             tbl.ShowColumnStripes = true;
@@ -1340,7 +1340,7 @@ namespace EPPlusTest
             tbl = ws.Tables.Add(ws.Cells["G50:G54"], "");
             tbl.ShowTotal = true;
             tbl.ShowFilter = false;
-            tbl.Columns[0].TotalsRowFunction = OfficeOpenXml.Table.RowFunctions.Sum;
+            tbl.Columns[0].TotalsRowFunction = RowFunctions.Sum;
         }
 
         [TestMethod]
@@ -1417,8 +1417,8 @@ namespace EPPlusTest
             var table = ws.Tables.Add(ws.Cells["B2:C4"], "TestTable");
             table.ShowTotal = true;
             table.ShowHeader = true;
-            table.Columns[0].TotalsRowFunction = OfficeOpenXml.Table.RowFunctions.Sum;
-            table.Columns[1].TotalsRowFunction = OfficeOpenXml.Table.RowFunctions.Sum;
+            table.Columns[0].TotalsRowFunction = RowFunctions.Sum;
+            table.Columns[1].TotalsRowFunction = RowFunctions.Sum;
             ws.Cells["B5"].Calculate();
             Assert.AreEqual(3.0, ws.Cells["B5"].Value);
             ws.Cells["C5"].Calculate();
@@ -1442,7 +1442,7 @@ namespace EPPlusTest
             ws.Cells["A2:D30"].Merge = true;
             ws.Cells["A1"].Style.Font.Bold = true;
             ws.Cells["G4:H5"].Merge = true;
-            ws.Cells["B3:C5"].Copy(ws.Cells["G4"]);
+            ws.Cells["B3:C5"].Copy(ws.Cells["G4"], null);
         }
 
 
@@ -1456,7 +1456,7 @@ namespace EPPlusTest
             var source = ws.Cells["A11:C12"];
             var target = ws.Cells["A21"];
 
-            source.Copy(target);
+            source.Copy(target, null);
 
             var a21 = ws.Cells[21, 1];
             var a22 = ws.Cells[22, 1];
@@ -1613,7 +1613,7 @@ namespace EPPlusTest
                 using (var reader = dt.CreateDataReader())
                 {
                     range = ws.Cells["A1"].LoadFromDataReader(reader, true, "My_Table",
-                                                              OfficeOpenXml.Table.TableStyles.Medium5);
+                                                              TableStyles.Medium5);
                 }
                 Assert.AreEqual(1, range.Start.Column);
                 Assert.AreEqual(4, range.End.Column);
@@ -1623,7 +1623,7 @@ namespace EPPlusTest
                 using (var reader = dt.CreateDataReader())
                 {
                     range = ws.Cells["A5"].LoadFromDataReader(reader, false, "My_Table2",
-                                                              OfficeOpenXml.Table.TableStyles.Medium5);
+                                                              TableStyles.Medium5);
                 }
 
                 Assert.AreEqual(1, range.Start.Column);
@@ -1666,11 +1666,11 @@ namespace EPPlusTest
             dr[3] = 3.125;
             dt.Rows.Add(dr);
 
-            ws.Cells["A1"].LoadFromDataTable(dt, true, OfficeOpenXml.Table.TableStyles.Medium5);
+            ws.Cells["A1"].LoadFromDataTable(dt, true, TableStyles.Medium5);
 
             //worksheet.Cells[startRow, 7, worksheet.Dimension.End.Row, 7].FormulaR1C1 = "=IF(RC[-2]=0,0,RC[-1]/RC[-2])";
 
-            ws.Tables[0].Columns[1].TotalsRowFunction = OfficeOpenXml.Table.RowFunctions.Sum;
+            ws.Tables[0].Columns[1].TotalsRowFunction = RowFunctions.Sum;
             ws.Tables[0].ShowTotal = true;
         }
 
@@ -1807,7 +1807,7 @@ namespace EPPlusTest
             sheet.Cells[1, 6].Value = "Gebruikersnaam";
             sheet.Cells[1, 7].Value = "E-mail adres";
             ExcelRange headerRow = sheet.Cells[1, 1, 1, 7];
-            headerRow.Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+            headerRow.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
             headerRow.Style.Font.Size = 12;
             headerRow.Style.Font.Bold = true;
         }
@@ -2036,7 +2036,7 @@ namespace EPPlusTest
             pt.DataFields.Add(pt.Fields[3]);
             pt.DataFields.Add(pt.Fields[2]);
             pt.DataOnRows = true;
-            wsPivot6.Drawings.AddChart("Pivotchart6", OfficeOpenXml.Drawing.Chart.eChartType.BarStacked3D, pt);
+            wsPivot6.Drawings.AddChart("Pivotchart6", eChartType.BarStacked3D, pt);
 
             pt = wsPivot7.PivotTables.Add(wsPivot7.Cells["A3"], ws.Cells["K1:N11"], "Pivottable7");
             pt.PageFields.Add(pt.Fields[1]);
@@ -2058,7 +2058,7 @@ namespace EPPlusTest
             Assert.AreEqual(pt.Fields[0].SubTotalFunctions, eSubTotalFunctions.Default);
 
             pt.Fields[0].Sort = eSortType.Descending;
-            pt.TableStyle = OfficeOpenXml.Table.TableStyles.Medium14;
+            pt.TableStyle = TableStyles.Medium14;
 
             pt = wsPivot8.PivotTables.Add(wsPivot8.Cells["A3"], ws.Cells["K1:O11"], "Pivottable8");
             pt.RowFields.Add(pt.Fields[1]);
@@ -2080,7 +2080,7 @@ namespace EPPlusTest
             pt.RowFields[0].AddNumericGrouping(-3.3, 5.5, 4.0);
             pt.DataFields.Add(pt.Fields[2]);
             pt.DataOnRows = false;
-            pt.TableStyle = OfficeOpenXml.Table.TableStyles.Medium14;
+            pt.TableStyle = TableStyles.Medium14;
 
             pt = wsPivot8.PivotTables.Add(wsPivot8.Cells["H3"], ws.Cells["K1:O11"], "Pivottable10");
             pt.RowFields.Add(pt.Fields[1]);
@@ -2138,7 +2138,7 @@ namespace EPPlusTest
 
             var pivot6 = pck.Workbook.Worksheets[6].PivotTables[0];
 
-            pck.Workbook.Worksheets[6].Drawings.AddChart("chart1", OfficeOpenXml.Drawing.Chart.eChartType.ColumnStacked3D, pivot6);
+            pck.Workbook.Worksheets[6].Drawings.AddChart("chart1", eChartType.ColumnStacked3D, pivot6);
 
             pck.SaveAs(new FileInfo(@"c:\temp\pivot\pivotforread_new.xlsx"));
         }
@@ -2386,10 +2386,10 @@ namespace EPPlusTest
             {
                 for (int row = 1; row < 30; row++)
                 {
-                    ws.SetValue(row, col, "cell " + ExcelAddressBase.GetAddress(row, col));
+                    ws.SetValue(row, col, "cell " + ExcelCellBase.GetAddress(row, col));
                 }
             }
-            ws.Cells["A1:P30"].Copy(ws.Cells["B1"]);
+            ws.Cells["A1:P30"].Copy(ws.Cells["B1"], null);
         }
         [Ignore]
         [TestMethod]
@@ -2583,7 +2583,7 @@ namespace EPPlusTest
                 sheet2.Cells[4, 4].Value = "Goodbye, WORLD!";
                 package.Workbook.Calculate();
                 Assert.AreEqual("Hello, world!", sheet1.Cells[3, 3].Value);
-                sheet1.Cells[3, 3].Copy(sheet1.Cells[4, 4]);
+                sheet1.Cells[3, 3].Copy(sheet1.Cells[4, 4], null);
                 package.Workbook.Calculate();
                 Assert.AreEqual("'Sheet2'!D4", sheet1.Cells[4, 4].Formula, true);
                 Assert.AreEqual("Hello, world!", sheet1.Cells[3, 3].Value);
@@ -2605,7 +2605,7 @@ namespace EPPlusTest
                 sheet2.Cells[4, 4].Value = "Goodbye, WORLD!";
                 package.Workbook.Calculate();
                 Assert.AreEqual("Hello, world!", sheet1.Cells[3, 3].Value);
-                sheet1.Cells[3, 3].Copy(sheet1.Cells[4, 4]);
+                sheet1.Cells[3, 3].Copy(sheet1.Cells[4, 4], null);
                 package.Workbook.Calculate();
                 Assert.AreEqual("'Sheet2'!$C$3", sheet1.Cells[4, 4].Formula, true);
                 Assert.AreEqual("Hello, world!", sheet1.Cells[3, 3].Value);
@@ -2627,7 +2627,7 @@ namespace EPPlusTest
                 sheet2.Cells[4, 4].Value = "Goodbye, WORLD!";
                 package.Workbook.Calculate();
                 Assert.AreEqual("Hello, world!", sheet1.Cells[3, 3].Value);
-                sheet1.Cells[3, 3].Copy(sheet1.Cells[4, 4]);
+                sheet1.Cells[3, 3].Copy(sheet1.Cells[4, 4], null);
                 package.Workbook.Calculate();
                 Assert.AreEqual("'Sheet2'!D$3", sheet1.Cells[4, 4].Formula, true);
                 Assert.AreEqual("Hello, world!", sheet1.Cells[3, 3].Value);
@@ -2649,7 +2649,7 @@ namespace EPPlusTest
                 sheet2.Cells[4, 4].Value = "Goodbye, WORLD!";
                 package.Workbook.Calculate();
                 Assert.AreEqual("Hello, world!", sheet1.Cells[3, 3].Value);
-                sheet1.Cells[3, 3].Copy(sheet1.Cells[4, 4]);
+                sheet1.Cells[3, 3].Copy(sheet1.Cells[4, 4], null);
                 package.Workbook.Calculate();
                 Assert.AreEqual("'Sheet2'!$C4", sheet1.Cells[4, 4].Formula, true);
                 Assert.AreEqual("Hello, world!", sheet1.Cells[3, 3].Value);

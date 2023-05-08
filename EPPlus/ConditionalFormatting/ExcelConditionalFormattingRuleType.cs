@@ -189,23 +189,15 @@ namespace OfficeOpenXml.ConditionalFormatting
             {
                 return eExcelConditionalFormattingRuleType.ThreeIconSet;
             }
-            else
-            {
-                var v = node.Value;
 
-                if (v[0] == '3')
-                {
-                    return eExcelConditionalFormattingRuleType.ThreeIconSet;
-                }
-                else if (v[0] == '4')
-                {
-                    return eExcelConditionalFormattingRuleType.FourIconSet;
-                }
-                else
-                {
-                    return eExcelConditionalFormattingRuleType.FiveIconSet;
-                }
-            }
+            var v = node.Value;
+
+            return v[0] switch
+            {
+                '3' => eExcelConditionalFormattingRuleType.ThreeIconSet,
+                '4' => eExcelConditionalFormattingRuleType.FourIconSet,
+                _ => eExcelConditionalFormattingRuleType.FiveIconSet
+            };
         }
 
         /// <summary>
@@ -235,16 +227,16 @@ namespace OfficeOpenXml.ConditionalFormatting
 
             // We determine if it is "TwoColorScale" or "ThreeColorScale" by the
             // number of <cfvo> and <color> inside the <colorScale> node
-            if ((cfvoNodes == null) || (cfvoNodes.Count < 2) || (cfvoNodes.Count > 3)
-              || (colorNodes == null) || (colorNodes.Count < 2) || (colorNodes.Count > 3)
-              || (cfvoNodes.Count != colorNodes.Count))
+            if (cfvoNodes == null || cfvoNodes.Count < 2 || cfvoNodes.Count > 3
+              || colorNodes == null || colorNodes.Count < 2 || colorNodes.Count > 3
+              || cfvoNodes.Count != colorNodes.Count)
             {
                 throw new Exception(
                   ExcelConditionalFormattingConstants.Errors.WrongNumberCfvoColorNodes);
             }
 
             // Return the corresponding rule type (TwoColorScale or ThreeColorScale)
-            return (cfvoNodes.Count == 2)
+            return cfvoNodes.Count == 2
               ? eExcelConditionalFormattingRuleType.TwoColorScale
               : eExcelConditionalFormattingRuleType.ThreeColorScale;
         }
@@ -266,52 +258,44 @@ namespace OfficeOpenXml.ConditionalFormatting
           XmlNamespaceManager nameSpaceManager)
         {
             // Get @StdDev attribute
-            int? stdDev = ExcelConditionalFormattingHelper.GetAttributeIntNullable(
+            var stdDev = ExcelConditionalFormattingHelper.GetAttributeIntNullable(
               topNode,
               ExcelConditionalFormattingConstants.Attributes.StdDev);
 
-            if (stdDev > 0)
+            switch (stdDev)
             {
-                // @StdDev > "0" --> AboveStdDev
-                return eExcelConditionalFormattingRuleType.AboveStdDev;
-            }
-
-            if (stdDev < 0)
-            {
-                // @StdDev < "0" --> BelowStdDev
-                return eExcelConditionalFormattingRuleType.BelowStdDev;
+                case > 0:
+                    // @StdDev > "0" --> AboveStdDev
+                    return eExcelConditionalFormattingRuleType.AboveStdDev;
+                case < 0:
+                    // @StdDev < "0" --> BelowStdDev
+                    return eExcelConditionalFormattingRuleType.BelowStdDev;
             }
 
             // Get @AboveAverage attribute
-            bool? isAboveAverage = ExcelConditionalFormattingHelper.GetAttributeBoolNullable(
+            var isAboveAverage = ExcelConditionalFormattingHelper.GetAttributeBoolNullable(
               topNode,
               ExcelConditionalFormattingConstants.Attributes.AboveAverage);
 
             // Get @EqualAverage attribute
-            bool? isEqualAverage = ExcelConditionalFormattingHelper.GetAttributeBoolNullable(
+            var isEqualAverage = ExcelConditionalFormattingHelper.GetAttributeBoolNullable(
               topNode,
               ExcelConditionalFormattingConstants.Attributes.EqualAverage);
 
-            if ((isAboveAverage == null) || (isAboveAverage == true))
+            if (isAboveAverage is null or true)
             {
-                if (isEqualAverage == true)
-                {
+                return isEqualAverage == true ?
                     // @AboveAverage = "1"/null and @EqualAverage = "1" == AboveOrEqualAverage
-                    return eExcelConditionalFormattingRuleType.AboveOrEqualAverage;
-                }
-
-                // @AboveAverage = "1"/null and @EqualAverage = "0"/null == AboveAverage
-                return eExcelConditionalFormattingRuleType.AboveAverage;
+                    eExcelConditionalFormattingRuleType.AboveOrEqualAverage :
+                    // @AboveAverage = "1"/null and @EqualAverage = "0"/null == AboveAverage
+                    eExcelConditionalFormattingRuleType.AboveAverage;
             }
 
-            if (isEqualAverage == true)
-            {
+            return isEqualAverage == true ?
                 // @AboveAverage = "0" and @EqualAverage = "1" == BelowOrEqualAverage
-                return eExcelConditionalFormattingRuleType.BelowOrEqualAverage;
-            }
-
-            // @AboveAverage = "0" and @EqualAverage = "0"/null == BelowAverage
-            return eExcelConditionalFormattingRuleType.BelowAverage;
+                eExcelConditionalFormattingRuleType.BelowOrEqualAverage :
+                // @AboveAverage = "0" and @EqualAverage = "0"/null == BelowAverage
+                eExcelConditionalFormattingRuleType.BelowAverage;
         }
 
         /// <summary>
@@ -329,35 +313,29 @@ namespace OfficeOpenXml.ConditionalFormatting
           XmlNamespaceManager nameSpaceManager)
         {
             // Get @Bottom attribute
-            bool? isBottom = ExcelConditionalFormattingHelper.GetAttributeBoolNullable(
+            var isBottom = ExcelConditionalFormattingHelper.GetAttributeBoolNullable(
               topNode,
               ExcelConditionalFormattingConstants.Attributes.Bottom);
 
             // Get @Percent attribute
-            bool? isPercent = ExcelConditionalFormattingHelper.GetAttributeBoolNullable(
+            var isPercent = ExcelConditionalFormattingHelper.GetAttributeBoolNullable(
               topNode,
               ExcelConditionalFormattingConstants.Attributes.Percent);
 
             if (isBottom == true)
             {
-                if (isPercent == true)
-                {
+                return isPercent == true ?
                     // @Bottom = "1" and @Percent = "1" == BottomPercent
-                    return eExcelConditionalFormattingRuleType.BottomPercent;
-                }
-
-                // @Bottom = "1" and @Percent = "0"/null == Bottom
-                return eExcelConditionalFormattingRuleType.Bottom;
+                    eExcelConditionalFormattingRuleType.BottomPercent :
+                    // @Bottom = "1" and @Percent = "0"/null == Bottom
+                    eExcelConditionalFormattingRuleType.Bottom;
             }
 
-            if (isPercent == true)
-            {
+            return isPercent == true ?
                 // @Bottom = "0"/null and @Percent = "1" == TopPercent
-                return eExcelConditionalFormattingRuleType.TopPercent;
-            }
-
-            // @Bottom = "0"/null and @Percent = "0"/null == Top
-            return eExcelConditionalFormattingRuleType.Top;
+                eExcelConditionalFormattingRuleType.TopPercent :
+                // @Bottom = "0"/null and @Percent = "0"/null == Top
+                eExcelConditionalFormattingRuleType.Top;
         }
 
         /// <summary>
@@ -368,46 +346,25 @@ namespace OfficeOpenXml.ConditionalFormatting
           XmlNode topNode,
           XmlNamespaceManager nameSpaceManager)
         {
-            eExcelConditionalFormattingTimePeriodType timePeriod = ExcelConditionalFormattingTimePeriodType.GetTypeByAttribute(
+            var timePeriod = ExcelConditionalFormattingTimePeriodType.GetTypeByAttribute(
               ExcelConditionalFormattingHelper.GetAttributeString(
                 topNode,
                 ExcelConditionalFormattingConstants.Attributes.TimePeriod));
 
-            switch (timePeriod)
+            return timePeriod switch
             {
-                case eExcelConditionalFormattingTimePeriodType.Last7Days:
-                    return eExcelConditionalFormattingRuleType.Last7Days;
-
-                case eExcelConditionalFormattingTimePeriodType.LastMonth:
-                    return eExcelConditionalFormattingRuleType.LastMonth;
-
-                case eExcelConditionalFormattingTimePeriodType.LastWeek:
-                    return eExcelConditionalFormattingRuleType.LastWeek;
-
-                case eExcelConditionalFormattingTimePeriodType.NextMonth:
-                    return eExcelConditionalFormattingRuleType.NextMonth;
-
-                case eExcelConditionalFormattingTimePeriodType.NextWeek:
-                    return eExcelConditionalFormattingRuleType.NextWeek;
-
-                case eExcelConditionalFormattingTimePeriodType.ThisMonth:
-                    return eExcelConditionalFormattingRuleType.ThisMonth;
-
-                case eExcelConditionalFormattingTimePeriodType.ThisWeek:
-                    return eExcelConditionalFormattingRuleType.ThisWeek;
-
-                case eExcelConditionalFormattingTimePeriodType.Today:
-                    return eExcelConditionalFormattingRuleType.Today;
-
-                case eExcelConditionalFormattingTimePeriodType.Tomorrow:
-                    return eExcelConditionalFormattingRuleType.Tomorrow;
-
-                case eExcelConditionalFormattingTimePeriodType.Yesterday:
-                    return eExcelConditionalFormattingRuleType.Yesterday;
-            }
-
-            throw new Exception(
-              ExcelConditionalFormattingConstants.Errors.UnexistentTimePeriodTypeAttribute);
+                eExcelConditionalFormattingTimePeriodType.Last7Days => eExcelConditionalFormattingRuleType.Last7Days,
+                eExcelConditionalFormattingTimePeriodType.LastMonth => eExcelConditionalFormattingRuleType.LastMonth,
+                eExcelConditionalFormattingTimePeriodType.LastWeek => eExcelConditionalFormattingRuleType.LastWeek,
+                eExcelConditionalFormattingTimePeriodType.NextMonth => eExcelConditionalFormattingRuleType.NextMonth,
+                eExcelConditionalFormattingTimePeriodType.NextWeek => eExcelConditionalFormattingRuleType.NextWeek,
+                eExcelConditionalFormattingTimePeriodType.ThisMonth => eExcelConditionalFormattingRuleType.ThisMonth,
+                eExcelConditionalFormattingTimePeriodType.ThisWeek => eExcelConditionalFormattingRuleType.ThisWeek,
+                eExcelConditionalFormattingTimePeriodType.Today => eExcelConditionalFormattingRuleType.Today,
+                eExcelConditionalFormattingTimePeriodType.Tomorrow => eExcelConditionalFormattingRuleType.Tomorrow,
+                eExcelConditionalFormattingTimePeriodType.Yesterday => eExcelConditionalFormattingRuleType.Yesterday,
+                _ => throw new Exception(ExcelConditionalFormattingConstants.Errors.UnexistentTimePeriodTypeAttribute)
+            };
         }
 
         /// <summary>

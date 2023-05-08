@@ -58,10 +58,7 @@ namespace OfficeOpenXml.DataValidation.Formulas
         /// </summary>
         public T Value
         {
-            get
-            {
-                return _value;
-            }
+            get => _value;
             set
             {
                 State = FormulaState.Value;
@@ -74,6 +71,5 @@ namespace OfficeOpenXml.DataValidation.Formulas
         {
             Value = default(T);
         }
-
     }
 }

@@ -45,18 +45,18 @@ namespace OfficeOpenXml.Utils
         /// <returns></returns>
         public static byte[] CompressPart(byte[] part)
         {
-            MemoryStream ms = new MemoryStream(4096);
-            BinaryWriter br = new BinaryWriter(ms);
+            var ms = new MemoryStream(4096);
+            var br = new BinaryWriter(ms);
             br.Write((byte)1);
 
-            int compStart = 1;
-            int compEnd = 4098;
-            int decompStart = 0;
-            int decompEnd = part.Length < 4096 ? part.Length : 4096;
+            var compStart = 1;
+            var compEnd = 4098;
+            var decompStart = 0;
+            var decompEnd = part.Length < 4096 ? part.Length : 4096;
 
             while (decompStart < decompEnd && compStart < compEnd)
             {
-                byte[] chunk = CompressChunk(part, ref decompStart);
+                var chunk = CompressChunk(part, ref decompStart);
                 ushort header;
                 if (chunk == null || chunk.Length == 0)
                 {
@@ -64,7 +64,7 @@ namespace OfficeOpenXml.Utils
                 }
                 else
                 {
-                    header = (ushort)(((chunk.Length - 1) & 0xFFF));
+                    header = (ushort)((chunk.Length - 1) & 0xFFF);
                     header |= 0xB000;   //B=011 A=1
                     br.Write(header);
                     br.Write(chunk);
@@ -79,29 +79,29 @@ namespace OfficeOpenXml.Utils
         private static byte[] CompressChunk(byte[] buffer, ref int startPos)
         {
             var comprBuffer = new byte[4096];
-            int flagPos = 0;
-            int cPos = 1;
-            int dPos = startPos;
-            int dEnd = startPos + 4096 < buffer.Length ? startPos + 4096 : buffer.Length;
+            var flagPos = 0;
+            var cPos = 1;
+            var dPos = startPos;
+            var dEnd = startPos + 4096 < buffer.Length ? startPos + 4096 : buffer.Length;
             while (dPos < dEnd)
             {
                 byte tokenFlags = 0;
-                for (int i = 0; i < 8; i++)
+                for (var i = 0; i < 8; i++)
                 {
                     if (dPos - startPos > 0)
                     {
-                        int bestCandidate = -1;
-                        int bestLength = 0;
-                        int candidate = dPos - 1;
-                        int bitCount = GetLengthBits(dPos - startPos);
-                        int bits = (16 - bitCount);
-                        ushort lengthMask = (ushort)((0xFFFF) >> bits);
+                        var bestCandidate = -1;
+                        var bestLength = 0;
+                        var candidate = dPos - 1;
+                        var bitCount = GetLengthBits(dPos - startPos);
+                        var bits = 16 - bitCount;
+                        var lengthMask = (ushort)(0xFFFF >> bits);
 
                         while (candidate >= startPos)
                         {
                             if (buffer[candidate] == buffer[dPos])
                             {
-                                int length = 1;
+                                var length = 1;
 
                                 while (buffer.Length > dPos + length && buffer[candidate + length] == buffer[dPos + length] && length < lengthMask && dPos + length < dEnd)
                                 {
@@ -123,8 +123,8 @@ namespace OfficeOpenXml.Utils
                         {
                             tokenFlags |= (byte)(1 << i);
 
-                            UInt16 offsetMask = (ushort)~lengthMask;
-                            ushort token = (ushort)(((ushort)(dPos - (bestCandidate + 1))) << (bitCount) | (ushort)(bestLength - 3));
+                            var offsetMask = (ushort)~lengthMask;
+                            var token = (ushort)((ushort)(dPos - (bestCandidate + 1)) << bitCount | (ushort)(bestLength - 3));
                             Array.Copy(BitConverter.GetBytes(token), 0, comprBuffer, cPos, 2);
                             dPos = dPos + bestLength;
                             cPos += 2;
@@ -168,8 +168,8 @@ namespace OfficeOpenXml.Utils
             {
                 return null;
             }
-            MemoryStream ms = new MemoryStream(4096);
-            int compressPos = startPos + 1;
+            var ms = new MemoryStream(4096);
+            var compressPos = startPos + 1;
             while (compressPos < part.Length - 1)
             {
                 DecompressChunk(ms, part, ref compressPos);
@@ -178,23 +178,23 @@ namespace OfficeOpenXml.Utils
         }
         private static void DecompressChunk(MemoryStream ms, byte[] compBuffer, ref int pos)
         {
-            ushort header = BitConverter.ToUInt16(compBuffer, pos);
-            int decomprPos = 0;
-            byte[] buffer = new byte[4198]; //Add an extra 100 byte. Some workbooks have overflowing worksheets.
-            int size = (int)(header & 0xFFF) + 3;
-            int endPos = pos + size;
-            int a = (int)(header & 0x7000) >> 12;
-            int b = (int)(header & 0x8000) >> 15;
+            var header = BitConverter.ToUInt16(compBuffer, pos);
+            var decomprPos = 0;
+            var buffer = new byte[4198]; //Add an extra 100 byte. Some workbooks have overflowing worksheets.
+            var size = (int)(header & 0xFFF) + 3;
+            var endPos = pos + size;
+            var a = (int)(header & 0x7000) >> 12;
+            var b = (int)(header & 0x8000) >> 15;
             pos += 2;
             if (b == 1) //Compressed chunk
             {
                 while (pos < compBuffer.Length && pos < endPos)
                 {
                     //Decompress token
-                    byte token = compBuffer[pos++];
+                    var token = compBuffer[pos++];
                     if (pos >= endPos)
                         break;
-                    for (int i = 0; i < 8; i++)
+                    for (var i = 0; i < 8; i++)
                     {
                         //Literal token
                         if ((token & (1 << i)) == 0)
@@ -205,13 +205,13 @@ namespace OfficeOpenXml.Utils
                         else //copy token
                         {
                             var t = BitConverter.ToUInt16(compBuffer, pos);
-                            int bitCount = GetLengthBits(decomprPos);
-                            int bits = (16 - bitCount);
-                            ushort lengthMask = (ushort)((0xFFFF) >> bits);
-                            UInt16 offsetMask = (ushort)~lengthMask;
+                            var bitCount = GetLengthBits(decomprPos);
+                            var bits = 16 - bitCount;
+                            var lengthMask = (ushort)(0xFFFF >> bits);
+                            var offsetMask = (ushort)~lengthMask;
                             var length = (lengthMask & t) + 3;
-                            var offset = (offsetMask & t) >> (bitCount);
-                            int source = decomprPos - offset - 1;
+                            var offset = (offsetMask & t) >> bitCount;
+                            var source = decomprPos - offset - 1;
                             if (decomprPos + length >= buffer.Length)
                             {
                                 // Be lenient on decompression, so extend our decompression
@@ -227,7 +227,7 @@ namespace OfficeOpenXml.Utils
                             // We still should decompress the token into this buffer
                             // in case a later token needs to use the bytes we're
                             // about to decompress.
-                            for (int c = 0; c < length; c++)
+                            for (var c = 0; c < length; c++)
                             {
                                 ms.WriteByte(buffer[source]); //Must copy byte-wise because copytokens can overlap compressed buffer.
                                 buffer[decomprPos++] = buffer[source++];
@@ -242,12 +242,11 @@ namespace OfficeOpenXml.Utils
                 }
                 return;
             }
-            else //Raw chunk
-            {
-                ms.Write(compBuffer, pos, size);
-                pos += size;
-                return;
-            }
+
+            //Raw chunk
+            ms.Write(compBuffer, pos, size);
+            pos += size;
+            return;
         }
         private static int GetLengthBits(int decompPos)
         {
@@ -255,43 +254,41 @@ namespace OfficeOpenXml.Utils
             {
                 return 12;
             }
-            else if (decompPos <= 32)
+
+            if (decompPos <= 32)
             {
                 return 11;
             }
-            else if (decompPos <= 64)
+            if (decompPos <= 64)
             {
                 return 10;
             }
-            else if (decompPos <= 128)
+            if (decompPos <= 128)
             {
                 return 9;
             }
-            else if (decompPos <= 256)
+            if (decompPos <= 256)
             {
                 return 8;
             }
-            else if (decompPos <= 512)
+            if (decompPos <= 512)
             {
                 return 7;
             }
-            else if (decompPos <= 1024)
+            if (decompPos <= 1024)
             {
                 return 6;
             }
-            else if (decompPos <= 2048)
+            if (decompPos <= 2048)
             {
                 return 5;
             }
-            else if (decompPos <= 4096)
+            if (decompPos <= 4096)
             {
                 return 4;
             }
-            else
-            {
-                //We should never end up here, but if so this is the formula to calculate the bits...
-                return 12 - (int)Math.Truncate(Math.Log(decompPos - 1 >> 4, 2) + 1);
-            }
+            //We should never end up here, but if so this is the formula to calculate the bits...
+            return 12 - (int)Math.Truncate(Math.Log(decompPos - 1 >> 4, 2) + 1);
         }
         #endregion
     }

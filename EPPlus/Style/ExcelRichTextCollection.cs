@@ -80,13 +80,8 @@ namespace OfficeOpenXml.Style
         /// <summary>
         /// Items in the list
         /// </summary>
-        public int Count
-        {
-            get
-            {
-                return _list.Count;
-            }
-        }
+        public int Count => _list.Count;
+
         /// <summary>
         /// Add a rich text string
         /// </summary>
@@ -127,7 +122,7 @@ namespace OfficeOpenXml.Style
             var rt = new ExcelRichText(NameSpaceManager, node, this);
             if (_list.Count > 0)
             {
-                ExcelRichText prevItem = _list[index < _list.Count ? index : _list.Count - 1];
+                var prevItem = _list[index < _list.Count ? index : _list.Count - 1];
                 rt.FontName = prevItem.FontName;
                 rt.Size = prevItem.Size;
                 if (prevItem.Color == SKColors.Empty)
@@ -177,7 +172,7 @@ namespace OfficeOpenXml.Style
                 _cells.Worksheet._flags.SetFlagValue(_cells._fromRow, _cells._fromCol, true, CellFlags.RichText);
                 var s = _cells.Worksheet.GetStyleInner(_cells._fromRow, _cells._fromCol);
                 //var fnt = cell.Style.Font;
-                var fnt = _cells.Worksheet.Workbook.Styles.GetStyleObject(s, _cells.Worksheet.PositionID, ExcelAddressBase.GetAddress(_cells._fromRow, _cells._fromCol)).Font;
+                var fnt = _cells.Worksheet.Workbook.Styles.GetStyleObject(s, _cells.Worksheet.PositionID, ExcelCellBase.GetAddress(_cells._fromRow, _cells._fromCol)).Font;
                 this[0].PreserveSpace = true;
                 this[0].Bold = fnt.Bold;
                 this[0].FontName = fnt.Name;
@@ -238,7 +233,7 @@ namespace OfficeOpenXml.Style
         {
             get
             {
-                StringBuilder sb = new StringBuilder();
+                var sb = new StringBuilder();
                 foreach (var item in _list)
                 {
                     sb.Append(item.Text);
@@ -254,7 +249,7 @@ namespace OfficeOpenXml.Style
                 else
                 {
                     this[0].Text = value;
-                    for (int ix = 1; ix < Count; ix++)
+                    for (var ix = 1; ix < Count; ix++)
                     {
                         RemoveAt(ix);
                     }

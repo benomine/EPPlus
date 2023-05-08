@@ -92,7 +92,7 @@ namespace OfficeOpenXml.FormulaParsing.ExcelUtilities
                 Worksheet = sheet,
                 FromRow = adr._fromRow,
                 FromCol = adr._fromCol,
-                ToRow = (dim != null && adr._toRow > dim.Row) ? dim.Row : adr._toRow,
+                ToRow = dim != null && adr._toRow > dim.Row ? dim.Row : adr._toRow,
                 ToCol = adr._toCol
             };
 

@@ -51,27 +51,19 @@ namespace OfficeOpenXml.Style
         /// <summary>
         /// The theme color
         /// </summary>
-        public string Theme
-        {
-            get
-            {
-                return GetSource().Theme;
-            }
-        }
+        public string Theme => GetSource().Theme;
+
         /// <summary>
         /// The tint value
         /// </summary>
         public decimal Tint
         {
-            get
-            {
-                return GetSource().Tint;
-            }
+            get => GetSource().Tint;
             set
             {
                 if (value > 1 || value < -1)
                 {
-                    throw (new ArgumentOutOfRangeException("Value must be between -1 and 1"));
+                    throw new ArgumentOutOfRangeException("Value must be between -1 and 1");
                 }
                 _ChangedEvent(this, new StyleChangeEventArgs(_cls, eStyleProperty.Tint, value, _positionID, _address));
             }
@@ -81,28 +73,16 @@ namespace OfficeOpenXml.Style
         /// </summary>
         public string Rgb
         {
-            get
-            {
-                return GetSource().Rgb;
-            }
-            internal set
-            {
-                _ChangedEvent(this, new StyleChangeEventArgs(_cls, eStyleProperty.Color, value, _positionID, _address));
-            }
+            get => GetSource().Rgb;
+            internal set => _ChangedEvent(this, new StyleChangeEventArgs(_cls, eStyleProperty.Color, value, _positionID, _address));
         }
         /// <summary>
         /// The indexed color number.
         /// </summary>
         public int Indexed
         {
-            get
-            {
-                return GetSource().Indexed;
-            }
-            set
-            {
-                _ChangedEvent(this, new StyleChangeEventArgs(_cls, eStyleProperty.IndexedColor, value, _positionID, _address));
-            }
+            get => GetSource().Indexed;
+            set => _ChangedEvent(this, new StyleChangeEventArgs(_cls, eStyleProperty.IndexedColor, value, _positionID, _address));
         }
         /// <summary>
         /// Set the color of the object
@@ -124,17 +104,12 @@ namespace OfficeOpenXml.Style
             if (alpha < 0 || red < 0 || green < 0 ||blue < 0 ||
                alpha > 255 || red > 255 || green > 255 || blue > 255)
             {
-                throw (new ArgumentException("Argument range must be from 0 to 255"));
+                throw new ArgumentException("Argument range must be from 0 to 255");
             }
             Rgb = alpha.ToString("X2") + red.ToString("X2") + green.ToString("X2") + blue.ToString("X2");
         }
-        internal override string Id
-        {
-            get
-            {
-                return Theme + Tint + Rgb + Indexed;
-            }
-        }
+        internal override string Id => Theme + Tint + Rgb + Indexed;
+
         private ExcelColorXml GetSource()
         {
             Index = _parent.Index < 0 ? 0 : _parent.Index;
@@ -157,7 +132,7 @@ namespace OfficeOpenXml.Style
                 case eStyleClass.BorderDiagonal:
                     return _styles.Borders[Index].Diagonal.Color;
                 default:
-                    throw (new Exception("Invalid style-class for Color"));
+                    throw new Exception("Invalid style-class for Color");
             }
         }
         internal override void SetIndex(int index)
@@ -180,8 +155,8 @@ namespace OfficeOpenXml.Style
         public string LookupColor(ExcelColor theColor)
         {
             //Thanks to neaves for contributing this method.
-            int iTint = 0;
-            string translatedRGB = "";
+            var iTint = 0;
+            var translatedRGB = "";
 
             // reference extracted from ECMA-376, Part 4, Section 3.8.26 or 18.8.27 SE Part 1
             string[] rgbLookup =
@@ -252,7 +227,7 @@ namespace OfficeOpenXml.Style
                 "#FF333333", // 63
             };
 
-            if ((0 <= theColor.Indexed) && (rgbLookup.Length > theColor.Indexed))
+            if (0 <= theColor.Indexed && rgbLookup.Length > theColor.Indexed)
             {
                 // coloring by pre-set color codes
                 translatedRGB = rgbLookup[theColor.Indexed];
@@ -265,8 +240,8 @@ namespace OfficeOpenXml.Style
             else
             {
                 // coloring by shades of grey (-1 -> 0)
-                iTint = ((int)(theColor.Tint * 160) + 0x80);
-                translatedRGB = ((int)(Math.Round(theColor.Tint * -512))).ToString("X");
+                iTint = (int)(theColor.Tint * 160) + 0x80;
+                translatedRGB = ((int)Math.Round(theColor.Tint * -512)).ToString("X");
                 translatedRGB = "#FF" + translatedRGB + translatedRGB + translatedRGB;
             }
 

@@ -47,10 +47,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 
         private readonly IExpressionCompiler _expressionCompiler;
 
-        public override bool IsGroupedExpression
-        {
-            get { return false; }
-        }
+        public override bool IsGroupedExpression => false;
 
         public override Expression PrepareForNextChild()
         {

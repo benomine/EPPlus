@@ -51,13 +51,7 @@ namespace OfficeOpenXml.Sparkline
         /// <summary>
         /// Number of sparklines in the collection
         /// </summary>
-        public int Count
-        {
-            get
-            {
-                return _lst.Count;
-            }
-        }
+        public int Count => _lst.Count;
 
         private void LoadSparklines()
         {
@@ -72,13 +66,7 @@ namespace OfficeOpenXml.Sparkline
         /// </summary>
         /// <param name="index">The position of the Sparklinegroup. 0-base</param>
         /// <returns></returns>
-        public ExcelSparkline this[int index]
-        {
-            get
-            {
-                return (_lst[index]);
-            }
-        }
+        public ExcelSparkline this[int index] => _lst[index];
 
         public IEnumerator<ExcelSparkline> GetEnumerator()
         {

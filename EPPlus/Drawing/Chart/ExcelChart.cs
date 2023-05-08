@@ -418,7 +418,7 @@ namespace OfficeOpenXml.Drawing.Chart
         }
         private void InitChartLoad(ExcelDrawings drawings, XmlNode chartNode)
         {
-            bool isPivot = false;
+            var isPivot = false;
             Init(drawings, chartNode);
             _chartSeries = new ExcelChartSeries(this, drawings.NameSpaceManager, _chartNode, isPivot);
             LoadAxis();
@@ -467,7 +467,7 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             if (topChart == null)
             {
-                XmlElement graphFrame = TopNode.OwnerDocument.CreateElement("graphicFrame", ExcelPackage.schemaSheetDrawings);
+                var graphFrame = TopNode.OwnerDocument.CreateElement("graphicFrame", ExcelPackage.schemaSheetDrawings);
                 graphFrame.SetAttribute("macro", "");
                 TopNode.AppendChild(graphFrame);
                 graphFrame.InnerXml = string.Format("<xdr:nvGraphicFramePr><xdr:cNvPr id=\"{0}\" name=\"Chart 1\" /><xdr:cNvGraphicFramePr /></xdr:nvGraphicFramePr><xdr:xfrm><a:off x=\"0\" y=\"0\" /> <a:ext cx=\"0\" cy=\"0\" /></xdr:xfrm><a:graphic><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"><c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"rId1\" />   </a:graphicData>  </a:graphic>", _id);
@@ -482,13 +482,13 @@ namespace OfficeOpenXml.Drawing.Chart
 
                 Part = package.CreatePart(UriChart, "application/vnd.openxmlformats-officedocument.drawingml.chart+xml", _drawings._package.Compression);
 
-                StreamWriter streamChart = new StreamWriter(Part.GetStream(FileMode.Create, FileAccess.Write));
+                var streamChart = new StreamWriter(Part.GetStream(FileMode.Create, FileAccess.Write));
                 ChartXml.Save(streamChart);
                 streamChart.Close();
 
                 package.Flush();
 
-                var chartRelation = drawings.Part.CreateRelationship(UriHelper.GetRelativeUri(drawings.UriDrawing, UriChart), Packaging.TargetMode.Internal, ExcelPackage.schemaRelationships + "/chart");
+                var chartRelation = drawings.Part.CreateRelationship(UriHelper.GetRelativeUri(drawings.UriDrawing, UriChart), TargetMode.Internal, ExcelPackage.schemaRelationships + "/chart");
                 graphFrame.SelectSingleNode("a:graphic/a:graphicData/c:chart", NameSpaceManager).Attributes["r:id"].Value = chartRelation.Id;
                 package.Flush();
                 _chartNode = ChartXml.SelectSingleNode(string.Format("c:chartSpace/c:chart/c:plotArea/{0}", GetChartNodeText()), NameSpaceManager);
@@ -501,25 +501,25 @@ namespace OfficeOpenXml.Drawing.Chart
                 UriChart = topChart.UriChart;
                 _axis = topChart._axis;
 
-                XmlNode preNode = _plotArea.ChartTypes[_plotArea.ChartTypes.Count - 1].ChartNode;
+                var preNode = _plotArea.ChartTypes[_plotArea.ChartTypes.Count - 1].ChartNode;
                 _chartNode = ((XmlDocument)ChartXml).CreateElement(GetChartNodeText(), ExcelPackage.schemaChart);
                 preNode.ParentNode.InsertAfter(_chartNode, preNode);
                 if (topChart.Axis.Length == 0)
                 {
                     AddAxis();
                 }
-                string serieXML = GetChartSerieStartXml(type, int.Parse(topChart.Axis[0].Id), int.Parse(topChart.Axis[1].Id), topChart.Axis.Length>2 ? int.Parse(topChart.Axis[2].Id) : -1);
+                var serieXML = GetChartSerieStartXml(type, int.Parse(topChart.Axis[0].Id), int.Parse(topChart.Axis[1].Id), topChart.Axis.Length>2 ? int.Parse(topChart.Axis[2].Id) : -1);
                 _chartNode.InnerXml = serieXML;
             }
             GetPositionSize();
         }
         private void LoadAxis()
         {
-            XmlNodeList nl = _chartNode.SelectNodes("c:axId", NameSpaceManager);
-            List<ExcelChartAxis> l = new List<ExcelChartAxis>();
+            var nl = _chartNode.SelectNodes("c:axId", NameSpaceManager);
+            var l = new List<ExcelChartAxis>();
             foreach (XmlNode node in nl)
             {
-                string id = node.Attributes["val"].Value;
+                var id = node.Attributes["val"].Value;
                 var axNode = ChartXml.SelectNodes(rootPath + string.Format("/*/c:axId[@val=\"{0}\"]", id), NameSpaceManager);
                 if (axNode != null && axNode.Count>1)
                 {
@@ -527,8 +527,8 @@ namespace OfficeOpenXml.Drawing.Chart
                     {
                         if (axn.ParentNode.LocalName.EndsWith("Ax"))
                         {
-                            XmlNode axisNode = axNode[1].ParentNode;
-                            ExcelChartAxis ax = new ExcelChartAxis(NameSpaceManager, axisNode);
+                            var axisNode = axNode[1].ParentNode;
+                            var ax = new ExcelChartAxis(NameSpaceManager, axisNode);
                             l.Add(ax);
                         }
                     }
@@ -550,27 +550,23 @@ namespace OfficeOpenXml.Drawing.Chart
                     {
                         return eChartType.AreaStacked3D;
                     }
-                    else if (Grouping == eGrouping.PercentStacked)
+
+                    if (Grouping == eGrouping.PercentStacked)
                     {
                         return eChartType.AreaStacked1003D;
                     }
-                    else
-                    {
-                        return eChartType.Area3D;
-                    }
+                    return eChartType.Area3D;
                 case "areaChart":
                     if (Grouping == eGrouping.Stacked)
                     {
                         return eChartType.AreaStacked;
                     }
-                    else if (Grouping == eGrouping.PercentStacked)
+
+                    if (Grouping == eGrouping.PercentStacked)
                     {
                         return eChartType.AreaStacked100;
                     }
-                    else
-                    {
-                        return eChartType.Area;
-                    }
+                    return eChartType.Area;
                 case "doughnutChart":
                     return eChartType.Doughnut;
                 case "pie3DChart":
@@ -593,17 +589,17 @@ namespace OfficeOpenXml.Drawing.Chart
         #region "Xml init Functions"
         private string ChartStartXml(eChartType type)
         {
-            StringBuilder xml = new StringBuilder();
-            int axID = 1;
-            int xAxID = 2;
-            int serAxID = IsTypeSurface() ? 3 : -1;
+            var xml = new StringBuilder();
+            var axID = 1;
+            var xAxID = 2;
+            var serAxID = IsTypeSurface() ? 3 : -1;
 
             xml.Append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
             xml.AppendFormat("<c:chartSpace xmlns:c=\"{0}\" xmlns:a=\"{1}\" xmlns:r=\"{2}\">", ExcelPackage.schemaChart, ExcelPackage.schemaDrawings, ExcelPackage.schemaRelationships);
             xml.Append("<c:chart>");
             xml.AppendFormat("{0}{1}<c:plotArea><c:layout/>", AddPerspectiveXml(type), AddSurfaceXml(type));
 
-            string chartNodeText = GetChartNodeText();
+            var chartNodeText = GetChartNodeText();
             xml.AppendFormat("<{0}>", chartNodeText);
             xml.Append(GetChartSerieStartXml(type, axID, xAxID, serAxID));
             xml.AppendFormat("</{0}>", chartNodeText);
@@ -633,7 +629,7 @@ namespace OfficeOpenXml.Drawing.Chart
 
         private string GetChartSerieStartXml(eChartType type, int axID, int xAxID, int serAxID)
         {
-            StringBuilder xml = new StringBuilder();
+            var xml = new StringBuilder();
 
             xml.Append(AddScatterType(type));
             xml.Append(AddRadarType(type));
@@ -667,15 +663,11 @@ namespace OfficeOpenXml.Drawing.Chart
                 {
                     return string.Format("<c:axId val=\"{0}\"/><c:axId val=\"{1}\"/><c:axId val=\"{2}\"/>", axID, xAxID, serAxID);
                 }
-                else
-                {
-                    return string.Format("<c:axId val=\"{0}\"/><c:axId val=\"{1}\"/>", axID, xAxID);
-                }
+
+                return string.Format("<c:axId val=\"{0}\"/><c:axId val=\"{1}\"/>", axID, xAxID);
             }
-            else
-            {
-                return "";
-            }
+
+            return "";
         }
         private string AddAxType()
         {
@@ -703,10 +695,8 @@ namespace OfficeOpenXml.Drawing.Chart
             {
                 return "<c:scatterStyle val=\"\" />";
             }
-            else
-            {
-                return "";
-            }
+
+            return "";
         }
         private string AddRadarType(eChartType type)
         {
@@ -716,10 +706,8 @@ namespace OfficeOpenXml.Drawing.Chart
             {
                 return "<c:radarStyle val=\"\" />";
             }
-            else
-            {
-                return "";
-            }
+
+            return "";
         }
         private string AddGrouping()
         {
@@ -727,10 +715,8 @@ namespace OfficeOpenXml.Drawing.Chart
             {
                 return "<c:grouping val=\"standard\"/>";
             }
-            else
-            {
-                return "";
-            }
+
+            return "";
         }
         private string AddHoleSize(eChartType type)
         {
@@ -739,10 +725,8 @@ namespace OfficeOpenXml.Drawing.Chart
             {
                 return "<c:holeSize val=\"50\" />";
             }
-            else
-            {
-                return "";
-            }
+
+            return "";
         }
         private string AddFirstSliceAng(eChartType type)
         {
@@ -751,10 +735,8 @@ namespace OfficeOpenXml.Drawing.Chart
             {
                 return "<c:firstSliceAng val=\"0\" />";
             }
-            else
-            {
-                return "";
-            }
+
+            return "";
         }
         private string AddVaryColors()
         {
@@ -762,10 +744,8 @@ namespace OfficeOpenXml.Drawing.Chart
             {
                 return "<c:varyColors val=\"1\" />";
             }
-            else
-            {
-                return "<c:varyColors val=\"0\" />";
-            }
+
+            return "<c:varyColors val=\"0\" />";
         }
         private string AddHasMarker(eChartType type)
         {
@@ -775,10 +755,8 @@ namespace OfficeOpenXml.Drawing.Chart
             {
                 return "<c:marker val=\"1\"/>";
             }
-            else
-            {
-                return "";
-            }
+
+            return "";
         }
         private string AddShape(eChartType type)
         {
@@ -786,10 +764,8 @@ namespace OfficeOpenXml.Drawing.Chart
             {
                 return "<c:shape val=\"box\" />";
             }
-            else
-            {
-                return "";
-            }
+
+            return "";
         }
         private string AddBarDir(eChartType type)
         {
@@ -797,10 +773,8 @@ namespace OfficeOpenXml.Drawing.Chart
             {
                 return "<c:barDir val=\"col\" />";
             }
-            else
-            {
-                return "";
-            }
+
+            return "";
         }
         private string AddPerspectiveXml(eChartType type)
         {
@@ -808,10 +782,8 @@ namespace OfficeOpenXml.Drawing.Chart
             {
                 return "<c:view3D><c:perspective val=\"30\" /></c:view3D>";
             }
-            else
-            {
-                return "";
-            }
+
+            return "";
         }
         private string AddSurfaceXml(eChartType type)
         {
@@ -819,10 +791,8 @@ namespace OfficeOpenXml.Drawing.Chart
             {
                 return AddSurfacePart("floor") + AddSurfacePart("sideWall") + AddSurfacePart("backWall");
             }
-            else
-            {
-                return "";
-            }
+
+            return "";
         }
 
         private string AddSurfacePart(string name)
@@ -1089,7 +1059,7 @@ namespace OfficeOpenXml.Drawing.Chart
                 case eChartType.StockHLC:
                     return "c:stockChart";
                 default:
-                    throw (new NotImplementedException("Chart type not implemented"));
+                    throw new NotImplementedException("Chart type not implemented");
             }
         }
         /// <summary>
@@ -1097,7 +1067,7 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         internal void AddAxis()
         {
-            XmlElement catAx = ChartXml.CreateElement(string.Format("c:{0}", AddAxType()), ExcelPackage.schemaChart);
+            var catAx = ChartXml.CreateElement(string.Format("c:{0}", AddAxType()), ExcelPackage.schemaChart);
             int axID;
             if (_axis.Length == 0)
             {
@@ -1106,12 +1076,12 @@ namespace OfficeOpenXml.Drawing.Chart
             }
             else
             {
-                _axis[0].TopNode.ParentNode.InsertAfter(catAx, _axis[_axis.Length-1].TopNode);
+                _axis[0].TopNode.ParentNode.InsertAfter(catAx, _axis[^1].TopNode);
                 axID = int.Parse(_axis[0].Id) < int.Parse(_axis[1].Id) ? int.Parse(_axis[1].Id) + 1 : int.Parse(_axis[0].Id) + 1;
             }
 
 
-            XmlElement valAx = ChartXml.CreateElement("c:valAx", ExcelPackage.schemaChart);
+            var valAx = ChartXml.CreateElement("c:valAx", ExcelPackage.schemaChart);
             catAx.ParentNode.InsertAfter(valAx, catAx);
 
             if (_axis.Length == 0)
@@ -1131,13 +1101,13 @@ namespace OfficeOpenXml.Drawing.Chart
             }
             else
             {
-                ExcelChartAxis[] newAxis = new ExcelChartAxis[_axis.Length + 2];
+                var newAxis = new ExcelChartAxis[_axis.Length + 2];
                 Array.Copy(_axis, newAxis, _axis.Length);
                 _axis = newAxis;
             }
 
-            _axis[_axis.Length - 2] = new ExcelChartAxis(NameSpaceManager, catAx);
-            _axis[_axis.Length - 1] = new ExcelChartAxis(NameSpaceManager, valAx);
+            _axis[^2] = new ExcelChartAxis(NameSpaceManager, catAx);
+            _axis[^1] = new ExcelChartAxis(NameSpaceManager, valAx);
             foreach (var chart in _plotArea.ChartTypes)
             {
                 chart._axis = _axis;
@@ -1145,7 +1115,7 @@ namespace OfficeOpenXml.Drawing.Chart
         }
         internal void RemoveSecondaryAxis()
         {
-            throw (new NotImplementedException("Not yet implemented"));
+            throw new NotImplementedException("Not yet implemented");
         }
         #region "Properties"
         /// <summary>
@@ -1160,48 +1130,27 @@ namespace OfficeOpenXml.Drawing.Chart
         /// Type of chart
         /// </summary>
         public eChartType ChartType { get; internal set; }
-        internal protected XmlNode _chartNode = null;
-        internal XmlNode ChartNode
-        {
-            get
-            {
-                return _chartNode;
-            }
-        }
+
+        protected XmlNode _chartNode = null;
+        internal XmlNode ChartNode => _chartNode;
+
         /// <summary>
         /// Titel of the chart
         /// </summary>
-        public ExcelChartTitle Title
-        {
-            get
-            {
-                if (_title == null)
-                {
-                    _title = new ExcelChartTitle(NameSpaceManager, ChartXml.SelectSingleNode("c:chartSpace/c:chart", NameSpaceManager));
-                }
-                return _title;
-            }
-        }
+        public ExcelChartTitle Title =>
+            _title ??= new ExcelChartTitle(NameSpaceManager,
+                ChartXml.SelectSingleNode("c:chartSpace/c:chart", NameSpaceManager));
+
         /// <summary>
         /// Chart series
         /// </summary>
-        public virtual ExcelChartSeries Series
-        {
-            get
-            {
-                return _chartSeries;
-            }
-        }
+        public virtual ExcelChartSeries Series => _chartSeries;
+
         /// <summary>
         /// An array containg all axis of all Charttypes
         /// </summary>
-        public ExcelChartAxis[] Axis
-        {
-            get
-            {
-                return _axis;
-            }
-        }
+        public ExcelChartAxis[] Axis => _axis;
+
         /// <summary>
         /// The XAxis
         /// </summary>
@@ -1225,10 +1174,7 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public bool UseSecondaryAxis
         {
-            get
-            {
-                return _secondaryAxis;
-            }
+            get => _secondaryAxis;
             set
             {
                 if (_secondaryAxis != value)
@@ -1237,11 +1183,12 @@ namespace OfficeOpenXml.Drawing.Chart
                     {
                         if (IsTypePieDoughnut())
                         {
-                            throw (new Exception("Pie charts do not support axis"));
+                            throw new Exception("Pie charts do not support axis");
                         }
-                        else if (HasPrimaryAxis() == false)
+
+                        if (HasPrimaryAxis() == false)
                         {
-                            throw (new Exception("Can't set to secondary axis when no serie uses the primary axis"));
+                            throw new Exception("Can't set to secondary axis when no serie uses the primary axis");
                         }
                         if (Axis.Length == 2)
                         {
@@ -1272,40 +1219,32 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             get
             {
-                XmlNode node = ChartXml.SelectSingleNode("c:chartSpace/c:style/@val", NameSpaceManager);
+                var node = ChartXml.SelectSingleNode("c:chartSpace/c:style/@val", NameSpaceManager);
                 if (node == null)
                 {
                     return eChartStyle.None;
                 }
-                else
+
+                if (int.TryParse(node.Value, NumberStyles.Number, CultureInfo.InvariantCulture, out var v))
                 {
-                    int v;
-                    if (int.TryParse(node.Value, NumberStyles.Number, CultureInfo.InvariantCulture, out v))
-                    {
-                        return (eChartStyle)v;
-                    }
-                    else
-                    {
-                        return eChartStyle.None;
-                    }
+                    return (eChartStyle)v;
                 }
+
+                return eChartStyle.None;
 
             }
             set
             {
                 if (value == eChartStyle.None)
                 {
-                    XmlElement element = ChartXml.SelectSingleNode("c:chartSpace/c:style", NameSpaceManager) as XmlElement;
-                    if (element != null)
-                    {
-                        element.ParentNode.RemoveChild(element);
-                    }
+                    var element = ChartXml.SelectSingleNode("c:chartSpace/c:style", NameSpaceManager) as XmlElement;
+                    element?.ParentNode.RemoveChild(element);
                 }
                 else
                 {
-                    XmlElement element = ChartXml.CreateElement("c:style", ExcelPackage.schemaChart);
+                    var element = ChartXml.CreateElement("c:style", ExcelPackage.schemaChart);
                     element.SetAttribute("val", ((int)value).ToString());
-                    XmlElement parent = ChartXml.SelectSingleNode("c:chartSpace", NameSpaceManager) as XmlElement;
+                    var parent = ChartXml.SelectSingleNode("c:chartSpace", NameSpaceManager) as XmlElement;
                     parent.InsertBefore(element, parent.SelectSingleNode("c:chart", NameSpaceManager));
                 }
             }
@@ -1316,14 +1255,8 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public bool RoundedCorners
         {
-            get
-            {
-                return _chartXmlHelper.GetXmlNodeBool(_roundedCornersPath);
-            }
-            set
-            {
-                _chartXmlHelper.SetXmlNodeBool(_roundedCornersPath, value);
-            }
+            get => _chartXmlHelper.GetXmlNodeBool(_roundedCornersPath);
+            set => _chartXmlHelper.SetXmlNodeBool(_roundedCornersPath, value);
         }
         const string _plotVisibleOnlyPath = "../../c:plotVisOnly/@val";
         /// <summary>
@@ -1331,16 +1264,12 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public bool ShowHiddenData
         {
-            get
-            {
+            get =>
                 //!!Inverted value!!
-                return !_chartXmlHelper.GetXmlNodeBool(_plotVisibleOnlyPath);
-            }
-            set
-            {
+                !_chartXmlHelper.GetXmlNodeBool(_plotVisibleOnlyPath);
+            set =>
                 //!!Inverted value!!
                 _chartXmlHelper.SetXmlNodeBool(_plotVisibleOnlyPath, !value);
-            }
         }
         const string _displayBlanksAsPath = "../../c:dispBlanksAs/@val";
         /// <summary>
@@ -1350,20 +1279,15 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             get
             {
-                string v = _chartXmlHelper.GetXmlNodeString(_displayBlanksAsPath);
+                var v = _chartXmlHelper.GetXmlNodeString(_displayBlanksAsPath);
                 if (string.IsNullOrEmpty(v))
                 {
                     return eDisplayBlanksAs.Zero; //Issue 14715 Changed in Office 2010-?
                 }
-                else
-                {
-                    return (eDisplayBlanksAs)Enum.Parse(typeof(eDisplayBlanksAs), v, true);
-                }
+
+                return (eDisplayBlanksAs)Enum.Parse(typeof(eDisplayBlanksAs), v, true);
             }
-            set
-            {
-                _chartSeries.SetXmlNodeString(_displayBlanksAsPath, value.ToString().ToLower(CultureInfo.InvariantCulture));
-            }
+            set => _chartSeries.SetXmlNodeString(_displayBlanksAsPath, value.ToString().ToLower(CultureInfo.InvariantCulture));
         }
         const string _showDLblsOverMax = "../../c:showDLblsOverMax/@val";
         /// <summary>
@@ -1371,14 +1295,8 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public bool ShowDataLabelsOverMaximum
         {
-            get
-            {
-                return _chartXmlHelper.GetXmlNodeBool(_showDLblsOverMax, true);
-            }
-            set
-            {
-                _chartXmlHelper.SetXmlNodeBool(_showDLblsOverMax, value, true);
-            }
+            get => _chartXmlHelper.GetXmlNodeBool(_showDLblsOverMax, true);
+            set => _chartXmlHelper.SetXmlNodeBool(_showDLblsOverMax, value, true);
         }
         private bool HasPrimaryAxis()
         {
@@ -1464,8 +1382,8 @@ namespace OfficeOpenXml.Drawing.Chart
             if (ExistsAxis(excelChartAxis))
             {
                 //Remove the axis
-                ExcelChartAxis[] newAxis = new ExcelChartAxis[Axis.Length - 1];
-                int pos = 0;
+                var newAxis = new ExcelChartAxis[Axis.Length - 1];
+                var pos = 0;
                 foreach (var ax in Axis)
                 {
                     if (ax != excelChartAxis)
@@ -1475,7 +1393,7 @@ namespace OfficeOpenXml.Drawing.Chart
                 }
 
                 //Update all charttypes.
-                foreach (ExcelChart chartType in _plotArea.ChartTypes)
+                foreach (var chartType in _plotArea.ChartTypes)
                 {
                     chartType._axis = newAxis;
                 }
@@ -1484,7 +1402,7 @@ namespace OfficeOpenXml.Drawing.Chart
 
         private bool ExistsAxis(ExcelChartAxis excelChartAxis)
         {
-            foreach (ExcelChart chartType in _plotArea.ChartTypes)
+            foreach (var chartType in _plotArea.ChartTypes)
             {
                 if (chartType != this)
                 {
@@ -1502,63 +1420,34 @@ namespace OfficeOpenXml.Drawing.Chart
         /// <summary>
         /// Plotarea
         /// </summary>
-        public ExcelChartPlotArea PlotArea
-        {
-            get
-            {
-                if (_plotArea == null)
-                {
-                    _plotArea = new ExcelChartPlotArea(NameSpaceManager, ChartXml.SelectSingleNode("c:chartSpace/c:chart/c:plotArea", NameSpaceManager), this);
-                }
-                return _plotArea;
-            }
-        }
+        public ExcelChartPlotArea PlotArea =>
+            _plotArea ??= new ExcelChartPlotArea(NameSpaceManager,
+                ChartXml.SelectSingleNode("c:chartSpace/c:chart/c:plotArea", NameSpaceManager), this);
+
         ExcelChartLegend _legend = null;
         /// <summary>
         /// Legend
         /// </summary>
-        public ExcelChartLegend Legend
-        {
-            get
-            {
-                if (_legend == null)
-                {
-                    _legend = new ExcelChartLegend(NameSpaceManager, ChartXml.SelectSingleNode("c:chartSpace/c:chart/c:legend", NameSpaceManager), this);
-                }
-                return _legend;
-            }
+        public ExcelChartLegend Legend =>
+            _legend ??= new ExcelChartLegend(NameSpaceManager,
+                ChartXml.SelectSingleNode("c:chartSpace/c:chart/c:legend", NameSpaceManager), this);
 
-        }
         ExcelDrawingBorder _border = null;
         /// <summary>
         /// Border
         /// </summary>
-        public ExcelDrawingBorder Border
-        {
-            get
-            {
-                if (_border == null)
-                {
-                    _border = new ExcelDrawingBorder(NameSpaceManager, ChartXml.SelectSingleNode("c:chartSpace", NameSpaceManager), "c:spPr/a:ln");
-                }
-                return _border;
-            }
-        }
+        public ExcelDrawingBorder Border =>
+            _border ??= new ExcelDrawingBorder(NameSpaceManager,
+                ChartXml.SelectSingleNode("c:chartSpace", NameSpaceManager), "c:spPr/a:ln");
+
         ExcelDrawingFill _fill = null;
         /// <summary>
         /// Fill
         /// </summary>
-        public ExcelDrawingFill Fill
-        {
-            get
-            {
-                if (_fill == null)
-                {
-                    _fill = new ExcelDrawingFill(NameSpaceManager, ChartXml.SelectSingleNode("c:chartSpace", NameSpaceManager), "c:spPr");
-                }
-                return _fill;
-            }
-        }
+        public ExcelDrawingFill Fill =>
+            _fill ??= new ExcelDrawingFill(NameSpaceManager,
+                ChartXml.SelectSingleNode("c:chartSpace", NameSpaceManager), "c:spPr");
+
         /// <summary>
         /// 3D-settings
         /// </summary>
@@ -1570,10 +1459,8 @@ namespace OfficeOpenXml.Drawing.Chart
                 {
                     return new ExcelView3D(NameSpaceManager, ChartXml.SelectSingleNode("//c:view3D", NameSpaceManager));
                 }
-                else
-                {
-                    throw (new Exception("Charttype does not support 3D"));
-                }
+
+                throw new Exception("Charttype does not support 3D");
 
             }
         }
@@ -1581,14 +1468,8 @@ namespace OfficeOpenXml.Drawing.Chart
         string _groupingPath = "c:grouping/@val";
         public eGrouping Grouping
         {
-            get
-            {
-                return GetGroupingEnum(_chartXmlHelper.GetXmlNodeString(_groupingPath));
-            }
-            internal set
-            {
-                _chartXmlHelper.SetXmlNodeString(_groupingPath, GetGroupingText(value));
-            }
+            get => GetGroupingEnum(_chartXmlHelper.GetXmlNodeString(_groupingPath));
+            internal set => _chartXmlHelper.SetXmlNodeString(_groupingPath, GetGroupingText(value));
         }
         //string _varyColorsPath = "c:chartSpace/c:chart/c:plotArea/{0}/c:varyColors/@val";
         string _varyColorsPath = "c:varyColors/@val";
@@ -1597,31 +1478,15 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public bool VaryColors
         {
-            get
-            {
-                return _chartXmlHelper.GetXmlNodeBool(_varyColorsPath);
-            }
-            set
-            {
-                if (value)
-                {
-                    _chartXmlHelper.SetXmlNodeString(_varyColorsPath, "1");
-                }
-                else
-                {
-                    _chartXmlHelper.SetXmlNodeString(_varyColorsPath, "0");
-                }
-            }
+            get => _chartXmlHelper.GetXmlNodeBool(_varyColorsPath);
+            set => _chartXmlHelper.SetXmlNodeString(_varyColorsPath, value ? "1" : "0");
         }
-        internal Packaging.ZipPackagePart Part { get; set; }
+        internal ZipPackagePart Part { get; set; }
         /// <summary>
         /// Package internal URI
         /// </summary>
         internal Uri UriChart { get; set; }
-        internal new string Id
-        {
-            get { return ""; }
-        }
+        internal new string Id => "";
         ExcelChartTitle _title = null;
         #endregion
         #region "Grouping Enum Translation"
@@ -1655,7 +1520,7 @@ namespace OfficeOpenXml.Drawing.Chart
         #endregion
         internal static ExcelChart GetChart(ExcelDrawings drawings, XmlNode node/*, XmlNode chartTypeNode*/)
         {
-            XmlNode chartNode = node.SelectSingleNode("xdr:graphicFrame/a:graphic/a:graphicData/c:chart", drawings.NameSpaceManager);
+            var chartNode = node.SelectSingleNode("xdr:graphicFrame/a:graphic/a:graphicData/c:chart", drawings.NameSpaceManager);
             if (chartNode != null)
             {
                 var drawingRelation = drawings.Part.GetRelationship(chartNode.Attributes["r:id"].Value);
@@ -1671,10 +1536,7 @@ namespace OfficeOpenXml.Drawing.Chart
                     if (topChart == null)
                     {
                         topChart = GetChart(n, drawings, node, uriChart, part, chartXml, null);
-                        if (topChart!=null)
-                        {
-                            topChart.PlotArea.ChartTypes.Add(topChart);
-                        }
+                        topChart?.PlotArea.ChartTypes.Add(topChart);
                     }
                     else
                     {
@@ -1687,111 +1549,53 @@ namespace OfficeOpenXml.Drawing.Chart
                 }
                 return topChart;
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
-        internal static ExcelChart GetChart(XmlElement chartNode, ExcelDrawings drawings, XmlNode node, Uri uriChart, Packaging.ZipPackagePart part, XmlDocument chartXml, ExcelChart topChart)
+        internal static ExcelChart GetChart(XmlElement chartNode, ExcelDrawings drawings, XmlNode node, Uri uriChart, ZipPackagePart part, XmlDocument chartXml, ExcelChart topChart)
         {
             switch (chartNode.LocalName)
             {
                 case "area3DChart":
                 case "areaChart":
                 case "stockChart":
-                    if (topChart == null)
-                    {
-                        return new ExcelChart(drawings, node, uriChart, part, chartXml, chartNode);
-                    }
-                    else
-                    {
-                        return new ExcelChart(topChart, chartNode);
-                    }
+                    return topChart == null ? new ExcelChart(drawings, node, uriChart, part, chartXml, chartNode) : new ExcelChart(topChart, chartNode);
+
                 case "surface3DChart":
                 case "surfaceChart":
-                    if (topChart == null)
-                    {
-                        return new ExcelSurfaceChart(drawings, node, uriChart, part, chartXml, chartNode);
-                    }
-                    else
-                    {
-                        return new ExcelSurfaceChart(topChart, chartNode);
-                    }
+                    return topChart == null ? new ExcelSurfaceChart(drawings, node, uriChart, part, chartXml, chartNode) : new ExcelSurfaceChart(topChart, chartNode);
+
                 case "radarChart":
-                    if (topChart == null)
-                    {
-                        return new ExcelRadarChart(drawings, node, uriChart, part, chartXml, chartNode);
-                    }
-                    else
-                    {
-                        return new ExcelRadarChart(topChart, chartNode);
-                    }
+                    return topChart == null ? new ExcelRadarChart(drawings, node, uriChart, part, chartXml, chartNode) : new ExcelRadarChart(topChart, chartNode);
+
                 case "bubbleChart":
-                    if (topChart == null)
-                    {
-                        return new ExcelBubbleChart(drawings, node, uriChart, part, chartXml, chartNode);
-                    }
-                    else
-                    {
-                        return new ExcelBubbleChart(topChart, chartNode);
-                    }
+                    return topChart == null ? new ExcelBubbleChart(drawings, node, uriChart, part, chartXml, chartNode) : new ExcelBubbleChart(topChart, chartNode);
+
                 case "barChart":
                 case "bar3DChart":
-                    if (topChart == null)
-                    {
-                        return new ExcelBarChart(drawings, node, uriChart, part, chartXml, chartNode);
-                    }
-                    else
-                    {
-                        return new ExcelBarChart(topChart, chartNode);
-                    }
+                    return topChart == null ? new ExcelBarChart(drawings, node, uriChart, part, chartXml, chartNode) : new ExcelBarChart(topChart, chartNode);
+
                 case "doughnutChart":
-                    if (topChart == null)
-                    {
-                        return new ExcelDoughnutChart(drawings, node, uriChart, part, chartXml, chartNode);
-                    }
-                    else
-                    {
-                        return new ExcelDoughnutChart(topChart, chartNode);
-                    }
+                    return topChart == null ? new ExcelDoughnutChart(drawings, node, uriChart, part, chartXml, chartNode) : new ExcelDoughnutChart(topChart, chartNode);
+
                 case "pie3DChart":
                 case "pieChart":
-                    if (topChart == null)
-                    {
-                        return new ExcelPieChart(drawings, node, uriChart, part, chartXml, chartNode);
-                    }
-                    else
-                    {
-                        return new ExcelPieChart(topChart, chartNode);
-                    }
+                    return topChart == null ? new ExcelPieChart(drawings, node, uriChart, part, chartXml, chartNode) : new ExcelPieChart(topChart, chartNode);
+
                 case "ofPieChart":
                     if (topChart == null)
                     {
                         return new ExcelOfPieChart(drawings, node, uriChart, part, chartXml, chartNode);
                     }
-                    else
-                    {
-                        return new ExcelBarChart(topChart, chartNode);
-                    }
+
+                    return new ExcelBarChart(topChart, chartNode);
                 case "lineChart":
                 case "line3DChart":
-                    if (topChart == null)
-                    {
-                        return new ExcelLineChart(drawings, node, uriChart, part, chartXml, chartNode);
-                    }
-                    else
-                    {
-                        return new ExcelLineChart(topChart, chartNode);
-                    }
+                    return topChart == null ? new ExcelLineChart(drawings, node, uriChart, part, chartXml, chartNode) : new ExcelLineChart(topChart, chartNode);
+
                 case "scatterChart":
-                    if (topChart == null)
-                    {
-                        return new ExcelScatterChart(drawings, node, uriChart, part, chartXml, chartNode);
-                    }
-                    else
-                    {
-                        return new ExcelScatterChart(topChart, chartNode);
-                    }
+                    return topChart == null ? new ExcelScatterChart(drawings, node, uriChart, part, chartXml, chartNode) : new ExcelScatterChart(topChart, chartNode);
+
                 default:
                     return null;
             }
@@ -1884,7 +1688,7 @@ namespace OfficeOpenXml.Drawing.Chart
         internal void SetPivotSource(ExcelPivotTable pivotTableSource)
         {
             PivotTableSource = pivotTableSource;
-            XmlElement chart = ChartXml.SelectSingleNode("c:chartSpace/c:chart", NameSpaceManager) as XmlElement;
+            var chart = ChartXml.SelectSingleNode("c:chartSpace/c:chart", NameSpaceManager) as XmlElement;
 
             var pivotSource = ChartXml.CreateElement("pivotSource", ExcelPackage.schemaChart);
             chart.ParentNode.InsertBefore(pivotSource, chart);
@@ -1904,7 +1708,7 @@ namespace OfficeOpenXml.Drawing.Chart
             }
             catch (Exception ex)
             {
-                throw (new InvalidDataException("EPPlus internal error when deleteing chart.", ex));
+                throw new InvalidDataException("EPPlus internal error when deleteing chart.", ex);
             }
             base.DeleteMe();
         }

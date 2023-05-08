@@ -8,7 +8,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime
 {
     public class Weeknum : ExcelFunction
     {
-        public override ExpressionGraph.CompileResult Execute(IEnumerable<FunctionArgument> arguments, ParsingContext context)
+        public override CompileResult Execute(IEnumerable<FunctionArgument> arguments, ParsingContext context)
         {
             ValidateArguments(arguments, 1, eErrorType.Value);
             var dateSerial = ArgToDecimal(arguments, 0);

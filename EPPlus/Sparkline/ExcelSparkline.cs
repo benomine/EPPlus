@@ -17,14 +17,8 @@ namespace OfficeOpenXml.Sparkline
         /// </summary>
         public ExcelAddressBase RangeAddress
         {
-            get
-            {
-                return new ExcelAddressBase(GetXmlNodeString(_fPath));
-            }
-            internal set
-            {
-                SetXmlNodeString(_fPath, value.FullAddress);
-            }
+            get => new(GetXmlNodeString(_fPath));
+            internal set => SetXmlNodeString(_fPath, value.FullAddress);
         }
         const string _sqrefPath = "xm:sqref";
         /// <summary>
@@ -32,14 +26,8 @@ namespace OfficeOpenXml.Sparkline
         /// </summary>
         public ExcelCellAddress Cell
         {
-            get
-            {
-                return new ExcelCellAddress(GetXmlNodeString(_sqrefPath));
-            }
-            internal set
-            {
-                SetXmlNodeString("xm:sqref", value.Address);
-            }
+            get => new(GetXmlNodeString(_sqrefPath));
+            internal set => SetXmlNodeString("xm:sqref", value.Address);
         }
         public override string ToString()
         {

@@ -81,7 +81,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime
 
         private double Parse12HourTimeString(string input)
         {
-            string dayPart = string.Empty;
+            var dayPart = string.Empty;
             dayPart = input.Substring(input.Length - 2, 2);
             int hour;
             int minute;

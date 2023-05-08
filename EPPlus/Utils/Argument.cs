@@ -41,9 +41,6 @@ namespace OfficeOpenXml.Utils
 
         private T _value;
 
-        T IArgument<T>.Value
-        {
-            get { return _value; }
-        }
+        T IArgument<T>.Value => _value;
     }
 }

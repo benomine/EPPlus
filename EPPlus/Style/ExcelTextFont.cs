@@ -83,7 +83,7 @@ namespace OfficeOpenXml.Style
             _rootNode = rootNode;
             if (path != "")
             {
-                XmlNode node = rootNode.SelectSingleNode(path, namespaceManager);
+                var node = rootNode.SelectSingleNode(path, namespaceManager);
                 if (node != null)
                 {
                     TopNode = node;
@@ -94,10 +94,7 @@ namespace OfficeOpenXml.Style
         string _fontLatinPath = "a:latin/@typeface";
         public string LatinFont
         {
-            get
-            {
-                return GetXmlNodeString(_fontLatinPath);
-            }
+            get => GetXmlNodeString(_fontLatinPath);
             set
             {
                 CreateTopNode();
@@ -116,10 +113,7 @@ namespace OfficeOpenXml.Style
         string _fontCsPath = "a:cs/@typeface";
         public string ComplexFont
         {
-            get
-            {
-                return GetXmlNodeString(_fontCsPath);
-            }
+            get => GetXmlNodeString(_fontCsPath);
             set
             {
                 CreateTopNode();
@@ -129,10 +123,7 @@ namespace OfficeOpenXml.Style
         string _boldPath = "@b";
         public bool Bold
         {
-            get
-            {
-                return GetXmlNodeBool(_boldPath);
-            }
+            get => GetXmlNodeBool(_boldPath);
             set
             {
                 CreateTopNode();
@@ -142,10 +133,7 @@ namespace OfficeOpenXml.Style
         string _underLinePath = "@u";
         public eUnderLineType UnderLine
         {
-            get
-            {
-                return TranslateUnderline(GetXmlNodeString(_underLinePath));
-            }
+            get => TranslateUnderline(GetXmlNodeString(_underLinePath));
             set
             {
                 CreateTopNode();
@@ -157,15 +145,13 @@ namespace OfficeOpenXml.Style
         {
             get
             {
-                string col = GetXmlNodeString(_underLineColorPath);
+                var col = GetXmlNodeString(_underLineColorPath);
                 if (col == "")
                 {
                     return SKColors.Empty;
                 }
-                else
-                {
-                    return SKColor.Parse(col);
-                }
+
+                return SKColor.Parse(col);
             }
             set
             {
@@ -176,10 +162,7 @@ namespace OfficeOpenXml.Style
         string _italicPath = "@i";
         public bool Italic
         {
-            get
-            {
-                return GetXmlNodeBool(_italicPath);
-            }
+            get => GetXmlNodeBool(_italicPath);
             set
             {
                 CreateTopNode();
@@ -189,10 +172,7 @@ namespace OfficeOpenXml.Style
         string _strikePath = "@strike";
         public eStrikeType Strike
         {
-            get
-            {
-                return TranslateStrike(GetXmlNodeString(_strikePath));
-            }
+            get => TranslateStrike(GetXmlNodeString(_strikePath));
             set
             {
                 CreateTopNode();
@@ -202,10 +182,7 @@ namespace OfficeOpenXml.Style
         string _sizePath = "@sz";
         public float Size
         {
-            get
-            {
-                return GetXmlNodeInt(_sizePath) / 100;
-            }
+            get => GetXmlNodeInt(_sizePath) / 100;
             set
             {
                 CreateTopNode();
@@ -217,15 +194,13 @@ namespace OfficeOpenXml.Style
         {
             get
             {
-                string col = GetXmlNodeString(_colorPath);
+                var col = GetXmlNodeString(_colorPath);
                 if (col == "")
                 {
                     return SKColors.Empty;
                 }
-                else
-                {
-                    return SKColor.Parse(col);
-                }
+
+                return SKColor.Parse(col);
             }
             set
             {
@@ -257,7 +232,7 @@ namespace OfficeOpenXml.Style
                 case eUnderLineType.Double:
                     return "dbl";
                 default:
-                    string ret = value.ToString();
+                    var ret = value.ToString();
                     return ret.Substring(0, 1).ToLower(CultureInfo.InvariantCulture) + ret.Substring(1, ret.Length - 1);
             }
         }

@@ -51,14 +51,8 @@ namespace OfficeOpenXml.Drawing
         /// </summary>
         public decimal Perspective
         {
-            get
-            {
-                return GetXmlNodeInt(perspectivePath);
-            }
-            set
-            {
-                SetXmlNodeString(perspectivePath, value.ToString(CultureInfo.InvariantCulture));
-            }
+            get => GetXmlNodeInt(perspectivePath);
+            set => SetXmlNodeString(perspectivePath, value.ToString(CultureInfo.InvariantCulture));
         }
         const string rotXPath = "c:rotX/@val";
         /// <summary>
@@ -66,10 +60,7 @@ namespace OfficeOpenXml.Drawing
         /// </summary>
         public decimal RotX
         {
-            get
-            {
-                return GetXmlNodeDecimal(rotXPath);
-            }
+            get => GetXmlNodeDecimal(rotXPath);
             set
             {
                 CreateNode(rotXPath);
@@ -82,10 +73,7 @@ namespace OfficeOpenXml.Drawing
         /// </summary>
         public decimal RotY
         {
-            get
-            {
-                return GetXmlNodeDecimal(rotYPath);
-            }
+            get => GetXmlNodeDecimal(rotYPath);
             set
             {
                 CreateNode(rotYPath);
@@ -98,14 +86,8 @@ namespace OfficeOpenXml.Drawing
         /// </summary>
         public bool RightAngleAxes
         {
-            get
-            {
-                return GetXmlNodeBool(rAngAxPath);
-            }
-            set
-            {
-                SetXmlNodeBool(rAngAxPath, value);
-            }
+            get => GetXmlNodeBool(rAngAxPath);
+            set => SetXmlNodeBool(rAngAxPath, value);
         }
         const string depthPercentPath = "c:depthPercent/@val";
         /// <summary>
@@ -113,15 +95,12 @@ namespace OfficeOpenXml.Drawing
         /// </summary>
         public int DepthPercent
         {
-            get
-            {
-                return GetXmlNodeInt(depthPercentPath);
-            }
+            get => GetXmlNodeInt(depthPercentPath);
             set
             {
                 if (value < 0 || value > 2000)
                 {
-                    throw (new ArgumentOutOfRangeException("Value must be between 0 and 2000"));
+                    throw new ArgumentOutOfRangeException("Value must be between 0 and 2000");
                 }
                 SetXmlNodeString(depthPercentPath, value.ToString());
             }
@@ -132,15 +111,12 @@ namespace OfficeOpenXml.Drawing
         /// </summary>
         public int HeightPercent
         {
-            get
-            {
-                return GetXmlNodeInt(heightPercentPath);
-            }
+            get => GetXmlNodeInt(heightPercentPath);
             set
             {
                 if (value < 5 || value > 500)
                 {
-                    throw (new ArgumentOutOfRangeException("Value must be between 5 and 500"));
+                    throw new ArgumentOutOfRangeException("Value must be between 5 and 500");
                 }
                 SetXmlNodeString(heightPercentPath, value.ToString());
             }

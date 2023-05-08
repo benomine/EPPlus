@@ -39,7 +39,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
     {
         protected string ExpressionString { get; private set; }
         private readonly List<Expression> _children = new List<Expression>();
-        public IEnumerable<Expression> Children { get { return _children; } }
+        public IEnumerable<Expression> Children => _children;
         public Expression Next { get; set; }
         public Expression Prev { get; set; }
         public IOperator Operator { get; set; }
@@ -56,10 +56,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             Operator = null;
         }
 
-        public virtual bool HasChildren
-        {
-            get { return _children.Any(); }
-        }
+        public virtual bool HasChildren => _children.Any();
 
         public virtual Expression PrepareForNextChild()
         {
@@ -105,7 +102,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             }
             else
             {
-                throw (new FormatException("Invalid formula syntax. Operator missing expression."));
+                throw new FormatException("Invalid formula syntax. Operator missing expression.");
             }
             if (Prev != null)
             {

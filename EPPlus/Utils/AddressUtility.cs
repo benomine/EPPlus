@@ -6,7 +6,7 @@ namespace OfficeOpenXml.Utils
     {
         public static string ParseEntireColumnSelections(string address)
         {
-            string parsedAddress = address;
+            var parsedAddress = address;
             var matches = Regex.Matches(address, "[A-Z]+:[A-Z]+");
             foreach (Match match in matches)
             {

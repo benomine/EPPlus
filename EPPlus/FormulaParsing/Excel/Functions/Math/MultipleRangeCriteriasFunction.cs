@@ -50,7 +50,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
 
         protected bool Evaluate(object obj, string expression)
         {
-            double? candidate = default(double?);
+            var candidate = default(double?);
             if (IsNumeric(obj))
             {
                 candidate = ConvertUtil.GetValueDouble(obj);

@@ -78,38 +78,26 @@ namespace OfficeOpenXml.Drawing.Vml
         }
         public string Id
         {
-            get
-            {
-                return GetXmlNodeString("@id");
-            }
-            set
-            {
-                SetXmlNodeString("@id", value);
-            }
+            get => GetXmlNodeString("@id");
+            set => SetXmlNodeString("@id", value);
         }
         /// <summary>
         /// Alternative text to be displayed instead of a graphic.
         /// </summary>
         public string AlternativeText
         {
-            get
-            {
-                return GetXmlNodeString("@alt");
-            }
-            set
-            {
-                SetXmlNodeString("@alt", value);
-            }
+            get => GetXmlNodeString("@alt");
+            set => SetXmlNodeString("@alt", value);
         }
         #region "Style Handling methods"
         protected bool GetStyle(string style, string key, out string value)
         {
-            string[] styles = style.Split(';');
-            foreach (string s in styles)
+            var styles = style.Split(';');
+            foreach (var s in styles)
             {
                 if (s.IndexOf(':') > 0)
                 {
-                    string[] split = s.Split(':');
+                    var split = s.Split(':');
                     if (split[0] == key)
                     {
                         value=split[1];
@@ -127,12 +115,12 @@ namespace OfficeOpenXml.Drawing.Vml
         }
         protected string SetStyle(string style, string key, string value)
         {
-            string[] styles = style.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-            string newStyle = "";
-            bool changed = false;
-            foreach (string s in styles)
+            var styles = style.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            var newStyle = "";
+            var changed = false;
+            foreach (var s in styles)
             {
-                string[] split = s.Split(':');
+                var split = s.Split(':');
                 if (split[0].Trim() == key)
                 {
                     if (value.Trim() != "")

@@ -64,7 +64,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 {
     sealed class Tree
     {
-        private static readonly int HEAP_SIZE = (2 * InternalConstants.L_CODES + 1);
+        private static readonly int HEAP_SIZE = 2 * InternalConstants.L_CODES + 1;
 
         // extra bits for each length code
         internal static readonly int[] ExtraLengthBits = new int[]
@@ -174,7 +174,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         /// </remarks>
         internal static int DistanceCode(int dist)
         {
-            return (dist < 256)
+            return dist < 256
                 ? _dist_code[dist]
                 : _dist_code[256 + SharedUtils.URShift(dist, 7)];
         }
@@ -193,17 +193,17 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         //     not null.
         internal void gen_bitlen(DeflateManager s)
         {
-            short[] tree = dyn_tree;
-            short[] stree = staticTree.treeCodes;
-            int[] extra = staticTree.extraBits;
-            int base_Renamed = staticTree.extraBase;
-            int max_length = staticTree.maxLength;
+            var tree = dyn_tree;
+            var stree = staticTree.treeCodes;
+            var extra = staticTree.extraBits;
+            var base_Renamed = staticTree.extraBase;
+            var max_length = staticTree.maxLength;
             int h; // heap index
             int n, m; // iterate over the tree elements
             int bits; // bit length
             int xbits; // extra bits
             short f; // frequency
-            int overflow = 0; // number of elements with bit length too large
+            var overflow = 0; // number of elements with bit length too large
 
             for (bits = 0; bits <= InternalConstants.MAX_BITS; bits++)
                 s.bl_count[bits] = 0;
@@ -280,11 +280,11 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         //     also updated if stree is not null. The field max_code is set.
         internal void build_tree(DeflateManager s)
         {
-            short[] tree = dyn_tree;
-            short[] stree = staticTree.treeCodes;
-            int elems = staticTree.elems;
+            var tree = dyn_tree;
+            var stree = staticTree.treeCodes;
+            var elems = staticTree.elems;
             int n, m;            // iterate over heap elements
-            int max_code = -1;  // largest code with non zero frequency
+            var max_code = -1;  // largest code with non zero frequency
             int node;            // new node being created
 
             // Construct the initial heap, with least frequent element in
@@ -312,7 +312,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
             // two codes of non zero frequency.
             while (s.heap_len < 2)
             {
-                node = s.heap[++s.heap_len] = (max_code < 2 ? ++max_code : 0);
+                node = s.heap[++s.heap_len] = max_code < 2 ? ++max_code : 0;
                 tree[node * 2] = 1;
                 s.depth[node] = 0;
                 s.opt_len--;
@@ -373,7 +373,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         //     zero code length.
         internal static void gen_codes(short[] tree, int max_code, short[] bl_count)
         {
-            short[] next_code = new short[InternalConstants.MAX_BITS + 1]; // next code value for each bit length
+            var next_code = new short[InternalConstants.MAX_BITS + 1]; // next code value for each bit length
             short code = 0; // running code value
             int bits; // bit index
             int n; // code index
@@ -398,7 +398,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                 if (len == 0)
                     continue;
                 // Now reverse the bits
-                tree[n * 2] =  unchecked((short)(bi_reverse(next_code[len]++, len)));
+                tree[n * 2] =  unchecked((short)bi_reverse(next_code[len]++, len));
             }
         }
 
@@ -407,7 +407,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         // IN assertion: 1 <= len <= 15
         internal static int bi_reverse(int code, int len)
         {
-            int res = 0;
+            var res = 0;
             do
             {
                 res |= code & 1;

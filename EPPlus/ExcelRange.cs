@@ -61,38 +61,36 @@ namespace OfficeOpenXml
         /// <summary>
         /// Access the range using an address
         /// </summary>
-        /// <param name="Address">The address</param>
+        /// <param name="address">The address</param>
         /// <returns>A range object</returns>
-        public ExcelRange this[string Address]
+        public ExcelRange this[string address]
         {
             get
             {
-                if (_worksheet.Names.ContainsKey(Address))
+                if (_worksheet.Names.ContainsKey(address))
                 {
-                    if (_worksheet.Names[Address].IsName)
+                    if (_worksheet.Names[address].IsName)
                     {
                         return null;
                     }
-                    else
-                    {
-                        base.Address = _worksheet.Names[Address].Address;
-                    }
+
+                    Address = _worksheet.Names[address].Address;
                 }
                 else
                 {
-                    base.Address = Address;
+                    Address = address;
                 }
                 _rtc = null;
                 return this;
             }
         }
 
-        private ExcelRange GetTableAddess(ExcelWorksheet _worksheet, string address)
+        private ExcelRange GetTableAddess(ExcelWorksheet worksheet, string address)
         {
-            int ixStart = address.IndexOf('[');
+            var ixStart = address.IndexOf('[');
             if (ixStart == 0) //External Address
             {
-                int ixEnd = address.IndexOf(']', ixStart+1);
+                var ixEnd = address.IndexOf(']', ixStart+1);
                 if (ixStart >= 0 & ixEnd >= 0)
                 {
                     var external = address.Substring(ixStart + 1, ixEnd - 1);
@@ -107,19 +105,19 @@ namespace OfficeOpenXml
         /// <summary>
         /// Access a single cell
         /// </summary>
-        /// <param name="Row">The row</param>
-        /// <param name="Col">The column</param>
+        /// <param name="row">The row</param>
+        /// <param name="col">The column</param>
         /// <returns>A range object</returns>
-        public ExcelRange this[int Row, int Col]
+        public ExcelRange this[int row, int col]
         {
             get
             {
-                ValidateRowCol(Row, Col);
+                ValidateRowCol(row, col);
 
-                _fromCol = Col;
-                _fromRow = Row;
-                _toCol = Col;
-                _toRow = Row;
+                _fromCol = col;
+                _fromRow = row;
+                _toCol = col;
+                _toRow = row;
                 _rtc = null;
                 // avoid address re-calculation
                 //base.Address = GetAddress(_fromRow, _fromCol);
@@ -134,22 +132,22 @@ namespace OfficeOpenXml
         /// <summary>
         /// Access a range of cells
         /// </summary>
-        /// <param name="FromRow">Start row</param>
-        /// <param name="FromCol">Start column</param>
-        /// <param name="ToRow">End Row</param>
-        /// <param name="ToCol">End Column</param>
+        /// <param name="fromRow">Start row</param>
+        /// <param name="fromCol">Start column</param>
+        /// <param name="toRow">End Row</param>
+        /// <param name="toCol">End Column</param>
         /// <returns></returns>
-        public ExcelRange this[int FromRow, int FromCol, int ToRow, int ToCol]
+        public ExcelRange this[int fromRow, int fromCol, int toRow, int toCol]
         {
             get
             {
-                ValidateRowCol(FromRow, FromCol);
-                ValidateRowCol(ToRow, ToCol);
+                ValidateRowCol(fromRow, fromCol);
+                ValidateRowCol(toRow, toCol);
 
-                _fromCol = FromCol;
-                _fromRow = FromRow;
-                _toCol = ToCol;
-                _toRow = ToRow;
+                _fromCol = fromCol;
+                _fromRow = fromRow;
+                _toCol = toCol;
+                _toRow = toRow;
                 _rtc = null;
                 // avoid address re-calculation
                 //base.Address = GetAddress(_fromRow, _fromCol, _toRow, _toCol);
@@ -162,15 +160,15 @@ namespace OfficeOpenXml
             }
         }
         #endregion
-        private static void ValidateRowCol(int Row, int Col)
+        private static void ValidateRowCol(int row, int col)
         {
-            if (Row < 1 || Row > ExcelPackage.MaxRows)
+            if (row is < 1 or > ExcelPackage.MaxRows)
             {
-                throw (new ArgumentException("Row out of range"));
+                throw new ArgumentException("Row out of range");
             }
-            if (Col < 1 || Col > ExcelPackage.MaxColumns)
+            if (col is < 1 or > ExcelPackage.MaxColumns)
             {
-                throw (new ArgumentException("Column out of range"));
+                throw new ArgumentException("Column out of range");
             }
         }
 

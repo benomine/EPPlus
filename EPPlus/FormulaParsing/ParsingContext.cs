@@ -64,10 +64,7 @@ namespace OfficeOpenXml.FormulaParsing
         /// <summary>
         /// Returns true if a <see cref="IFormulaParserLogger"/> is attached to the parser.
         /// </summary>
-        public bool Debug
-        {
-            get { return Configuration.Logger != null; }
-        }
+        public bool Debug => Configuration.Logger != null;
 
         /// <summary>
         /// Factory method.

@@ -41,63 +41,56 @@ namespace OfficeOpenXml.VBA
     /// <typeparam name="T"></typeparam>
     public class ExcelVBACollectionBase<T> : IEnumerable<T>
     {
-        internal protected List<T> _list = new List<T>();
+        protected internal List<T> List = new List<T>();
         public IEnumerator<T> GetEnumerator()
         {
-            return _list.GetEnumerator();
+            return List.GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return _list.GetEnumerator();
+            return List.GetEnumerator();
         }
         /// <summary>
         /// Indexer
         /// </summary>
-        /// <param name="Name">Name</param>
+        /// <param name="name">Name</param>
         /// <returns></returns>
-        public T this[string Name]
+        public T this[string name]
         {
             get
             {
-                return _list.Find((f) => TypeCompat.GetPropertyValue(f, "Name").ToString().Equals(Name, StringComparison.OrdinalIgnoreCase));
+                return List.Find(f => TypeCompat.GetPropertyValue(f, "Name").ToString().Equals(name, StringComparison.OrdinalIgnoreCase));
             }
         }
         /// <summary>
         /// Indexer
         /// </summary>
-        /// <param name="Index">Position</param>
+        /// <param name="index">Position</param>
         /// <returns></returns>
-        public T this[int Index]
-        {
-            get
-            {
-                return _list[Index];
-            }
-        }
+        public T this[int index] => List[index];
+
         /// <summary>
         /// Number of items in the collection
         /// </summary>
-        public int Count
-        {
-            get { return _list.Count; }
-        }
+        public int Count => List.Count;
+
         /// <summary>
         /// If a specific name exists in the collection
         /// </summary>
-        /// <param name="Name">The name</param>
+        /// <param name="name">The name</param>
         /// <returns>True if the name exists</returns>
-        public bool Exists(string Name)
+        public bool Exists(string name)
         {
-            return _list.Exists((f) => TypeCompat.GetPropertyValue(f, "Name").ToString().Equals(Name, StringComparison.OrdinalIgnoreCase));
+            return List.Exists(f => TypeCompat.GetPropertyValue(f, "Name").ToString().Equals(name, StringComparison.OrdinalIgnoreCase));
         }
         /// <summary>
         /// Removes the item
         /// </summary>
-        /// <param name="Item"></param>
-        public void Remove(T Item)
+        /// <param name="item"></param>
+        public void Remove(T item)
         {
-            _list.Remove(Item);
+            List.Remove(item);
         }
         /// <summary>
         /// Removes the item at the specified index
@@ -105,12 +98,12 @@ namespace OfficeOpenXml.VBA
         /// <param name="index">THe index</param>
         public void RemoveAt(int index)
         {
-            _list.RemoveAt(index);
+            List.RemoveAt(index);
         }
 
         internal void Clear()
         {
-            _list.Clear();
+            List.Clear();
         }
     }
     /// <summary>
@@ -123,53 +116,53 @@ namespace OfficeOpenXml.VBA
         {
             _project=project;
         }
-        internal void Add(ExcelVBAModule Item)
+        internal void Add(ExcelVBAModule item)
         {
-            _list.Add(Item);
+            List.Add(item);
         }
         /// <summary>
         /// Adds a new VBA Module
         /// </summary>
-        /// <param name="Name">The name of the module</param>
+        /// <param name="name">The name of the module</param>
         /// <returns>The module object</returns>
-        public ExcelVBAModule AddModule(string Name)
+        public ExcelVBAModule AddModule(string name)
         {
-            if (this[Name] != null)
+            if (this[name] != null)
             {
-                throw (new ArgumentException("Vba modulename already exist."));
+                throw new ArgumentException("Vba modulename already exist.");
             }
             var m = new ExcelVBAModule();
-            m.Name = Name;
+            m.Name = name;
             m.Type = eModuleType.Module;
-            m.Attributes._list.Add(new ExcelVbaModuleAttribute() { Name = "VB_Name", Value = Name, DataType = eAttributeDataType.String });
+            m.Attributes.List.Add(new ExcelVbaModuleAttribute() { Name = "VB_Name", Value = name, DataType = eAttributeDataType.String });
             m.Type = eModuleType.Module;
-            _list.Add(m);
+            List.Add(m);
             return m;
         }
         /// <summary>
         /// Adds a new VBA class
         /// </summary>
-        /// <param name="Name">The name of the class</param>
-        /// <param name="Exposed">Private or Public not createble</param>
+        /// <param name="name">The name of the class</param>
+        /// <param name="exposed">Private or Public not createble</param>
         /// <returns>The class object</returns>
-        public ExcelVBAModule AddClass(string Name, bool Exposed)
+        public ExcelVBAModule AddClass(string name, bool exposed)
         {
-            var m = new ExcelVBAModule();
-            m.Name = Name;
-            m.Type = eModuleType.Class;
-            m.Attributes._list.Add(new ExcelVbaModuleAttribute() { Name = "VB_Name", Value = Name, DataType = eAttributeDataType.String });
-            m.Attributes._list.Add(new ExcelVbaModuleAttribute() { Name = "VB_Base", Value = "0{FCFB3D2A-A0FA-1068-A738-08002B3371B5}", DataType = eAttributeDataType.String });
-            m.Attributes._list.Add(new ExcelVbaModuleAttribute() { Name = "VB_GlobalNameSpace", Value = "False", DataType = eAttributeDataType.NonString });
-            m.Attributes._list.Add(new ExcelVbaModuleAttribute() { Name = "VB_Creatable", Value = "False", DataType = eAttributeDataType.NonString });
-            m.Attributes._list.Add(new ExcelVbaModuleAttribute() { Name = "VB_PredeclaredId", Value = "False", DataType = eAttributeDataType.NonString });
-            m.Attributes._list.Add(new ExcelVbaModuleAttribute() { Name = "VB_Exposed", Value = Exposed ? "True" : "False", DataType = eAttributeDataType.NonString });
-            m.Attributes._list.Add(new ExcelVbaModuleAttribute() { Name = "VB_TemplateDerived", Value = "False", DataType = eAttributeDataType.NonString });
-            m.Attributes._list.Add(new ExcelVbaModuleAttribute() { Name = "VB_Customizable", Value = "False", DataType = eAttributeDataType.NonString });
+            var m = new ExcelVBAModule
+            {
+                Name = name,
+                Type = eModuleType.Class
+            };
+            m.Attributes.List.Add(new ExcelVbaModuleAttribute() { Name = "VB_Name", Value = name, DataType = eAttributeDataType.String });
+            m.Attributes.List.Add(new ExcelVbaModuleAttribute() { Name = "VB_Base", Value = "0{FCFB3D2A-A0FA-1068-A738-08002B3371B5}", DataType = eAttributeDataType.String });
+            m.Attributes.List.Add(new ExcelVbaModuleAttribute() { Name = "VB_GlobalNameSpace", Value = "False", DataType = eAttributeDataType.NonString });
+            m.Attributes.List.Add(new ExcelVbaModuleAttribute() { Name = "VB_Creatable", Value = "False", DataType = eAttributeDataType.NonString });
+            m.Attributes.List.Add(new ExcelVbaModuleAttribute() { Name = "VB_PredeclaredId", Value = "False", DataType = eAttributeDataType.NonString });
+            m.Attributes.List.Add(new ExcelVbaModuleAttribute() { Name = "VB_Exposed", Value = exposed ? "True" : "False", DataType = eAttributeDataType.NonString });
+            m.Attributes.List.Add(new ExcelVbaModuleAttribute() { Name = "VB_TemplateDerived", Value = "False", DataType = eAttributeDataType.NonString });
+            m.Attributes.List.Add(new ExcelVbaModuleAttribute() { Name = "VB_Customizable", Value = "False", DataType = eAttributeDataType.NonString });
 
-            //m.Code = _project.GetBlankClassModule(Name, Exposed);
-            m.Private = !Exposed;
-            //m.ClassID=
-            _list.Add(m);
+            m.Private = !exposed;
+            List.Add(m);
             return m;
         }
     }
@@ -185,10 +178,10 @@ namespace OfficeOpenXml.VBA
         /// <summary>
         /// Adds a new reference 
         /// </summary>
-        /// <param name="Item">The reference object</param>
-        public void Add(ExcelVbaReference Item)
+        /// <param name="item">The reference object</param>
+        public void Add(ExcelVbaReference item)
         {
-            _list.Add(Item);
+            List.Add(item);
         }
     }
     /// <summary>
@@ -198,7 +191,7 @@ namespace OfficeOpenXml.VBA
     {
         internal string GetAttributeText()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
             foreach (var attr in this)
             {

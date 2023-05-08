@@ -49,10 +49,7 @@ namespace OfficeOpenXml.Style
         /// </summary>
         public string Text
         {
-            get
-            {
-                return GetXmlNodeString(TextPath);
-            }
+            get => GetXmlNodeString(TextPath);
             set
             {
                 CreateTopNode();

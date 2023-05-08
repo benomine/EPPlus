@@ -39,9 +39,6 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 
         }
 
-        public override bool IsGroupedExpression
-        {
-            get { return false; }
-        }
+        public override bool IsGroupedExpression => false;
     }
 }

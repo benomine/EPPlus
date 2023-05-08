@@ -42,8 +42,8 @@ namespace OfficeOpenXml
     /// </summary>
     public class ExcelNamedRangeCollection : IEnumerable<ExcelNamedRange>
     {
-        internal ExcelWorksheet _ws;
-        internal ExcelWorkbook _wb;
+        private readonly ExcelWorksheet _ws;
+        private readonly ExcelWorkbook _wb;
         public ExcelNamedRangeCollection(ExcelWorkbook wb)
         {
             _wb = wb;
@@ -54,80 +54,60 @@ namespace OfficeOpenXml
             _wb = wb;
             _ws = ws;
         }
-        List<ExcelNamedRange> _list = new List<ExcelNamedRange>();
-        Dictionary<string, int> _dic = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+        private readonly List<ExcelNamedRange> _list = new();
+        private readonly Dictionary<string, int> _dic = new(StringComparer.OrdinalIgnoreCase);
         /// <summary>
         /// Add a new named range
         /// </summary>
-        /// <param name="Name">The name</param>
-        /// <param name="Range">The range</param>
+        /// <param name="name">The name</param>
+        /// <param name="range">The range</param>
         /// <returns></returns>
-        public ExcelNamedRange Add(string Name, ExcelRangeBase Range)
+        public ExcelNamedRange Add(string name, ExcelRangeBase range)
         {
-            ExcelNamedRange item;
-            if (!ExcelAddressUtil.IsValidName(Name))
+            if (!ExcelAddressUtil.IsValidName(name))
             {
-                throw (new ArgumentException($"Name {Name} contains invalid characters"));  //Issue 458
+                throw new ArgumentException($"Name {name} contains invalid characters");  //Issue 458
             }
-            if (Range.IsName)
-            {
+            var item = range.IsName 
+                ? new ExcelNamedRange(name, _wb, _ws, _dic.Count) 
+                : new ExcelNamedRange(name, _ws, range.Worksheet, range.Address, _dic.Count);
 
-                item = new ExcelNamedRange(Name, _wb, _ws, _dic.Count);
-            }
-            else
-            {
-                item = new ExcelNamedRange(Name, _ws, Range.Worksheet, Range.Address, _dic.Count);
-            }
-
-            AddName(Name, item);
+            AddName(name, item);
 
             return item;
         }
 
-        private void AddName(string Name, ExcelNamedRange item)
+        private void AddName(string name, ExcelNamedRange item)
         {
-            _dic.Add(Name, _list.Count);
+            _dic.Add(name, _list.Count);
             _list.Add(item);
         }
         /// <summary>
         /// Add a defined name referencing value
         /// </summary>
-        /// <param name="Name"></param>
+        /// <param name="name"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public ExcelNamedRange AddValue(string Name, object value)
+        public ExcelNamedRange AddValue(string name, object value)
         {
-            var item = new ExcelNamedRange(Name, _wb, _ws, _dic.Count);
+            var item = new ExcelNamedRange(name, _wb, _ws, _dic.Count);
             item.NameValue = value;
-            AddName(Name, item);
+            AddName(name, item);
             return item;
-        }
-
-        /// <summary>
-        /// Add a defined name referencing a formula -- the method name contains a typo.
-        /// This method is obsolete and will be removed in the future.
-        /// Use <see cref="AddFormula"/>
-        /// </summary>
-        /// <param name="Name"></param>
-        /// <param name="Formula"></param>
-        /// <returns></returns>
-        [Obsolete("Call AddFormula() instead.  See Issue Tracker Id #14687")]
-        public ExcelNamedRange AddFormla(string Name, string Formula)
-        {
-            return this.AddFormula(Name, Formula);
         }
 
         /// <summary>
         /// Add a defined name referencing a formula
         /// </summary>
-        /// <param name="Name"></param>
-        /// <param name="Formula"></param>
+        /// <param name="name"></param>
+        /// <param name="formula"></param>
         /// <returns></returns>
-        public ExcelNamedRange AddFormula(string Name, string Formula)
+        public ExcelNamedRange AddFormula(string name, string formula)
         {
-            var item = new ExcelNamedRange(Name, _wb, _ws, _dic.Count);
-            item.NameFormula = Formula;
-            AddName(Name, item);
+            var item = new ExcelNamedRange(name, _wb, _ws, _dic.Count);
+            item.NameFormula = formula;
+            AddName(name, item);
             return item;
         }
 
@@ -138,7 +118,7 @@ namespace OfficeOpenXml
 
         internal void Insert(int rowFrom, int colFrom, int rows, int cols, Func<ExcelNamedRange, bool> filter)
         {
-            var namedRanges = this._list.Where(filter);
+            var namedRanges = _list.Where(filter);
             foreach (var namedRange in namedRanges)
             {
                 InsertRows(rowFrom, rows, namedRange);
@@ -151,7 +131,7 @@ namespace OfficeOpenXml
         }
         internal void Delete(int rowFrom, int colFrom, int rows, int cols, Func<ExcelNamedRange, bool> filter)
         {
-            var namedRanges = this._list.Where(filter);
+            var namedRanges = _list.Where(filter);
             foreach (var namedRange in namedRanges)
             {
                 ExcelAddressBase adr;
@@ -163,14 +143,7 @@ namespace OfficeOpenXml
                 {
                     adr = namedRange.DeleteRow(rowFrom, rows);
                 }
-                if (adr == null)
-                {
-                    namedRange.Address = "#REF!";
-                }
-                else
-                {
-                    namedRange.Address = adr.Address;
-                }
+                namedRange.Address = adr == null ? "#REF!" : adr.Address;
             }
         }
         private void InsertColumns(int colFrom, int cols, ExcelNamedRange namedRange)
@@ -192,12 +165,10 @@ namespace OfficeOpenXml
 
         private static string BuildNewAddress(ExcelNamedRange namedRange, string newAddress)
         {
-            if (namedRange.FullAddress.Contains("!"))
-            {
-                var worksheet = namedRange.FullAddress.Split('!')[0];
-                worksheet = worksheet.Trim('\'');
-                newAddress = ExcelCellBase.GetFullAddress(worksheet, newAddress);
-            }
+            if (!namedRange.FullAddress.Contains('!')) return newAddress;
+            var worksheet = namedRange.FullAddress.Split('!')[0];
+            worksheet = worksheet.Trim('\'');
+            newAddress = ExcelCellBase.GetFullAddress(worksheet, newAddress);
             return newAddress;
         }
 
@@ -221,20 +192,20 @@ namespace OfficeOpenXml
         /// <summary>
         /// Remove a defined name from the collection
         /// </summary>
-        /// <param name="Name">The name</param>
-        public void Remove(string Name)
+        /// <param name="name">The name</param>
+        public void Remove(string name)
         {
-            if (_dic.ContainsKey(Name))
+            if (_dic.ContainsKey(name))
             {
-                var ix = _dic[Name];
+                var ix = _dic[name];
 
-                for (int i = ix+1; i < _list.Count; i++)
+                for (var i = ix+1; i < _list.Count; i++)
                 {
                     _dic.Remove(_list[i].Name);
                     _list[i].Index--;
                     _dic.Add(_list[i].Name, _list[i].Index);
                 }
-                _dic.Remove(Name);
+                _dic.Remove(name);
                 _list.RemoveAt(ix);
             }
         }
@@ -250,35 +221,19 @@ namespace OfficeOpenXml
         /// <summary>
         /// The current number of items in the collection
         /// </summary>
-        public int Count
-        {
-            get
-            {
-                return _dic.Count;
-            }
-        }
+        public int Count => _dic.Count;
+
         /// <summary>
         /// Name indexer
         /// </summary>
-        /// <param name="Name">The name (key) for a Named range</param>
+        /// <param name="name">The name (key) for a Named range</param>
         /// <returns>a reference to the range</returns>
         /// <remarks>
         /// Throws a KeyNotFoundException if the key is not in the collection.
         /// </remarks>
-        public ExcelNamedRange this[string Name]
-        {
-            get
-            {
-                return _list[_dic[Name]];
-            }
-        }
-        public ExcelNamedRange this[int Index]
-        {
-            get
-            {
-                return _list[Index];
-            }
-        }
+        public ExcelNamedRange this[string name] => _list[_dic[name]];
+
+        public ExcelNamedRange this[int index] => _list[index];
 
         #region "IEnumerable"
         #region IEnumerable<ExcelNamedRange> Members
@@ -311,6 +266,5 @@ namespace OfficeOpenXml
                 Remove(_list[0].Name);
             }
         }
-
     }
 }

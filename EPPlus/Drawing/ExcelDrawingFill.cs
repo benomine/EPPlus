@@ -71,10 +71,8 @@ namespace OfficeOpenXml.Drawing
                 {
                     return eFillStyle.SolidFill;
                 }
-                else
-                {
-                    _style=GetStyleEnum(_fillTypeNode.Name);
-                }
+
+                _style=GetStyleEnum(_fillTypeNode.Name);
                 return _style;
             }
             set
@@ -147,15 +145,13 @@ namespace OfficeOpenXml.Drawing
         {
             get
             {
-                string col = GetXmlNodeString(_fillPath + ColorPath);
+                var col = GetXmlNodeString(_fillPath + ColorPath);
                 if (col == "")
                 {
                     return new SKColor(79, 129, 189);
                 }
-                else
-                {
-                    return new SKColor((uint)int.Parse(col, NumberStyles.AllowHexSpecifier));
-                }
+
+                return new SKColor((uint)int.Parse(col, NumberStyles.AllowHexSpecifier));
             }
             set
             {
@@ -177,7 +173,7 @@ namespace OfficeOpenXml.Drawing
         /// </summary>
         public int Transparancy
         {
-            get => 100 - (GetXmlNodeInt(_fillPath + alphaPath) / 1000);
+            get => 100 - GetXmlNodeInt(_fillPath + alphaPath) / 1000;
             set
             {
                 if (_fillTypeNode == null)

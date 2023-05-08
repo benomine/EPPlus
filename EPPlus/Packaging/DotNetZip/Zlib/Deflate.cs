@@ -117,11 +117,11 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
             private Config(int goodLength, int maxLazy, int niceLength, int maxChainLength, DeflateFlavor flavor)
             {
-                this.GoodLength = goodLength;
-                this.MaxLazy = maxLazy;
-                this.NiceLength = niceLength;
-                this.MaxChainLength = maxChainLength;
-                this.Flavor = flavor;
+                GoodLength = goodLength;
+                MaxLazy = maxLazy;
+                NiceLength = niceLength;
+                MaxChainLength = maxChainLength;
+                Flavor = flavor;
             }
 
             public static Config Lookup(CompressionLevel level)
@@ -153,7 +153,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
         private CompressFunc DeflateFunction;
 
-        private static readonly System.String[] _ErrorMessage = new System.String[]
+        private static readonly String[] _ErrorMessage = new String[]
         {
             "need dictionary",
             "stream end",
@@ -191,9 +191,9 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         private static readonly int MIN_MATCH = 3;
         private static readonly int MAX_MATCH = 258;
 
-        private static readonly int MIN_LOOKAHEAD = (MAX_MATCH + MIN_MATCH + 1);
+        private static readonly int MIN_LOOKAHEAD = MAX_MATCH + MIN_MATCH + 1;
 
-        private static readonly int HEAP_SIZE = (2 * InternalConstants.L_CODES + 1);
+        private static readonly int HEAP_SIZE = 2 * InternalConstants.L_CODES + 1;
 
         private static readonly int END_BLOCK = 256;
 
@@ -386,11 +386,11 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         internal void _InitializeBlocks()
         {
             // Initialize the trees.
-            for (int i = 0; i < InternalConstants.L_CODES; i++)
+            for (var i = 0; i < InternalConstants.L_CODES; i++)
                 dyn_ltree[i * 2] = 0;
-            for (int i = 0; i < InternalConstants.D_CODES; i++)
+            for (var i = 0; i < InternalConstants.D_CODES; i++)
                 dyn_dtree[i * 2] = 0;
-            for (int i = 0; i < InternalConstants.BL_CODES; i++)
+            for (var i = 0; i < InternalConstants.BL_CODES; i++)
                 bl_tree[i * 2] = 0;
 
             dyn_ltree[END_BLOCK * 2] = 1;
@@ -404,8 +404,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         // two sons).
         internal void pqdownheap(short[] tree, int k)
         {
-            int v = heap[k];
-            int j = k << 1; // left son of k
+            var v = heap[k];
+            var j = k << 1; // left son of k
             while (j <= heap_len)
             {
                 // Set j to the smallest of the two sons:
@@ -427,9 +427,9 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
         internal static bool _IsSmaller(short[] tree, int n, int m, sbyte[] depth)
         {
-            short tn2 = tree[n * 2];
-            short tm2 = tree[m * 2];
-            return (tn2 < tm2 || (tn2 == tm2 && depth[n] <= depth[m]));
+            var tn2 = tree[n * 2];
+            var tm2 = tree[m * 2];
+            return tn2 < tm2 || (tn2 == tm2 && depth[n] <= depth[m]);
         }
 
 
@@ -438,12 +438,12 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         internal void scan_tree(short[] tree, int max_code)
         {
             int n; // iterates over all tree elements
-            int prevlen = -1; // last emitted length
+            var prevlen = -1; // last emitted length
             int curlen; // length of current code
-            int nextlen = (int)tree[0 * 2 + 1]; // length of next code
-            int count = 0; // repeat count of the current code
-            int max_count = 7; // max repeat count
-            int min_count = 4; // min repeat count
+            var nextlen = (int)tree[0 * 2 + 1]; // length of next code
+            var count = 0; // repeat count of the current code
+            var max_count = 7; // max repeat count
+            var min_count = 4; // min repeat count
 
             if (nextlen == 0)
             {
@@ -458,7 +458,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                 {
                     continue;
                 }
-                else if (count < min_count)
+
+                if (count < min_count)
                 {
                     bl_tree[curlen * 2] = (short)(bl_tree[curlen * 2] + count);
                 }
@@ -545,12 +546,12 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         internal void send_tree(short[] tree, int max_code)
         {
             int n;                           // iterates over all tree elements
-            int prevlen = -1;              // last emitted length
+            var prevlen = -1;              // last emitted length
             int curlen;                      // length of current code
             int nextlen = tree[0 * 2 + 1]; // length of next code
-            int count = 0;               // repeat count of the current code
-            int max_count = 7;               // max repeat count
-            int min_count = 4;               // min repeat count
+            var count = 0;               // repeat count of the current code
+            var max_count = 7;               // max repeat count
+            var min_count = 4;               // min repeat count
 
             if (nextlen == 0)
             {
@@ -564,7 +565,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                 {
                     continue;
                 }
-                else if (count < min_count)
+
+                if (count < min_count)
                 {
                     do
                     {
@@ -640,13 +642,13 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
         internal void send_code(int c, short[] tree)
         {
-            int c2 = c * 2;
-            send_bits((tree[c2] & 0xffff), (tree[c2 + 1] & 0xffff));
+            var c2 = c * 2;
+            send_bits(tree[c2] & 0xffff, tree[c2 + 1] & 0xffff);
         }
 
         internal void send_bits(int value, int length)
         {
-            int len = length;
+            var len = length;
             unchecked
             {
                 if (bi_valid > (int)Buf_size - len)
@@ -728,19 +730,19 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
             if ((last_lit & 0x1fff) == 0 && (int)compressionLevel > 2)
             {
                 // Compute an upper bound for the compressed length
-                int out_length = last_lit << 3;
-                int in_length = strstart - block_start;
+                var out_length = last_lit << 3;
+                var in_length = strstart - block_start;
                 int dcode;
                 for (dcode = 0; dcode < InternalConstants.D_CODES; dcode++)
                 {
                     out_length = (int)(out_length + (int)dyn_dtree[dcode * 2] * (5L + Tree.ExtraDistanceBits[dcode]));
                 }
                 out_length >>= 3;
-                if ((matches < (last_lit / 2)) && out_length < in_length / 2)
+                if (matches < last_lit / 2 && out_length < in_length / 2)
                     return true;
             }
 
-            return (last_lit == lit_bufsize - 1) || (last_lit == lit_bufsize);
+            return last_lit == lit_bufsize - 1 || last_lit == lit_bufsize;
             // dinoch - wraparound?
             // We avoid equality with lit_bufsize because of wraparound at 64K
             // on 16 bit machines and because stored blocks are restricted to
@@ -754,7 +756,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         {
             int distance; // distance of matched string
             int lc;       // match length or unmatched char (if dist == 0)
-            int lx = 0;   // running index in l_buf
+            var lx = 0;   // running index in l_buf
             int code;     // the code to send
             int extra;    // number of extra bits to send
 
@@ -762,10 +764,10 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
             {
                 do
                 {
-                    int ix = _distanceOffset + lx * 2;
+                    var ix = _distanceOffset + lx * 2;
                     distance = ((pending[ix] << 8) & 0xff00) |
                         (pending[ix + 1] & 0xff);
-                    lc = (pending[_lengthOffset + lx]) & 0xff;
+                    lc = pending[_lengthOffset + lx] & 0xff;
                     lx++;
 
                     if (distance == 0)
@@ -819,9 +821,9 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         // frequencies does not exceed 64K (to fit in an int on 16 bit machines).
         internal void set_data_type()
         {
-            int n = 0;
-            int ascii_freq = 0;
-            int bin_freq = 0;
+            var n = 0;
+            var ascii_freq = 0;
+            var bin_freq = 0;
             while (n < 7)
             {
                 bin_freq += dyn_ltree[n * 2]; n++;
@@ -834,7 +836,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
             {
                 bin_freq += dyn_ltree[n * 2]; n++;
             }
-            data_type = (sbyte)(bin_freq > (ascii_freq >> 2) ? Z_BINARY : Z_ASCII);
+            data_type = (sbyte)(bin_freq > ascii_freq >> 2 ? Z_BINARY : Z_ASCII);
         }
 
 
@@ -915,7 +917,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
             // Stored blocks are limited to 0xffff bytes, pending is limited
             // to pending_buf_size, and each stored block has a 5 byte header:
 
-            int max_block_size = 0xffff;
+            var max_block_size = 0xffff;
             int max_start;
 
             if (max_block_size > pending.Length - 5)
@@ -964,7 +966,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
             flush_block_only(flush == FlushType.Finish);
             if (_codec.AvailableBytesOut == 0)
-                return (flush == FlushType.Finish) ? BlockState.FinishStarted : BlockState.NeedMore;
+                return flush == FlushType.Finish ? BlockState.FinishStarted : BlockState.NeedMore;
 
             return flush == FlushType.Finish ? BlockState.FinishDone : BlockState.BlockDone;
         }
@@ -982,7 +984,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         internal void _tr_flush_block(int buf, int stored_len, bool eof)
         {
             int opt_lenb, static_lenb; // opt_len and static_len in bytes
-            int max_blindex = 0; // index of last bit length code of non zero freq
+            var max_blindex = 0; // index of last bit length code of non zero freq
 
             // Build the Huffman trees unless a stored block is forced
             if (compressionLevel > 0)
@@ -1064,7 +1066,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
             do
             {
-                more = (window_size - lookahead - strstart);
+                more = window_size - lookahead - strstart;
 
                 // Deal with !@#$% 64K limit:
                 if (more == 0 && strstart == 0 && lookahead == 0)
@@ -1097,8 +1099,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                     p = n;
                     do
                     {
-                        m = (head[--p] & 0xffff);
-                        head[p] = (short)((m >= w_size) ? (m - w_size) : 0);
+                        m = head[--p] & 0xffff;
+                        head[p] = (short)(m >= w_size ? m - w_size : 0);
                     }
                     while (--n != 0);
 
@@ -1106,8 +1108,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                     p = n;
                     do
                     {
-                        m = (prev[--p] & 0xffff);
-                        prev[p] = (short)((m >= w_size) ? (m - w_size) : 0);
+                        m = prev[--p] & 0xffff;
+                        prev[p] = (short)(m >= w_size ? m - w_size : 0);
                         // If n is not on any hash chain, prev[n] is garbage but
                         // its value will never be used.
                     }
@@ -1136,7 +1138,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                 if (lookahead >= MIN_MATCH)
                 {
                     ins_h = window[strstart] & 0xff;
-                    ins_h = (((ins_h) << hash_shift) ^ (window[strstart + 1] & 0xff)) & hash_mask;
+                    ins_h = ((ins_h << hash_shift) ^ (window[strstart + 1] & 0xff)) & hash_mask;
                 }
                 // If the whole input has less than MIN_MATCH bytes, ins_h is garbage,
                 // but this is not important since only literal bytes will be emitted.
@@ -1152,7 +1154,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         internal BlockState DeflateFast(FlushType flush)
         {
             //    short hash_head = 0; // head of the hash chain
-            int hash_head = 0; // head of the hash chain
+            var hash_head = 0; // head of the hash chain
             bool bflush; // set if current block must be flushed
 
             while (true)
@@ -1176,10 +1178,10 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                 // dictionary, and set hash_head to the head of the hash chain:
                 if (lookahead >= MIN_MATCH)
                 {
-                    ins_h = (((ins_h) << hash_shift) ^ (window[(strstart) + (MIN_MATCH - 1)] & 0xff)) & hash_mask;
+                    ins_h = ((ins_h << hash_shift) ^ (window[strstart + (MIN_MATCH - 1)] & 0xff)) & hash_mask;
 
                     //  prev[strstart&w_mask]=hash_head=head[ins_h];
-                    hash_head = (head[ins_h] & 0xffff);
+                    hash_head = head[ins_h] & 0xffff;
                     prev[strstart & w_mask] = head[ins_h];
                     head[ins_h] = unchecked((short)strstart);
                 }
@@ -1215,9 +1217,9 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                         {
                             strstart++;
 
-                            ins_h = ((ins_h << hash_shift) ^ (window[(strstart) + (MIN_MATCH - 1)] & 0xff)) & hash_mask;
+                            ins_h = ((ins_h << hash_shift) ^ (window[strstart + (MIN_MATCH - 1)] & 0xff)) & hash_mask;
                             //      prev[strstart&w_mask]=hash_head=head[ins_h];
-                            hash_head = (head[ins_h] & 0xffff);
+                            hash_head = head[ins_h] & 0xffff;
                             prev[strstart & w_mask] = head[ins_h];
                             head[ins_h] = unchecked((short)strstart);
 
@@ -1233,7 +1235,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                         match_length = 0;
                         ins_h = window[strstart] & 0xff;
 
-                        ins_h = (((ins_h) << hash_shift) ^ (window[strstart + 1] & 0xff)) & hash_mask;
+                        ins_h = ((ins_h << hash_shift) ^ (window[strstart + 1] & 0xff)) & hash_mask;
                         // If lookahead < MIN_MATCH, ins_h is garbage, but it does not
                         // matter since it will be recomputed at next deflate call.
                     }
@@ -1259,8 +1261,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
             {
                 if (flush == FlushType.Finish)
                     return BlockState.FinishStarted;
-                else
-                    return BlockState.NeedMore;
+                return BlockState.NeedMore;
             }
             return flush == FlushType.Finish ? BlockState.FinishDone : BlockState.BlockDone;
         }
@@ -1271,7 +1272,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         internal BlockState DeflateSlow(FlushType flush)
         {
             //    short hash_head = 0;    // head of hash chain
-            int hash_head = 0; // head of hash chain
+            var hash_head = 0; // head of hash chain
             bool bflush; // set if current block must be flushed
 
             // Process the input block.
@@ -1297,9 +1298,9 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
                 if (lookahead >= MIN_MATCH)
                 {
-                    ins_h = (((ins_h) << hash_shift) ^ (window[(strstart) + (MIN_MATCH - 1)] & 0xff)) & hash_mask;
+                    ins_h = ((ins_h << hash_shift) ^ (window[strstart + (MIN_MATCH - 1)] & 0xff)) & hash_mask;
                     //  prev[strstart&w_mask]=hash_head=head[ins_h];
-                    hash_head = (head[ins_h] & 0xffff);
+                    hash_head = head[ins_h] & 0xffff;
                     prev[strstart & w_mask] = head[ins_h];
                     head[ins_h] = unchecked((short)strstart);
                 }
@@ -1336,7 +1337,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                 // match is not better, output the previous match:
                 if (prev_length >= MIN_MATCH && match_length <= prev_length)
                 {
-                    int max_insert = strstart + lookahead - MIN_MATCH;
+                    var max_insert = strstart + lookahead - MIN_MATCH;
                     // Do not insert strings in hash table beyond this.
 
                     //          check_match(strstart-1, prev_match, prev_length);
@@ -1347,15 +1348,15 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                     // strstart-1 and strstart are already inserted. If there is not
                     // enough lookahead, the last two strings are not inserted in
                     // the hash table.
-                    lookahead -= (prev_length - 1);
+                    lookahead -= prev_length - 1;
                     prev_length -= 2;
                     do
                     {
                         if (++strstart <= max_insert)
                         {
-                            ins_h = (((ins_h) << hash_shift) ^ (window[(strstart) + (MIN_MATCH - 1)] & 0xff)) & hash_mask;
+                            ins_h = ((ins_h << hash_shift) ^ (window[strstart + (MIN_MATCH - 1)] & 0xff)) & hash_mask;
                             //prev[strstart&w_mask]=hash_head=head[ins_h];
-                            hash_head = (head[ins_h] & 0xffff);
+                            hash_head = head[ins_h] & 0xffff;
                             prev[strstart & w_mask] = head[ins_h];
                             head[ins_h] = unchecked((short)strstart);
                         }
@@ -1412,8 +1413,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
             {
                 if (flush == FlushType.Finish)
                     return BlockState.FinishStarted;
-                else
-                    return BlockState.NeedMore;
+                return BlockState.NeedMore;
             }
 
             return flush == FlushType.Finish ? BlockState.FinishDone : BlockState.BlockDone;
@@ -1422,23 +1422,23 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
         internal int longest_match(int cur_match)
         {
-            int chain_length = config.MaxChainLength; // max hash chain length
-            int scan = strstart;              // current string
+            var chain_length = config.MaxChainLength; // max hash chain length
+            var scan = strstart;              // current string
             int match;                                // matched string
             int len;                                  // length of current match
-            int best_len = prev_length;           // best match length so far
-            int limit = strstart > (w_size - MIN_LOOKAHEAD) ? strstart - (w_size - MIN_LOOKAHEAD) : 0;
+            var best_len = prev_length;           // best match length so far
+            var limit = strstart > w_size - MIN_LOOKAHEAD ? strstart - (w_size - MIN_LOOKAHEAD) : 0;
 
-            int niceLength = config.NiceLength;
+            var niceLength = config.NiceLength;
 
             // Stop when cur_match becomes <= limit. To simplify the code,
             // we prevent matches with the string of window index 0.
 
-            int wmask = w_mask;
+            var wmask = w_mask;
 
-            int strend = strstart + MAX_MATCH;
-            byte scan_end1 = window[scan + best_len - 1];
-            byte scan_end = window[scan + best_len];
+            var strend = strstart + MAX_MATCH;
+            var scan_end1 = window[scan + best_len - 1];
+            var scan_end = window[scan + best_len];
 
             // The code is optimized for HASH_BITS >= 8 and MAX_MATCH-2 multiple of 16.
             // It is easy to get rid of this optimization if necessary.
@@ -1500,7 +1500,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                     scan_end = window[scan + best_len];
                 }
             }
-            while ((cur_match = (prev[cur_match & wmask] & 0xffff)) > limit && --chain_length != 0);
+            while ((cur_match = prev[cur_match & wmask] & 0xffff) > limit && --chain_length != 0);
 
             if (best_len <= lookahead)
                 return best_len;
@@ -1512,8 +1512,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
         private bool _WantRfc1950HeaderBytes = true;
         internal bool WantRfc1950HeaderBytes
         {
-            get { return _WantRfc1950HeaderBytes; }
-            set { _WantRfc1950HeaderBytes = value; }
+            get => _WantRfc1950HeaderBytes;
+            set => _WantRfc1950HeaderBytes = value;
         }
 
 
@@ -1553,7 +1553,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
             hash_bits = memLevel + 7;
             hash_size = 1 << hash_bits;
             hash_mask = hash_size - 1;
-            hash_shift = ((hash_bits + MIN_MATCH - 1) / MIN_MATCH);
+            hash_shift = (hash_bits + MIN_MATCH - 1) / MIN_MATCH;
 
             window = new byte[w_size * 2];
             prev = new short[w_size];
@@ -1575,8 +1575,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
             // The middle slice, of 32k, is used for distance codes.
             // The final 16k are length codes.
 
-            this.compressionLevel = level;
-            this.compressionStrategy = strategy;
+            compressionLevel = level;
+            compressionStrategy = strategy;
 
             Reset();
             return ZlibConstants.Z_OK;
@@ -1594,7 +1594,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
             Rfc1950BytesEmitted = false;
 
-            status = (WantRfc1950HeaderBytes) ? INIT_STATE : BUSY_STATE;
+            status = WantRfc1950HeaderBytes ? INIT_STATE : BUSY_STATE;
             _codec._Adler32 = Adler.Adler32(0, null, 0, 0);
 
             last_flush = (int)FlushType.None;
@@ -1640,11 +1640,11 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
         internal int SetParams(CompressionLevel level, CompressionStrategy strategy)
         {
-            int result = ZlibConstants.Z_OK;
+            var result = ZlibConstants.Z_OK;
 
             if (compressionLevel != level)
             {
-                Config newConfig = Config.Lookup(level);
+                var newConfig = Config.Lookup(level);
 
                 // change in the deflate flavor (Fast vs slow vs none)?
                 if (newConfig.Flavor != config.Flavor && _codec.TotalBytesIn != 0)
@@ -1667,8 +1667,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
 
         internal int SetDictionary(byte[] dictionary)
         {
-            int length = dictionary.Length;
-            int index = 0;
+            var length = dictionary.Length;
+            var index = 0;
 
             if (dictionary == null || status != INIT_STATE)
                 throw new ZlibException("Stream error.");
@@ -1691,11 +1691,11 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
             // call of fill_window.
 
             ins_h = window[0] & 0xff;
-            ins_h = (((ins_h) << hash_shift) ^ (window[1] & 0xff)) & hash_mask;
+            ins_h = ((ins_h << hash_shift) ^ (window[1] & 0xff)) & hash_mask;
 
-            for (int n = 0; n <= length - MIN_MATCH; n++)
+            for (var n = 0; n <= length - MIN_MATCH; n++)
             {
-                ins_h = (((ins_h) << hash_shift) ^ (window[(n) + (MIN_MATCH - 1)] & 0xff)) & hash_mask;
+                ins_h = ((ins_h << hash_shift) ^ (window[n + (MIN_MATCH - 1)] & 0xff)) & hash_mask;
                 prev[n & w_mask] = head[ins_h];
                 head[ins_h] = (short)n;
             }
@@ -1712,12 +1712,12 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                 (_codec.InputBuffer == null && _codec.AvailableBytesIn != 0) ||
                 (status == FINISH_STATE && flush != FlushType.Finish))
             {
-                _codec.Message = _ErrorMessage[ZlibConstants.Z_NEED_DICT - (ZlibConstants.Z_STREAM_ERROR)];
+                _codec.Message = _ErrorMessage[ZlibConstants.Z_NEED_DICT - ZlibConstants.Z_STREAM_ERROR];
                 throw new ZlibException(String.Format("Something is fishy. [{0}]", _codec.Message));
             }
             if (_codec.AvailableBytesOut == 0)
             {
-                _codec.Message = _ErrorMessage[ZlibConstants.Z_NEED_DICT - (ZlibConstants.Z_BUF_ERROR)];
+                _codec.Message = _ErrorMessage[ZlibConstants.Z_NEED_DICT - ZlibConstants.Z_BUF_ERROR];
                 throw new ZlibException("OutputBuffer is full (AvailableBytesOut == 0)");
             }
 
@@ -1727,15 +1727,15 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
             // Write the zlib (rfc1950) header bytes
             if (status == INIT_STATE)
             {
-                int header = (Z_DEFLATED + ((w_bits - 8) << 4)) << 8;
-                int level_flags = (((int)compressionLevel - 1) & 0xff) >> 1;
+                var header = (Z_DEFLATED + ((w_bits - 8) << 4)) << 8;
+                var level_flags = (((int)compressionLevel - 1) & 0xff) >> 1;
 
                 if (level_flags > 3)
                     level_flags = 3;
-                header |= (level_flags << 6);
+                header |= level_flags << 6;
                 if (strstart != 0)
                     header |= PRESET_DICT;
-                header += 31 - (header % 31);
+                header += 31 - header % 31;
 
                 status = BUSY_STATE;
                 //putShortMSB(header);
@@ -1795,14 +1795,14 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
             // User must not provide more input after the first FINISH:
             if (status == FINISH_STATE && _codec.AvailableBytesIn != 0)
             {
-                _codec.Message = _ErrorMessage[ZlibConstants.Z_NEED_DICT - (ZlibConstants.Z_BUF_ERROR)];
+                _codec.Message = _ErrorMessage[ZlibConstants.Z_NEED_DICT - ZlibConstants.Z_BUF_ERROR];
                 throw new ZlibException("status == FINISH_STATE && _codec.AvailableBytesIn != 0");
             }
 
             // Start a new block or continue the current one.
             if (_codec.AvailableBytesIn != 0 || lookahead != 0 || (flush != FlushType.None && status != FINISH_STATE))
             {
-                BlockState bstate = DeflateFunction(flush);
+                var bstate = DeflateFunction(flush);
 
                 if (bstate == BlockState.FinishStarted || bstate == BlockState.FinishDone)
                 {
@@ -1838,7 +1838,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zlib
                         if (flush == FlushType.Full)
                         {
                             // clear hash (forget the history)
-                            for (int i = 0; i < hash_size; i++)
+                            for (var i = 0; i < hash_size; i++)
                                 head[i] = 0;
                         }
                     }

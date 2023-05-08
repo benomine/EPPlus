@@ -67,23 +67,18 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             get
             {
-                switch (GetXmlNodeString(POSITION_PATH).ToLower(CultureInfo.InvariantCulture))
+                return GetXmlNodeString(POSITION_PATH).ToLower(CultureInfo.InvariantCulture) switch
                 {
-                    case "t":
-                        return eLegendPosition.Top;
-                    case "b":
-                        return eLegendPosition.Bottom;
-                    case "l":
-                        return eLegendPosition.Left;
-                    case "tr":
-                        return eLegendPosition.TopRight;
-                    default:
-                        return eLegendPosition.Right;
-                }
+                    "t" => eLegendPosition.Top,
+                    "b" => eLegendPosition.Bottom,
+                    "l" => eLegendPosition.Left,
+                    "tr" => eLegendPosition.TopRight,
+                    _ => eLegendPosition.Right
+                };
             }
             set
             {
-                if (TopNode == null) throw (new Exception("Can't set position. Chart has no legend"));
+                if (TopNode == null) throw new Exception("Can't set position. Chart has no legend");
                 switch (value)
                 {
                     case eLegendPosition.Top:
@@ -110,13 +105,10 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public bool Overlay
         {
-            get
-            {
-                return GetXmlNodeBool(OVERLAY_PATH);
-            }
+            get => GetXmlNodeBool(OVERLAY_PATH);
             set
             {
-                if (TopNode == null) throw (new Exception("Can't set overlay. Chart has no legend"));
+                if (TopNode == null) throw new Exception("Can't set overlay. Chart has no legend");
                 SetXmlNodeBool(OVERLAY_PATH, value);
             }
         }
@@ -124,32 +116,14 @@ namespace OfficeOpenXml.Drawing.Chart
         /// <summary>
         /// Fill style
         /// </summary>
-        public ExcelDrawingFill Fill
-        {
-            get
-            {
-                if (_fill == null)
-                {
-                    _fill = new ExcelDrawingFill(NameSpaceManager, TopNode, "c:spPr");
-                }
-                return _fill;
-            }
-        }
+        public ExcelDrawingFill Fill => _fill ??= new ExcelDrawingFill(NameSpaceManager, TopNode, "c:spPr");
+
         ExcelDrawingBorder _border = null;
         /// <summary>
         /// Border style
         /// </summary>
-        public ExcelDrawingBorder Border
-        {
-            get
-            {
-                if (_border == null)
-                {
-                    _border = new ExcelDrawingBorder(NameSpaceManager, TopNode, "c:spPr/a:ln");
-                }
-                return _border;
-            }
-        }
+        public ExcelDrawingBorder Border => _border ??= new ExcelDrawingBorder(NameSpaceManager, TopNode, "c:spPr/a:ln");
+
         ExcelTextFont _font = null;
         /// <summary>
         /// Font properties
@@ -186,7 +160,7 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             if (TopNode!=null) return;
 
-            XmlHelper xml = XmlHelperFactory.Create(NameSpaceManager, _chart.ChartXml);
+            var xml = XmlHelperFactory.Create(NameSpaceManager, _chart.ChartXml);
             xml.SchemaNodeOrder=_chart.SchemaNodeOrder;
 
             xml.CreateNode("c:chartSpace/c:chart/c:legend");

@@ -70,10 +70,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             _negate = negate;
         }
 
-        public override bool IsGroupedExpression
-        {
-            get { return false; }
-        }
+        public override bool IsGroupedExpression => false;
 
         public override CompileResult Compile()
         {
@@ -98,20 +95,18 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 
         private CompileResult CompileRangeValues()
         {
-            var c = this._parsingContext.Scopes.Current;
+            var c = _parsingContext.Scopes.Current;
             var result = _excelDataProvider.GetRange(c.Address.Worksheet, c.Address.FromRow, c.Address.FromCol, ExpressionString);
             if (result == null)
             {
                 return CompileResult.Empty;
             }
-            if (this.ResolveAsRange || result.Address.Rows > 1 || result.Address.Columns > 1)
+            if (ResolveAsRange || result.Address.Rows > 1 || result.Address.Columns > 1)
             {
                 return new CompileResult(result, DataType.Enumerable);
             }
-            else
-            {
-                return CompileSingleCell(result);
-            }
+
+            return CompileSingleCell(result);
         }
 
         private CompileResult CompileSingleCell(ExcelDataProvider.IRangeInfo result)

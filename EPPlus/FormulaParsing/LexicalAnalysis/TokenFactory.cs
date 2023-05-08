@@ -62,7 +62,7 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
 
         public Token Create(IEnumerable<Token> tokens, string token, string worksheet = null)
         {
-            if (_tokenSeparatorProvider.Tokens.TryGetValue(token, out Token tokenSeparator))
+            if (_tokenSeparatorProvider.Tokens.TryGetValue(token, out var tokenSeparator))
             {
                 return tokenSeparator;
             }
@@ -70,7 +70,7 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
             //Address with worksheet-string before  /JK
             if (token.StartsWith("!") && tokenList[tokenList.Count-1].TokenType == TokenType.String)
             {
-                string addr = "";
+                var addr = "";
                 var i = tokenList.Count - 2;
                 if (i > 0)
                 {
@@ -80,7 +80,7 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
                     }
                     else
                     {
-                        throw (new ArgumentException(string.Format("Invalid formula token sequence near {0}", token)));
+                        throw new ArgumentException(string.Format("Invalid formula token sequence near {0}", token));
                     }
                     //Remove the string tokens and content
                     tokenList.RemoveAt(tokenList.Count - 1);
@@ -89,10 +89,8 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
 
                     return new Token(addr + token, TokenType.ExcelAddress);
                 }
-                else
-                {
-                    throw (new ArgumentException(string.Format("Invalid formula token sequence near {0}", token)));
-                }
+
+                throw new ArgumentException(string.Format("Invalid formula token sequence near {0}", token));
 
             }
 
@@ -149,7 +147,8 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
             {
                 return new Token(token.ToUpper(CultureInfo.InvariantCulture), TokenType.ExcelAddress);
             }
-            else if (at == ExcelAddressBase.AddressType.R1C1)
+
+            if (at == ExcelAddressBase.AddressType.R1C1)
             {
                 return new Token(token.ToUpper(CultureInfo.InvariantCulture), TokenType.ExcelAddressR1C1);
             }

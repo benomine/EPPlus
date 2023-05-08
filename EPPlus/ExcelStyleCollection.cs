@@ -52,7 +52,7 @@ namespace OfficeOpenXml
             _setNextIdManual = SetNextIdManual;
         }
         public XmlNode TopNode { get; set; }
-        internal List<T> _list = new List<T>();
+        private List<T> _list = new List<T>();
         Dictionary<string, int> _dic = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
         internal int NextId = 0;
         #region IEnumerable<T> Members
@@ -70,20 +70,9 @@ namespace OfficeOpenXml
             return _list.GetEnumerator();
         }
         #endregion
-        public T this[int PositionID]
-        {
-            get
-            {
-                return _list[PositionID];
-            }
-        }
-        public int Count
-        {
-            get
-            {
-                return _list.Count;
-            }
-        }
+        public T this[int positionId] => _list[positionId];
+
+        public int Count => _list.Count;
 
         internal int Add(string key, T item)
         {
@@ -100,15 +89,10 @@ namespace OfficeOpenXml
         /// <returns>True if found</returns>
         internal bool FindByID(string key, ref T obj)
         {
-            if (_dic.ContainsKey(key))
-            {
-                obj = _list[_dic[key.ToLower(CultureInfo.InvariantCulture)]];
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            if (!_dic.ContainsKey(key)) return false;
+            obj = _list[_dic[key.ToLower(CultureInfo.InvariantCulture)]];
+            return true;
+
         }
         /// <summary>
         /// Find Index
@@ -117,14 +101,7 @@ namespace OfficeOpenXml
         /// <returns></returns>
         internal int FindIndexByID(string key)
         {
-            if (_dic.ContainsKey(key))
-            {
-                return _dic[key];
-            }
-            else
-            {
-                return int.MinValue;
-            }
+            return _dic.ContainsKey(key) ? _dic[key] : int.MinValue;
         }
         internal bool ExistsKey(string key)
         {

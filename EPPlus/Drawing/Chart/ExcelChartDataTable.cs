@@ -42,7 +42,7 @@ namespace OfficeOpenXml.Drawing.Chart
         internal ExcelChartDataTable(XmlNamespaceManager ns, XmlNode node)
             : base(ns, node)
         {
-            XmlNode topNode = node.SelectSingleNode("c:dTable", NameSpaceManager);
+            var topNode = node.SelectSingleNode("c:dTable", NameSpaceManager);
             if (topNode == null)
             {
                 topNode = node.OwnerDocument.CreateElement("c", "dTable", ExcelPackage.schemaChart);
@@ -59,14 +59,8 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public bool ShowHorizontalBorder
         {
-            get
-            {
-                return GetXmlNodeBool(showHorzBorderPath);
-            }
-            set
-            {
-                SetXmlNodeString(showHorzBorderPath, value ? "1" : "0");
-            }
+            get => GetXmlNodeBool(showHorzBorderPath);
+            set => SetXmlNodeString(showHorzBorderPath, value ? "1" : "0");
         }
         const string showVertBorderPath = "c:showVertBorder/@val";
         /// <summary>
@@ -74,14 +68,8 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public bool ShowVerticalBorder
         {
-            get
-            {
-                return GetXmlNodeBool(showVertBorderPath);
-            }
-            set
-            {
-                SetXmlNodeString(showVertBorderPath, value ? "1" : "0");
-            }
+            get => GetXmlNodeBool(showVertBorderPath);
+            set => SetXmlNodeString(showVertBorderPath, value ? "1" : "0");
         }
         const string showOutlinePath = "c:showOutline/@val";
         /// <summary>
@@ -89,14 +77,8 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public bool ShowOutline
         {
-            get
-            {
-                return GetXmlNodeBool(showOutlinePath);
-            }
-            set
-            {
-                SetXmlNodeString(showOutlinePath, value ? "1" : "0");
-            }
+            get => GetXmlNodeBool(showOutlinePath);
+            set => SetXmlNodeString(showOutlinePath, value ? "1" : "0");
         }
         const string showKeysPath = "c:showKeys/@val";
         /// <summary>
@@ -104,45 +86,21 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public bool ShowKeys
         {
-            get
-            {
-                return GetXmlNodeBool(showKeysPath);
-            }
-            set
-            {
-                SetXmlNodeString(showKeysPath, value ? "1" : "0");
-            }
+            get => GetXmlNodeBool(showKeysPath);
+            set => SetXmlNodeString(showKeysPath, value ? "1" : "0");
         }
         ExcelDrawingFill _fill = null;
         /// <summary>
         /// Access fill properties
         /// </summary>
-        public ExcelDrawingFill Fill
-        {
-            get
-            {
-                if (_fill == null)
-                {
-                    _fill = new ExcelDrawingFill(NameSpaceManager, TopNode, "c:spPr");
-                }
-                return _fill;
-            }
-        }
+        public ExcelDrawingFill Fill => _fill ??= new ExcelDrawingFill(NameSpaceManager, TopNode, "c:spPr");
+
         ExcelDrawingBorder _border = null;
         /// <summary>
         /// Access border properties
         /// </summary>
-        public ExcelDrawingBorder Border
-        {
-            get
-            {
-                if (_border == null)
-                {
-                    _border = new ExcelDrawingBorder(NameSpaceManager, TopNode, "c:spPr/a:ln");
-                }
-                return _border;
-            }
-        }
+        public ExcelDrawingBorder Border => _border ??= new ExcelDrawingBorder(NameSpaceManager, TopNode, "c:spPr/a:ln");
+
         string[] _paragraphSchemaOrder = new string[] { "spPr", "txPr", "dLblPos", "showVal", "showCatName", "showSerName", "showPercent", "separator", "showLeaderLines", "pPr", "defRPr", "solidFill", "uFill", "latin", "cs", "r", "rPr", "t" };
         ExcelTextFont _font = null;
         /// <summary>
@@ -168,52 +126,34 @@ namespace OfficeOpenXml.Drawing.Chart
         #region "Position Enum Translation"
         protected string GetPosText(eLabelPosition pos)
         {
-            switch (pos)
+            return pos switch
             {
-                case eLabelPosition.Bottom:
-                    return "b";
-                case eLabelPosition.Center:
-                    return "ctr";
-                case eLabelPosition.InBase:
-                    return "inBase";
-                case eLabelPosition.InEnd:
-                    return "inEnd";
-                case eLabelPosition.Left:
-                    return "l";
-                case eLabelPosition.Right:
-                    return "r";
-                case eLabelPosition.Top:
-                    return "t";
-                case eLabelPosition.OutEnd:
-                    return "outEnd";
-                default:
-                    return "bestFit";
-            }
+                eLabelPosition.Bottom => "b",
+                eLabelPosition.Center => "ctr",
+                eLabelPosition.InBase => "inBase",
+                eLabelPosition.InEnd => "inEnd",
+                eLabelPosition.Left => "l",
+                eLabelPosition.Right => "r",
+                eLabelPosition.Top => "t",
+                eLabelPosition.OutEnd => "outEnd",
+                _ => "bestFit"
+            };
         }
 
         protected eLabelPosition GetPosEnum(string pos)
         {
-            switch (pos)
+            return pos switch
             {
-                case "b":
-                    return eLabelPosition.Bottom;
-                case "ctr":
-                    return eLabelPosition.Center;
-                case "inBase":
-                    return eLabelPosition.InBase;
-                case "inEnd":
-                    return eLabelPosition.InEnd;
-                case "l":
-                    return eLabelPosition.Left;
-                case "r":
-                    return eLabelPosition.Right;
-                case "t":
-                    return eLabelPosition.Top;
-                case "outEnd":
-                    return eLabelPosition.OutEnd;
-                default:
-                    return eLabelPosition.BestFit;
-            }
+                "b" => eLabelPosition.Bottom,
+                "ctr" => eLabelPosition.Center,
+                "inBase" => eLabelPosition.InBase,
+                "inEnd" => eLabelPosition.InEnd,
+                "l" => eLabelPosition.Left,
+                "r" => eLabelPosition.Right,
+                "t" => eLabelPosition.Top,
+                "outEnd" => eLabelPosition.OutEnd,
+                _ => eLabelPosition.BestFit
+            };
         }
         #endregion
     }

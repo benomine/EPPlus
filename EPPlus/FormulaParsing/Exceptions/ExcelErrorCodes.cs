@@ -86,19 +86,10 @@ namespace OfficeOpenXml.FormulaParsing.Exceptions
             return false;
         }
 
-        public static ExcelErrorCodes Value
-        {
-            get { return new ExcelErrorCodes("#VALUE!"); }
-        }
+        public static ExcelErrorCodes Value => new("#VALUE!");
 
-        public static ExcelErrorCodes Name
-        {
-            get { return new ExcelErrorCodes("#NAME?"); }
-        }
+        public static ExcelErrorCodes Name => new("#NAME?");
 
-        public static ExcelErrorCodes NoValueAvaliable
-        {
-            get { return new ExcelErrorCodes("#N/A"); }
-        }
+        public static ExcelErrorCodes NoValueAvaliable => new("#N/A");
     }
 }

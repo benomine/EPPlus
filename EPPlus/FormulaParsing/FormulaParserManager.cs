@@ -95,7 +95,7 @@ namespace OfficeOpenXml.FormulaParsing
         public IEnumerable<string> GetImplementedFunctionNames()
         {
             var fnList = _parser.FunctionNames.ToList();
-            fnList.Sort((x, y) => String.Compare(x, y, System.StringComparison.Ordinal));
+            fnList.Sort((x, y) => String.Compare(x, y, StringComparison.Ordinal));
             return fnList;
         }
 

@@ -127,7 +127,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
     //#endif
     internal partial class ZipFile :
     System.Collections.IEnumerable,
-    System.Collections.Generic.IEnumerable<ZipEntry>,
+    IEnumerable<ZipEntry>,
     IDisposable
     {
 
@@ -316,8 +316,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
         public int BufferSize
         {
-            get { return _BufferSize; }
-            set { _BufferSize = value; }
+            get => _BufferSize;
+            set => _BufferSize = value;
         }
 
         /// <summary>
@@ -400,8 +400,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// </remarks>
         public CompressionStrategy Strategy
         {
-            get { return _Strategy; }
-            set { _Strategy = value; }
+            get => _Strategy;
+            set => _Strategy = value;
         }
 
 
@@ -431,8 +431,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// </remarks>
         public string Name
         {
-            get { return _name; }
-            set { _name = value; }
+            get => _name;
+            set => _name = value;
         }
 
 
@@ -484,16 +484,10 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         ///   </para>
         /// </remarks>
         /// <seealso cref="Ionic.Zip.CompressionMethod" />
-        internal Ionic.Zip.CompressionMethod CompressionMethod
+        internal CompressionMethod CompressionMethod
         {
-            get
-            {
-                return _compressionMethod;
-            }
-            set
-            {
-                _compressionMethod = value;
-            }
+            get => _compressionMethod;
+            set => _compressionMethod = value;
         }
 
 
@@ -550,7 +544,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// </remarks>
         public string Comment
         {
-            get { return _Comment; }
+            get => _Comment;
             set
             {
                 _Comment = value;
@@ -671,14 +665,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// <seealso cref="EmitTimesInUnixFormatWhenSaving" />
         public bool EmitTimesInWindowsFormatWhenSaving
         {
-            get
-            {
-                return _emitNtfsTimes;
-            }
-            set
-            {
-                _emitNtfsTimes = value;
-            }
+            get => _emitNtfsTimes;
+            set => _emitNtfsTimes = value;
         }
 
 
@@ -762,14 +750,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// <seealso cref="EmitTimesInWindowsFormatWhenSaving" />
         public bool EmitTimesInUnixFormatWhenSaving
         {
-            get
-            {
-                return _emitUnixTimes;
-            }
-            set
-            {
-                _emitUnixTimes = value;
-            }
+            get => _emitUnixTimes;
+            set => _emitUnixTimes = value;
         }
 
 
@@ -784,10 +766,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         ///   This is a <em>synthetic</em> property.  It returns true if the <see
         ///   cref="StatusMessageTextWriter"/> is non-null.
         /// </remarks>
-        internal bool Verbose
-        {
-            get { return (_StatusMessageTextWriter != null); }
-        }
+        internal bool Verbose => _StatusMessageTextWriter != null;
 
 
         /// <summary>
@@ -820,10 +799,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// </remarks>
         public bool CaseSensitiveRetrieval
         {
-            get
-            {
-                return _CaseSensitiveRetrieval;
-            }
+            get => _CaseSensitiveRetrieval;
 
             set
             {
@@ -955,11 +931,9 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         [Obsolete("Beginning with v1.9.1.6 of DotNetZip, this property is obsolete.  It will be removed in a future version of the library. Your applications should  use AlternateEncoding and AlternateEncodingUsage instead.")]
         public bool UseUnicodeAsNecessary
         {
-            get
-            {
-                return (_alternateEncoding == System.Text.Encoding.GetEncoding("UTF-8")) &&
-                    (_alternateEncodingUsage == ZipOption.AsNecessary);
-            }
+            get =>
+                _alternateEncoding == System.Text.Encoding.GetEncoding("UTF-8") &&
+                _alternateEncodingUsage == ZipOption.AsNecessary;
             set
             {
                 if (value)
@@ -970,7 +944,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                 }
                 else
                 {
-                    _alternateEncoding = Ionic.Zip.ZipFile.DefaultEncoding;
+                    _alternateEncoding = DefaultEncoding;
                     _alternateEncodingUsage = ZipOption.Never;
                 }
             }
@@ -1019,14 +993,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// <seealso cref="RequiresZip64"/>
         internal Zip64Option UseZip64WhenSaving
         {
-            get
-            {
-                return _zip64;
-            }
-            set
-            {
-                _zip64 = value;
-            }
+            get => _zip64;
+            set => _zip64 = value;
         }
 
 
@@ -1087,7 +1055,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                 if (!_hasBeenSaved || _contentsChanged) return null;
 
                 // Whether ZIP64 is required is knowable.
-                foreach (ZipEntry e in _entries.Values)
+                foreach (var e in _entries.Values)
                 {
                     if (e.RequiresZip64.Value) return new Nullable<bool>(true);
                 }
@@ -1134,13 +1102,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// </remarks>
         /// <seealso cref="UseZip64WhenSaving"/>
         /// <seealso cref="RequiresZip64"/>
-        public Nullable<bool> OutputUsedZip64
-        {
-            get
-            {
-                return _OutputUsesZip64;
-            }
-        }
+        public Nullable<bool> OutputUsedZip64 => _OutputUsesZip64;
 
 
         /// <summary>
@@ -1159,7 +1121,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                 if (_entries.Count > 65534)
                     return true;
 
-                foreach (ZipEntry e in this)
+                foreach (var e in this)
                 {
                     // if any entry was added after reading the zip file, then the result is null
                     if (e.Source != ZipEntrySource.ZipFile) return null;
@@ -1344,14 +1306,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// </remarks>
         public System.Text.Encoding AlternateEncoding
         {
-            get
-            {
-                return _alternateEncoding;
-            }
-            set
-            {
-                _alternateEncoding = value;
-            }
+            get => _alternateEncoding;
+            set => _alternateEncoding = value;
         }
 
 
@@ -1362,14 +1318,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// </summary>
         internal ZipOption AlternateEncodingUsage
         {
-            get
-            {
-                return _alternateEncodingUsage;
-            }
-            set
-            {
-                _alternateEncodingUsage = value;
-            }
+            get => _alternateEncodingUsage;
+            set => _alternateEncodingUsage = value;
         }
 
 
@@ -1378,13 +1328,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// known as IBM437.
         /// </summary>
         /// <seealso cref="Ionic.Zip.ZipFile.ProvisionalAlternateEncoding"/>
-        public static System.Text.Encoding DefaultEncoding
-        {
-            get
-            {
-                return _defaultEncoding;
-            }
-        }
+        public static System.Text.Encoding DefaultEncoding => _defaultEncoding;
 
 
         /// <summary>
@@ -1455,8 +1399,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// </example>
         public TextWriter StatusMessageTextWriter
         {
-            get { return _StatusMessageTextWriter; }
-            set { _StatusMessageTextWriter = value; }
+            get => _StatusMessageTextWriter;
+            set => _StatusMessageTextWriter = value;
         }
 
 
@@ -1514,7 +1458,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         ///
         public String TempFileFolder
         {
-            get { return _TempFileFolder; }
+            get => _TempFileFolder;
 
             set
             {
@@ -1681,10 +1625,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                     Encryption = EncryptionAlgorithm.PkzipWeak;
                 }
             }
-            private get
-            {
-                return _Password;
-            }
+            private get => _Password;
         }
 
 
@@ -1946,10 +1887,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// <seealso cref="ZipEntry.Encryption">ZipEntry.Encryption</seealso>
         internal EncryptionAlgorithm Encryption
         {
-            get
-            {
-                return _Encryption;
-            }
+            get => _Encryption;
             set
             {
                 if (value == EncryptionAlgorithm.Unsupported)
@@ -2090,10 +2028,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// <seealso cref="NumberOfSegmentsForMostRecentSave"/>
         public Int32 MaxOutputSegmentSize
         {
-            get
-            {
-                return _maxOutputSegmentSize;
-            }
+            get => _maxOutputSegmentSize;
             set
             {
                 if (value < 65536 && value != 0)
@@ -2121,13 +2056,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         ///   </para>
         /// </remarks>
         /// <seealso cref="MaxOutputSegmentSize"/>
-        public Int32 NumberOfSegmentsForMostRecentSave
-        {
-            get
-            {
-                return unchecked((Int32)_numberOfSegmentsForMostRecentSave + 1);
-            }
-        }
+        public Int32 NumberOfSegmentsForMostRecentSave => unchecked((Int32)_numberOfSegmentsForMostRecentSave + 1);
 
 
 #if !NETCF
@@ -2192,14 +2121,11 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         {
             set
             {
-                if ((value != 0) && (value != -1) && (value < 64 * 1024))
+                if (value != 0 && value != -1 && value < 64 * 1024)
                     throw new ArgumentOutOfRangeException("ParallelDeflateThreshold should be -1, 0, or > 65536");
                 _ParallelDeflateThreshold = value;
             }
-            get
-            {
-                return _ParallelDeflateThreshold;
-            }
+            get => _ParallelDeflateThreshold;
         }
 
         /// <summary>
@@ -2280,10 +2206,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         ///
         public int ParallelDeflateMaxBufferPairs
         {
-            get
-            {
-                return _maxBufferPairs;
-            }
+            get => _maxBufferPairs;
             set
             {
                 if (value < 4)
@@ -2319,13 +2242,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         ///     This static property is primarily useful for diagnostic purposes.
         ///   </para>
         /// </remarks>
-        public static System.Version LibraryVersion
-        {
-            get
-            {
-                return System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-            }
-        }
+        public static Version LibraryVersion => System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
 
         internal void NotifyEntryChanged()
         {
@@ -2335,13 +2252,13 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
         internal Stream StreamForDiskNumber(uint diskNumber)
         {
-            if (diskNumber + 1 == this._diskNumberWithCd ||
-                (diskNumber == 0 && this._diskNumberWithCd == 0))
+            if (diskNumber + 1 == _diskNumberWithCd ||
+                (diskNumber == 0 && _diskNumberWithCd == 0))
             {
                 //return (this.ReadStream as FileStream);
-                return this.ReadStream;
+                return ReadStream;
             }
-            return ZipSegmentedStream.ForReading(this._readName ?? this._name,
+            return ZipSegmentedStream.ForReading(_readName ?? _name,
                                                  diskNumber, _diskNumberWithCd);
         }
 
@@ -2354,20 +2271,20 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
             if (_JustSaved)
             {
                 // read in the just-saved zip archive
-                using (ZipFile x = new ZipFile())
+                using (var x = new ZipFile())
                 {
                     // workitem 10735
                     x._readName = x._name = whileSaving
-                        ? (this._readName ?? this._name)
-                        : this._name;
-                    x.AlternateEncoding = this.AlternateEncoding;
-                    x.AlternateEncodingUsage = this.AlternateEncodingUsage;
+                        ? _readName ?? _name
+                        : _name;
+                    x.AlternateEncoding = AlternateEncoding;
+                    x.AlternateEncodingUsage = AlternateEncodingUsage;
                     ReadIntoInstance(x);
                     // copy the contents of the entries.
                     // cannot just replace the entries - the app may be holding them
-                    foreach (ZipEntry e1 in x)
+                    foreach (var e1 in x)
                     {
-                        foreach (ZipEntry e2 in this)
+                        foreach (var e2 in this)
                         {
                             if (e1.FileName == e2.FileName)
                             {
@@ -2824,8 +2741,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         private void _initEntriesDictionary()
         {
             // workitem 9868
-            StringComparer sc = (CaseSensitiveRetrieval) ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
-            _entries = (_entries == null)
+            var sc = CaseSensitiveRetrieval ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
+            _entries = _entries == null
                 ? new Dictionary<String, ZipEntry>(sc)
                 : new Dictionary<String, ZipEntry>(_entries, sc);
         }
@@ -2851,7 +2768,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                     ReadIntoInstance_Orig(this);
                 else
                     ReadIntoInstance(this);
-                this._fileAlreadyExists = true;
+                _fileAlreadyExists = true;
             }
 
             return;
@@ -2908,14 +2825,9 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         ///   entry does not exist in the archive, this indexer throws.
         /// </returns>
         ///
-        public ZipEntry this[int ix]
-        {
+        public ZipEntry this[int ix] =>
             // workitem 6402
-            get
-            {
-                return ZipEntriesAsList[ix];
-            }
-        }
+            ZipEntriesAsList[ix];
 
 
         /// <summary>
@@ -3117,13 +3029,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         ///   The list of strings for the filenames contained within the Zip archive.
         /// </returns>
         ///
-        public System.Collections.Generic.ICollection<String> EntryFileNames
-        {
-            get
-            {
-                return _entries.Keys;
-            }
-        }
+        public ICollection<String> EntryFileNames => _entries.Keys;
 
 
         /// <summary>
@@ -3144,13 +3050,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// </para>
         /// </remarks>
         /// <seealso cref="EntriesSorted"/>
-        public System.Collections.Generic.ICollection<ZipEntry> Entries
-        {
-            get
-            {
-                return _entries.Values;
-            }
-        }
+        public ICollection<ZipEntry> Entries => _entries.Values;
 
 
         /// <summary>
@@ -3197,16 +3097,16 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// </example>
         ///
         /// <seealso cref="Entries"/>
-        public System.Collections.Generic.ICollection<ZipEntry> EntriesSorted
+        public ICollection<ZipEntry> EntriesSorted
         {
             get
             {
-                var coll = new System.Collections.Generic.List<ZipEntry>();
-                foreach (var e in this.Entries)
+                var coll = new List<ZipEntry>();
+                foreach (var e in Entries)
                 {
                     coll.Add(e);
                 }
-                StringComparison sc = (CaseSensitiveRetrieval) ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+                var sc = CaseSensitiveRetrieval ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
 
                 coll.Sort((x, y) => { return String.Compare(x.FileName, y.FileName, sc); });
                 return coll.AsReadOnly();
@@ -3217,14 +3117,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// <summary>
         /// Returns the number of entries in the Zip archive.
         /// </summary>
-        public int Count
-        {
-            get
-            {
-                return _entries.Count;
-            }
-        }
-
+        public int Count => _entries.Count;
 
 
         /// <summary>
@@ -3405,8 +3298,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         ///
         public void RemoveEntry(String fileName)
         {
-            string modifiedName = ZipEntry.NameInArchive(fileName, null);
-            ZipEntry e = this[modifiedName];
+            var modifiedName = ZipEntry.NameInArchive(fileName, null);
+            var e = this[modifiedName];
             if (e == null)
                 throw new ArgumentException("The entry you specified was not found in the zip archive.");
 
@@ -3494,7 +3387,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         /// </param>
         protected virtual void Dispose(bool disposeManagedResources)
         {
-            if (!this._disposed)
+            if (!_disposed)
             {
                 if (disposeManagedResources)
                 {
@@ -3513,7 +3406,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
                         }
                     }
                     // only dispose the writestream if there is a backing file
-                    if ((_temporaryFileName != null) && (_name != null))
+                    if (_temporaryFileName != null && _name != null)
                         if (_writestream != null)
                         {
                             // workitem 7704
@@ -3527,14 +3420,14 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
 #if !NETCF
                     // workitem 10030
-                    if (this.ParallelDeflater != null)
+                    if (ParallelDeflater != null)
                     {
-                        this.ParallelDeflater.Dispose();
-                        this.ParallelDeflater = null;
+                        ParallelDeflater.Dispose();
+                        ParallelDeflater = null;
                     }
 #endif
                 }
-                this._disposed = true;
+                _disposed = true;
             }
         }
         #endregion
@@ -3573,7 +3466,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
 
                 if (_maxOutputSegmentSize != 0)
                 {
-                    _writestream = ZipSegmentedStream.ForWriting(this._name, _maxOutputSegmentSize);
+                    _writestream = ZipSegmentedStream.ForWriting(_name, _maxOutputSegmentSize);
                     return _writestream;
                 }
 
@@ -3604,7 +3497,7 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         private ZipErrorAction _zipErrorAction;
         private bool _disposed;
         //private System.Collections.Generic.List<ZipEntry> _entries;
-        private System.Collections.Generic.Dictionary<String, ZipEntry> _entries;
+        private Dictionary<String, ZipEntry> _entries;
         private List<ZipEntry> _zipEntriesAsList;
         private string _name;
         private string _readName;
@@ -3612,8 +3505,8 @@ namespace OfficeOpenXml.Packaging.Ionic.Zip
         internal string _Password;
         private bool _emitNtfsTimes = true;
         private bool _emitUnixTimes;
-        private Ionic.Zlib.CompressionStrategy _Strategy = Ionic.Zlib.CompressionStrategy.Default;
-        private Ionic.Zip.CompressionMethod _compressionMethod = Ionic.Zip.CompressionMethod.Deflate;
+        private CompressionStrategy _Strategy = CompressionStrategy.Default;
+        private CompressionMethod _compressionMethod = CompressionMethod.Deflate;
         private bool _fileAlreadyExists;
         private string _temporaryFileName;
         private bool _contentsChanged;

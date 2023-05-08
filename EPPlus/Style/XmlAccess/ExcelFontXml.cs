@@ -69,7 +69,7 @@ namespace OfficeOpenXml.Style.XmlAccess
             _verticalAlign = GetXmlNodeString(verticalAlignPath);
             if (topNode.SelectSingleNode(underLinedPath, NameSpaceManager) != null)
             {
-                string ut = GetXmlNodeString(underLinedPath + "/@val");
+                var ut = GetXmlNodeString(underLinedPath + "/@val");
                 if (ut == "")
                 {
                     _underlineType = ExcelUnderLineType.Single;
@@ -85,13 +85,7 @@ namespace OfficeOpenXml.Style.XmlAccess
             }
         }
 
-        internal override string Id
-        {
-            get
-            {
-                return Name + "|" + Size + "|" + Family + "|" + Color.Id + "|" + Scheme + "|" + Bold.ToString() + "|" + Italic.ToString() + "|" + Strike.ToString() + "|" + VerticalAlign + "|" + UnderLineType.ToString();
-            }
-        }
+        internal override string Id => Name + "|" + Size + "|" + Family + "|" + Color.Id + "|" + Scheme + "|" + Bold.ToString() + "|" + Italic.ToString() + "|" + Strike.ToString() + "|" + VerticalAlign + "|" + UnderLineType.ToString();
         const string namePath = "d:name/@val";
         string _name;
         /// <summary>
@@ -99,10 +93,7 @@ namespace OfficeOpenXml.Style.XmlAccess
         /// </summary>
         public string Name
         {
-            get
-            {
-                return _name;
-            }
+            get => _name;
             set
             {
                 Scheme = "";        //Reset schema to avoid corrupt file if unsupported font is selected.
@@ -116,14 +107,8 @@ namespace OfficeOpenXml.Style.XmlAccess
         /// </summary>
         public float Size
         {
-            get
-            {
-                return _size;
-            }
-            set
-            {
-                _size = value;
-            }
+            get => _size;
+            set => _size = value;
         }
         const string familyPath = "d:family/@val";
         int _family;
@@ -132,14 +117,8 @@ namespace OfficeOpenXml.Style.XmlAccess
         /// </summary>
         public int Family
         {
-            get
-            {
-                return (_family == int.MinValue ? 0 : _family); ;
-            }
-            set
-            {
-                _family=value;
-            }
+            get => _family == int.MinValue ? 0 : _family;
+            set => _family=value;
         }
         ExcelColorXml _color = null;
         const string _colorPath = "d:color";
@@ -148,14 +127,8 @@ namespace OfficeOpenXml.Style.XmlAccess
         /// </summary>
         public ExcelColorXml Color
         {
-            get
-            {
-                return _color;
-            }
-            internal set
-            {
-                _color=value;
-            }
+            get => _color;
+            internal set => _color=value;
         }
         const string schemePath = "d:scheme/@val";
         string _scheme = "";
@@ -164,14 +137,8 @@ namespace OfficeOpenXml.Style.XmlAccess
         /// </summary>
         public string Scheme
         {
-            get
-            {
-                return _scheme;
-            }
-            private set
-            {
-                _scheme=value;
-            }
+            get => _scheme;
+            private set => _scheme=value;
         }
         const string boldPath = "d:b";
         bool _bold;
@@ -180,14 +147,8 @@ namespace OfficeOpenXml.Style.XmlAccess
         /// </summary>
         public bool Bold
         {
-            get
-            {
-                return _bold;
-            }
-            set
-            {
-                _bold=value;
-            }
+            get => _bold;
+            set => _bold=value;
         }
         const string italicPath = "d:i";
         bool _italic;
@@ -196,14 +157,8 @@ namespace OfficeOpenXml.Style.XmlAccess
         /// </summary>
         public bool Italic
         {
-            get
-            {
-                return _italic;
-            }
-            set
-            {
-                _italic=value;
-            }
+            get => _italic;
+            set => _italic=value;
         }
         const string strikePath = "d:strike";
         bool _strike;
@@ -212,14 +167,8 @@ namespace OfficeOpenXml.Style.XmlAccess
         /// </summary>
         public bool Strike
         {
-            get
-            {
-                return _strike;
-            }
-            set
-            {
-                _strike=value;
-            }
+            get => _strike;
+            set => _strike=value;
         }
         const string underLinedPath = "d:u";
         /// <summary>
@@ -228,14 +177,8 @@ namespace OfficeOpenXml.Style.XmlAccess
         /// </summary>
         public bool UnderLine
         {
-            get
-            {
-                return UnderLineType!=ExcelUnderLineType.None;
-            }
-            set
-            {
-                _underlineType=value ? ExcelUnderLineType.Single : ExcelUnderLineType.None;
-            }
+            get => UnderLineType!=ExcelUnderLineType.None;
+            set => _underlineType=value ? ExcelUnderLineType.Single : ExcelUnderLineType.None;
         }
         ExcelUnderLineType _underlineType;
         /// <summary>
@@ -243,14 +186,8 @@ namespace OfficeOpenXml.Style.XmlAccess
         /// </summary>
         public ExcelUnderLineType UnderLineType
         {
-            get
-            {
-                return _underlineType;
-            }
-            set
-            {
-                _underlineType = value;
-            }
+            get => _underlineType;
+            set => _underlineType = value;
         }
         const string verticalAlignPath = "d:vertAlign/@val";
         string _verticalAlign;
@@ -259,14 +196,8 @@ namespace OfficeOpenXml.Style.XmlAccess
         /// </summary>
         public string VerticalAlign
         {
-            get
-            {
-                return _verticalAlign;
-            }
-            set
-            {
-                _verticalAlign=value;
-            }
+            get => _verticalAlign;
+            set => _verticalAlign=value;
         }
         public void SetFromFont(SKFont Font)
         {
@@ -284,10 +215,8 @@ namespace OfficeOpenXml.Style.XmlAccess
             {
                 return GetHeightByName(name, size);
             }
-            else
-            {
-                return GetHeightByName("Calibri", size);
-            }
+
+            return GetHeightByName("Calibri", size);
         }
 
         private static float GetHeightByName(string name, float size)
@@ -296,33 +225,29 @@ namespace OfficeOpenXml.Style.XmlAccess
             {
                 return FontSize.FontHeights[name][size].Height;
             }
-            else
+
+            float min = -1, max = float.MaxValue;
+            foreach (var h in FontSize.FontHeights[name])
             {
-                float min = -1, max = float.MaxValue;
-                foreach (var h in FontSize.FontHeights[name])
+                if (min < h.Key && h.Key < size)
                 {
-                    if (min < h.Key && h.Key < size)
-                    {
-                        min = h.Key;
-                    }
-                    if (max > h.Key && h.Key > size)
-                    {
-                        max = h.Key;
-                    }
+                    min = h.Key;
                 }
-                if (min == max || max==float.MaxValue)
+                if (max > h.Key && h.Key > size)
                 {
-                    return Convert.ToSingle(FontSize.FontHeights[name][min].Height);
-                }
-                else if (min == -1)
-                {
-                    return Convert.ToSingle(FontSize.FontHeights[name][max].Height);
-                }
-                else
-                {
-                    return Convert.ToSingle(FontSize.FontHeights[name][min].Height + (FontSize.FontHeights[name][max].Height - FontSize.FontHeights[name][min].Height) * ((size - min) / (max - min)));
+                    max = h.Key;
                 }
             }
+            if (min == max || max==float.MaxValue)
+            {
+                return Convert.ToSingle(FontSize.FontHeights[name][min].Height);
+            }
+
+            if (min == -1)
+            {
+                return Convert.ToSingle(FontSize.FontHeights[name][max].Height);
+            }
+            return Convert.ToSingle(FontSize.FontHeights[name][min].Height + (FontSize.FontHeights[name][max].Height - FontSize.FontHeights[name][min].Height) * ((size - min) / (max - min)));
         }
         internal ExcelFontXml Copy()
         {

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net6.0</TargetFrameworks>
+		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<Description>Create advanced Excel spreadsheets using .NET</Description>
 		<ProductVersion>9.0.30729</ProductVersion>
@@ -13,9 +13,9 @@
 		<Compile Remove="Packaging\DotNetZip\ZipFile.SaveSelfExtractor.cs" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="SkiaSharp" Version="2.80.4" />
-		<PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.0" />
-		<PackageReference Include="System.Security.Cryptography.Pkcs" Version="6.0.1" />
-		<PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
+		<PackageReference Include="SkiaSharp" Version="2.88.3" />
+		<PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
+		<PackageReference Include="System.Security.Cryptography.Pkcs" Version="7.0.1" />
+		<PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
 	</ItemGroup>
 </Project>

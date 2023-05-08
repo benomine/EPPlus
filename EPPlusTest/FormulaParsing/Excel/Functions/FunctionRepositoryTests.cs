@@ -33,8 +33,8 @@ namespace EPPlusTest.FormulaParsing.Excel.Functions
             {
                 var myFunction = new MyFunction();
                 var customCompiler = new MyFunctionCompiler(myFunction, ParsingContext.Create());
-                base.Functions.Add(MyFunction.Name, myFunction);
-                base.CustomCompilers.Add(typeof(MyFunction), customCompiler);
+                Functions.Add(MyFunction.Name, myFunction);
+                CustomCompilers.Add(typeof(MyFunction), customCompiler);
             }
         }
 

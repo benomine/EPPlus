@@ -41,10 +41,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             _function = function;
         }
 
-        public override bool IsGroupedExpression
-        {
-            get { return false; }
-        }
+        public override bool IsGroupedExpression => false;
 
         public override Expression PrepareForNextChild()
         {

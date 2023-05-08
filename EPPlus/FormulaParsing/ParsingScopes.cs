@@ -60,10 +60,7 @@ namespace OfficeOpenXml.FormulaParsing
         /// <summary>
         /// The current parsing scope.
         /// </summary>
-        public virtual ParsingScope Current
-        {
-            get { return _scopes.Count() > 0 ? _scopes.Peek() : null; }
-        }
+        public virtual ParsingScope Current => _scopes.Count() > 0 ? _scopes.Peek() : null;
 
         /// <summary>
         /// Removes the current scope, setting the calling scope to current.

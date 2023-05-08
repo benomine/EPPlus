@@ -52,10 +52,7 @@ namespace OfficeOpenXml
         /// </summary>
         public bool IsProtected
         {
-            get
-            {
-                return GetXmlNodeBool(_isProtectedPath, false);
-            }
+            get => GetXmlNodeBool(_isProtectedPath, false);
             set
             {
                 SetXmlNodeBool(_isProtectedPath, value, false);
@@ -76,14 +73,8 @@ namespace OfficeOpenXml
         /// </summary>
         public bool AllowSelectLockedCells
         {
-            get
-            {
-                return !GetXmlNodeBool(_allowSelectLockedCellsPath, false);
-            }
-            set
-            {
-                SetXmlNodeBool(_allowSelectLockedCellsPath, !value, false);
-            }
+            get => !GetXmlNodeBool(_allowSelectLockedCellsPath, false);
+            set => SetXmlNodeBool(_allowSelectLockedCellsPath, !value, false);
         }
         private const string _allowSelectUnlockedCellsPath = "d:sheetProtection/@selectUnlockedCells";
         /// <summary>
@@ -91,14 +82,8 @@ namespace OfficeOpenXml
         /// </summary>
         public bool AllowSelectUnlockedCells
         {
-            get
-            {
-                return !GetXmlNodeBool(_allowSelectUnlockedCellsPath, false);
-            }
-            set
-            {
-                SetXmlNodeBool(_allowSelectUnlockedCellsPath, !value, false);
-            }
+            get => !GetXmlNodeBool(_allowSelectUnlockedCellsPath, false);
+            set => SetXmlNodeBool(_allowSelectUnlockedCellsPath, !value, false);
         }
         private const string _allowObjectPath = "d:sheetProtection/@objects";
         /// <summary>
@@ -106,14 +91,8 @@ namespace OfficeOpenXml
         /// </summary>
         public bool AllowEditObject
         {
-            get
-            {
-                return !GetXmlNodeBool(_allowObjectPath, false);
-            }
-            set
-            {
-                SetXmlNodeBool(_allowObjectPath, !value, false);
-            }
+            get => !GetXmlNodeBool(_allowObjectPath, false);
+            set => SetXmlNodeBool(_allowObjectPath, !value, false);
         }
         private const string _allowScenariosPath = "d:sheetProtection/@scenarios";
         /// <summary>
@@ -121,14 +100,8 @@ namespace OfficeOpenXml
         /// </summary>
         public bool AllowEditScenarios
         {
-            get
-            {
-                return !GetXmlNodeBool(_allowScenariosPath, false);
-            }
-            set
-            {
-                SetXmlNodeBool(_allowScenariosPath, !value, false);
-            }
+            get => !GetXmlNodeBool(_allowScenariosPath, false);
+            set => SetXmlNodeBool(_allowScenariosPath, !value, false);
         }
         private const string _allowFormatCellsPath = "d:sheetProtection/@formatCells";
         /// <summary>
@@ -136,14 +109,8 @@ namespace OfficeOpenXml
         /// </summary>
         public bool AllowFormatCells
         {
-            get
-            {
-                return !GetXmlNodeBool(_allowFormatCellsPath, true);
-            }
-            set
-            {
-                SetXmlNodeBool(_allowFormatCellsPath, !value, true);
-            }
+            get => !GetXmlNodeBool(_allowFormatCellsPath, true);
+            set => SetXmlNodeBool(_allowFormatCellsPath, !value, true);
         }
         private const string _allowFormatColumnsPath = "d:sheetProtection/@formatColumns";
         /// <summary>
@@ -151,14 +118,8 @@ namespace OfficeOpenXml
         /// </summary>
         public bool AllowFormatColumns
         {
-            get
-            {
-                return !GetXmlNodeBool(_allowFormatColumnsPath, true);
-            }
-            set
-            {
-                SetXmlNodeBool(_allowFormatColumnsPath, !value, true);
-            }
+            get => !GetXmlNodeBool(_allowFormatColumnsPath, true);
+            set => SetXmlNodeBool(_allowFormatColumnsPath, !value, true);
         }
         private const string _allowFormatRowsPath = "d:sheetProtection/@formatRows";
         /// <summary>
@@ -166,14 +127,8 @@ namespace OfficeOpenXml
         /// </summary>
         public bool AllowFormatRows
         {
-            get
-            {
-                return !GetXmlNodeBool(_allowFormatRowsPath, true);
-            }
-            set
-            {
-                SetXmlNodeBool(_allowFormatRowsPath, !value, true);
-            }
+            get => !GetXmlNodeBool(_allowFormatRowsPath, true);
+            set => SetXmlNodeBool(_allowFormatRowsPath, !value, true);
         }
 
         private const string _allowInsertColumnsPath = "d:sheetProtection/@insertColumns";
@@ -182,14 +137,8 @@ namespace OfficeOpenXml
         /// </summary>
         public bool AllowInsertColumns
         {
-            get
-            {
-                return !GetXmlNodeBool(_allowInsertColumnsPath, true);
-            }
-            set
-            {
-                SetXmlNodeBool(_allowInsertColumnsPath, !value, true);
-            }
+            get => !GetXmlNodeBool(_allowInsertColumnsPath, true);
+            set => SetXmlNodeBool(_allowInsertColumnsPath, !value, true);
         }
 
         private const string _allowInsertRowsPath = "d:sheetProtection/@insertRows";
@@ -198,14 +147,8 @@ namespace OfficeOpenXml
         /// </summary>
         public bool AllowInsertRows
         {
-            get
-            {
-                return !GetXmlNodeBool(_allowInsertRowsPath, true);
-            }
-            set
-            {
-                SetXmlNodeBool(_allowInsertRowsPath, !value, true);
-            }
+            get => !GetXmlNodeBool(_allowInsertRowsPath, true);
+            set => SetXmlNodeBool(_allowInsertRowsPath, !value, true);
         }
         private const string _allowInsertHyperlinksPath = "d:sheetProtection/@insertHyperlinks";
         /// <summary>
@@ -213,14 +156,8 @@ namespace OfficeOpenXml
         /// </summary>
         public bool AllowInsertHyperlinks
         {
-            get
-            {
-                return !GetXmlNodeBool(_allowInsertHyperlinksPath, true);
-            }
-            set
-            {
-                SetXmlNodeBool(_allowInsertHyperlinksPath, !value, true);
-            }
+            get => !GetXmlNodeBool(_allowInsertHyperlinksPath, true);
+            set => SetXmlNodeBool(_allowInsertHyperlinksPath, !value, true);
         }
         private const string _allowDeleteColumns = "d:sheetProtection/@deleteColumns";
         /// <summary>
@@ -228,14 +165,8 @@ namespace OfficeOpenXml
         /// </summary>
         public bool AllowDeleteColumns
         {
-            get
-            {
-                return !GetXmlNodeBool(_allowDeleteColumns, true);
-            }
-            set
-            {
-                SetXmlNodeBool(_allowDeleteColumns, !value, true);
-            }
+            get => !GetXmlNodeBool(_allowDeleteColumns, true);
+            set => SetXmlNodeBool(_allowDeleteColumns, !value, true);
         }
         private const string _allowDeleteRowsPath = "d:sheetProtection/@deleteRows";
         /// <summary>
@@ -243,14 +174,8 @@ namespace OfficeOpenXml
         /// </summary>
         public bool AllowDeleteRows
         {
-            get
-            {
-                return !GetXmlNodeBool(_allowDeleteRowsPath, true);
-            }
-            set
-            {
-                SetXmlNodeBool(_allowDeleteRowsPath, !value, true);
-            }
+            get => !GetXmlNodeBool(_allowDeleteRowsPath, true);
+            set => SetXmlNodeBool(_allowDeleteRowsPath, !value, true);
         }
 
         private const string _allowSortPath = "d:sheetProtection/@sort";
@@ -259,14 +184,8 @@ namespace OfficeOpenXml
         /// </summary>
         public bool AllowSort
         {
-            get
-            {
-                return !GetXmlNodeBool(_allowSortPath, true);
-            }
-            set
-            {
-                SetXmlNodeBool(_allowSortPath, !value, true);
-            }
+            get => !GetXmlNodeBool(_allowSortPath, true);
+            set => SetXmlNodeBool(_allowSortPath, !value, true);
         }
 
         private const string _allowAutoFilterPath = "d:sheetProtection/@autoFilter";
@@ -275,14 +194,8 @@ namespace OfficeOpenXml
         /// </summary>
         public bool AllowAutoFilter
         {
-            get
-            {
-                return !GetXmlNodeBool(_allowAutoFilterPath, true);
-            }
-            set
-            {
-                SetXmlNodeBool(_allowAutoFilterPath, !value, true);
-            }
+            get => !GetXmlNodeBool(_allowAutoFilterPath, true);
+            set => SetXmlNodeBool(_allowAutoFilterPath, !value, true);
         }
         private const string _allowPivotTablesPath = "d:sheetProtection/@pivotTables";
         /// <summary>
@@ -290,14 +203,8 @@ namespace OfficeOpenXml
         /// </summary>
         public bool AllowPivotTables
         {
-            get
-            {
-                return !GetXmlNodeBool(_allowPivotTablesPath, true);
-            }
-            set
-            {
-                SetXmlNodeBool(_allowPivotTablesPath, !value, true);
-            }
+            get => !GetXmlNodeBool(_allowPivotTablesPath, true);
+            set => SetXmlNodeBool(_allowPivotTablesPath, !value, true);
         }
 
         private const string _passwordPath = "d:sheetProtection/@password";

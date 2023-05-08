@@ -72,12 +72,12 @@ namespace OfficeOpenXml.Drawing.Vml
                     list.Add(new ExcelVmlDrawingComment(node, ws.Cells[1, 1], NameSpaceManager));
                 }
             }
-            list.Sort(new Comparison<IRangeID>((r1, r2) => (r1.RangeID < r2.RangeID ? -1 : r1.RangeID > r2.RangeID ? 1 : 0)));  //Vml drawings are not sorted. Sort to avoid missmatches.
+            list.Sort(new Comparison<IRangeID>((r1, r2) => r1.RangeID < r2.RangeID ? -1 : r1.RangeID > r2.RangeID ? 1 : 0));  //Vml drawings are not sorted. Sort to avoid missmatches.
             _drawings = new RangeCollection(list);
         }
         private string CreateVmlDrawings()
         {
-            string vml = string.Format("<xml xmlns:v=\"{0}\" xmlns:o=\"{1}\" xmlns:x=\"{2}\">",
+            var vml = string.Format("<xml xmlns:v=\"{0}\" xmlns:o=\"{1}\" xmlns:x=\"{2}\">",
                 ExcelPackage.schemaMicrosoftVml,
                 ExcelPackage.schemaMicrosoftOffice,
                 ExcelPackage.schemaMicrosoftExcel);
@@ -96,7 +96,7 @@ namespace OfficeOpenXml.Drawing.Vml
         }
         internal ExcelVmlDrawingComment Add(ExcelRangeBase cell)
         {
-            XmlNode node = AddDrawing(cell);
+            var node = AddDrawing(cell);
             var draw = new ExcelVmlDrawingComment(node, cell, NameSpaceManager);
             _drawings.Add(draw);
             return draw;
@@ -108,7 +108,7 @@ namespace OfficeOpenXml.Drawing.Vml
 
             var id = ExcelCellBase.GetCellID(cell.Worksheet.SheetID, cell._fromRow, cell._fromCol);
             var ix = _drawings.IndexOf(id);
-            if (ix < 0 && (~ix < _drawings.Count))
+            if (ix < 0 && ~ix < _drawings.Count)
             {
                 ix = ~ix;
                 var prevDraw = _drawings[ix] as ExcelVmlDrawingBase;
@@ -126,7 +126,7 @@ namespace OfficeOpenXml.Drawing.Vml
             node.SetAttribute("fillcolor", "#ffffe1");
             node.SetAttribute("insetmode", ExcelPackage.schemaMicrosoftOffice, "auto");
 
-            string vml = "<v:fill color2=\"#ffffe1\" />";
+            var vml = "<v:fill color2=\"#ffffe1\" />";
             vml += "<v:shadow on=\"t\" color=\"black\" obscured=\"t\" />";
             vml += "<v:path o:connecttype=\"none\" />";
             vml += "<v:textbox style=\"mso-direction-alt:auto\">";
@@ -157,8 +157,7 @@ namespace OfficeOpenXml.Drawing.Vml
                 {
                     if (draw.Id.Length > 3 && draw.Id.StartsWith("vml"))
                     {
-                        int id;
-                        if (int.TryParse(draw.Id.Substring(3, draw.Id.Length - 3), System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out id))
+                        if (int.TryParse(draw.Id.Substring(3, draw.Id.Length - 3), NumberStyles.Any, CultureInfo.InvariantCulture, out var id))
                         {
                             if (id > _nextID)
                             {
@@ -171,27 +170,13 @@ namespace OfficeOpenXml.Drawing.Vml
             _nextID++;
             return "vml" + _nextID.ToString();
         }
-        internal ExcelVmlDrawingBase this[ulong rangeID]
-        {
-            get
-            {
-                return _drawings[rangeID] as ExcelVmlDrawingComment;
-            }
-        }
+        internal ExcelVmlDrawingBase this[ulong rangeID] => _drawings[rangeID] as ExcelVmlDrawingComment;
+
         internal bool ContainsKey(ulong rangeID)
         {
             return _drawings.ContainsKey(rangeID);
         }
-        internal int Count
-        {
-            get
-            {
-                return _drawings.Count;
-            }
-        }
-        #region IEnumerable Members
-
-        #endregion
+        internal int Count => _drawings.Count;
 
         public IEnumerator GetEnumerator()
         {

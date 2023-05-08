@@ -60,8 +60,8 @@ namespace EPPlusSamples
     {
         public MyFunctionModule()
         {
-            base.Functions.Add("sum.addtwo", new SumAddTwo());
-            base.Functions.Add("seanconneryfy", new SeanConneryfy());
+            Functions.Add("sum.addtwo", new SumAddTwo());
+            Functions.Add("seanconneryfy", new SeanConneryfy());
         }
     }
 
@@ -80,7 +80,7 @@ namespace EPPlusSamples
 
             // Do the work
             var result = 0d;
-            numbers.ToList().ForEach(x => result += (x + 2));
+            numbers.ToList().ForEach(x => result += x + 2);
 
             // return the result
             return CreateResult(result, DataType.Decimal);

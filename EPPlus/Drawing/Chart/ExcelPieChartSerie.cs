@@ -57,15 +57,12 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public int Explosion
         {
-            get
-            {
-                return GetXmlNodeInt(explosionPath);
-            }
+            get => GetXmlNodeInt(explosionPath);
             set
             {
-                if (value < 0 || value > 400)
+                if (value is < 0 or > 400)
                 {
-                    throw (new ArgumentOutOfRangeException("Explosion range is 0-400"));
+                    throw new ArgumentOutOfRangeException("Explosion range is 0-400");
                 }
                 SetXmlNodeString(explosionPath, value.ToString());
             }
@@ -74,16 +71,6 @@ namespace OfficeOpenXml.Drawing.Chart
         /// <summary>
         /// DataLabels
         /// </summary>
-        public ExcelChartSerieDataLabel DataLabel
-        {
-            get
-            {
-                if (_DataLabel == null)
-                {
-                    _DataLabel = new ExcelChartSerieDataLabel(_ns, _node);
-                }
-                return _DataLabel;
-            }
-        }
+        public ExcelChartSerieDataLabel DataLabel => _DataLabel ??= new ExcelChartSerieDataLabel(_ns, _node);
     }
 }

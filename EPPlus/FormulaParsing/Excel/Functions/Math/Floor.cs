@@ -41,29 +41,27 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
                 var floor = System.Math.Floor(number);
                 var rest = number - floor;
                 var nSign = (int)(rest / significance);
-                return CreateResult(floor + (nSign * significance), DataType.Decimal);
+                return CreateResult(floor + nSign * significance, DataType.Decimal);
             }
-            else if (significance == 1)
+
+            if (significance == 1)
             {
                 return CreateResult(System.Math.Floor(number), DataType.Decimal);
             }
-            else if (number % significance == 0)
+            if (number % significance == 0)
             {
                 return CreateResult(number, DataType.Decimal);
             }
+            double result;
+            if (number > 1)
+            {
+                result = number - number % significance + significance;
+            }
             else
             {
-                double result;
-                if (number > 1)
-                {
-                    result = number - (number % significance) + significance;
-                }
-                else
-                {
-                    result = number - (number % significance);
-                }
-                return CreateResult(result, DataType.Decimal);
+                result = number - number % significance;
             }
+            return CreateResult(result, DataType.Decimal);
         }
 
         private void ValidateNumberAndSign(double number, double sign)

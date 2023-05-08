@@ -62,43 +62,20 @@ namespace OfficeOpenXml.Drawing.Chart
         /// <summary>
         /// Access to datalabel properties
         /// </summary>
-        public ExcelChartDataLabel DataLabel
-        {
-            get
-            {
-                if (_DataLabel == null)
-                {
-                    _DataLabel = new ExcelChartDataLabel(NameSpaceManager, ChartNode);
-                }
-                return _DataLabel;
-            }
-        }
+        public ExcelChartDataLabel DataLabel => _DataLabel ??= new ExcelChartDataLabel(NameSpaceManager, ChartNode);
 
         internal override eChartType GetChartType(string name)
         {
-            if (name == "pieChart")
+            return name switch
             {
-                if (Series.Count > 0 && ((ExcelPieChartSerie)Series[0]).Explosion>0)
-                {
-                    return eChartType.PieExploded;
-                }
-                else
-                {
-                    return eChartType.Pie;
-                }
-            }
-            else if (name == "pie3DChart")
-            {
-                if (Series.Count > 0 && ((ExcelPieChartSerie)Series[0]).Explosion > 0)
-                {
-                    return eChartType.PieExploded3D;
-                }
-                else
-                {
-                    return eChartType.Pie3D;
-                }
-            }
-            return base.GetChartType(name);
+                "pieChart" when Series.Count > 0 && ((ExcelPieChartSerie)Series[0]).Explosion > 0 => eChartType
+                    .PieExploded,
+                "pieChart" => eChartType.Pie,
+                "pie3DChart" when Series.Count > 0 && ((ExcelPieChartSerie)Series[0]).Explosion > 0 => eChartType
+                    .PieExploded3D,
+                "pie3DChart" => eChartType.Pie3D,
+                _ => base.GetChartType(name)
+            };
         }
     }
 }

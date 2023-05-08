@@ -102,8 +102,8 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph.FunctionCompilers
             {
                 var myFunction = new MyFunction();
                 var customCompiler = new MyFunctionCompiler(myFunction, context);
-                base.Functions.Add(MyFunction.Name, myFunction);
-                base.CustomCompilers.Add(typeof(MyFunction), customCompiler);
+                Functions.Add(MyFunction.Name, myFunction);
+                CustomCompilers.Add(typeof(MyFunction), customCompiler);
             }
         }
 

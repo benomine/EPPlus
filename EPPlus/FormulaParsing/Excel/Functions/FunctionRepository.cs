@@ -42,10 +42,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions
         /// <summary>
         /// Gets a <see cref="Dictionary{Type, FunctionCompiler}" /> of custom <see cref="FunctionCompiler"/>s.
         /// </summary>
-        public Dictionary<Type, FunctionCompiler> CustomCompilers
-        {
-            get { return _customCompilers; }
-        }
+        public Dictionary<Type, FunctionCompiler> CustomCompilers => _customCompilers;
 
         private FunctionRepository()
         {
@@ -72,7 +69,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions
             }
             foreach (var key in module.CustomCompilers.Keys)
             {
-                this.CustomCompilers[key] = module.CustomCompilers[key];
+                CustomCompilers[key] = module.CustomCompilers[key];
             }
         }
 
@@ -108,10 +105,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions
         /// <summary>
         /// Returns the names of all implemented functions.
         /// </summary>
-        public IEnumerable<string> FunctionNames
-        {
-            get { return _functions.Keys; }
-        }
+        public IEnumerable<string> FunctionNames => _functions.Keys;
 
         /// <summary>
         /// Adds or replaces a function.

@@ -82,7 +82,7 @@ namespace OfficeOpenXml.ConditionalFormatting
             priority,
             worksheet,
             itemElementNode,
-            (namespaceManager == null) ? worksheet.NameSpaceManager : namespaceManager)
+            namespaceManager == null ? worksheet.NameSpaceManager : namespaceManager)
         {
             if (itemElementNode == null)
             {
@@ -177,8 +177,8 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// </summary>
         public ExcelConditionalFormattingColorScaleValue LowValue
         {
-            get { return _lowValue; }
-            set { _lowValue = value; }
+            get => _lowValue;
+            set => _lowValue = value;
         }
 
         /// <summary>
@@ -186,8 +186,8 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// </summary>
         public ExcelConditionalFormattingColorScaleValue MiddleValue
         {
-            get { return _middleValue; }
-            set { _middleValue = value; }
+            get => _middleValue;
+            set => _middleValue = value;
         }
 
         /// <summary>
@@ -195,8 +195,8 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// </summary>
         public ExcelConditionalFormattingColorScaleValue HighValue
         {
-            get { return _highValue; }
-            set { _highValue = value; }
+            get => _highValue;
+            set => _highValue = value;
         }
         #endregion Public Properties
 

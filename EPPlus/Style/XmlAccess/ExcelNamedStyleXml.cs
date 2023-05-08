@@ -55,13 +55,7 @@ namespace OfficeOpenXml.Style.XmlAccess
             _styles = styles;
             _style = new ExcelStyle(styles, styles.NamedStylePropertyChange, -1, Name, _styleXfId);
         }
-        internal override string Id
-        {
-            get
-            {
-                return Name;
-            }
-        }
+        internal override string Id => Name;
         int _styleXfId = 0;
         const string idPath = "@xfId";
         /// <summary>
@@ -69,14 +63,8 @@ namespace OfficeOpenXml.Style.XmlAccess
         /// </summary>
         public int StyleXfId
         {
-            get
-            {
-                return _styleXfId;
-            }
-            set
-            {
-                _styleXfId = value;
-            }
+            get => _styleXfId;
+            set => _styleXfId = value;
         }
         int _xfId = int.MinValue;
         /// <summary>
@@ -84,14 +72,8 @@ namespace OfficeOpenXml.Style.XmlAccess
         /// </summary>
         internal int XfId
         {
-            get
-            {
-                return _xfId;
-            }
-            set
-            {
-                _xfId = value;
-            }
+            get => _xfId;
+            set => _xfId = value;
         }
         const string buildInIdPath = "@builtinId";
         public int BuildInId { get; set; }
@@ -104,14 +86,8 @@ namespace OfficeOpenXml.Style.XmlAccess
         /// </summary>
         public string Name
         {
-            get
-            {
-                return _name;
-            }
-            internal set
-            {
-                _name = value;
-            }
+            get => _name;
+            internal set => _name = value;
         }
         ExcelStyle _style = null;
         /// <summary>
@@ -119,14 +95,8 @@ namespace OfficeOpenXml.Style.XmlAccess
         /// </summary>
         public ExcelStyle Style
         {
-            get
-            {
-                return _style;
-            }
-            internal set
-            {
-                _style = value;
-            }
+            get => _style;
+            internal set => _style = value;
         }
 
         internal override XmlNode CreateXmlNode(XmlNode topNode)

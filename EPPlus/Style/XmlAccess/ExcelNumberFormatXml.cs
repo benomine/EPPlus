@@ -95,30 +95,15 @@ namespace OfficeOpenXml.Style.XmlAccess
         /// </summary>            
         public int NumFmtId
         {
-            get
-            {
-                return _numFmtId;
-            }
-            set
-            {
-                _numFmtId = value;
-            }
+            get => _numFmtId;
+            set => _numFmtId = value;
         }
-        internal override string Id
-        {
-            get
-            {
-                return _format;
-            }
-        }
+        internal override string Id => _format;
         const string fmtPath = "@formatCode";
         string _format = string.Empty;
         public string Format
         {
-            get
-            {
-                return _format;
-            }
+            get => _format;
             set
             {
                 _numFmtId = ExcelNumberFormat.GetFromBuildIdFromFormat(value);
@@ -240,10 +225,7 @@ namespace OfficeOpenXml.Style.XmlAccess
                     }
                     return _ci;
                 }
-                private set
-                {
-                    _ci = value;
-                }
+                private set => _ci = value;
             }
             internal eFormatType DataType { get; private set; }
             internal string NetTextFormatForWidth { get; private set; }
@@ -253,18 +235,18 @@ namespace OfficeOpenXml.Style.XmlAccess
             private void ToNetFormat(string ExcelFormat, bool forColWidth)
             {
                 DataType = eFormatType.Unknown;
-                int secCount = 0;
-                bool isText = false;
-                bool isBracket = false;
-                string bracketText = "";
-                bool prevBslsh = false;
-                bool useMinute = false;
-                bool prevUnderScore = false;
-                bool ignoreNext = false;
-                int fractionPos = -1;
-                bool containsAmPm = ExcelFormat.Contains("AM/PM");
-                List<int> lstDec = new List<int>();
-                StringBuilder sb = new StringBuilder();
+                var secCount = 0;
+                var isText = false;
+                var isBracket = false;
+                var bracketText = "";
+                var prevBslsh = false;
+                var useMinute = false;
+                var prevUnderScore = false;
+                var ignoreNext = false;
+                var fractionPos = -1;
+                var containsAmPm = ExcelFormat.Contains("AM/PM");
+                var lstDec = new List<int>();
+                var sb = new StringBuilder();
                 Culture = null;
                 var format = "";
                 var text = "";
@@ -276,9 +258,9 @@ namespace OfficeOpenXml.Style.XmlAccess
                     DataType = eFormatType.DateTime;
                 }
 
-                for (int pos = 0; pos < ExcelFormat.Length; pos++)
+                for (var pos = 0; pos < ExcelFormat.Length; pos++)
                 {
-                    char c = ExcelFormat[pos];
+                    var c = ExcelFormat[pos];
                     if (c == '"')
                     {
                         isText = !isText;
@@ -290,7 +272,8 @@ namespace OfficeOpenXml.Style.XmlAccess
                             ignoreNext = false;
                             continue;
                         }
-                        else if (isText && !isBracket)
+
+                        if (isText && !isBracket)
                         {
                             sb.Append(c);
                         }
@@ -301,7 +284,7 @@ namespace OfficeOpenXml.Style.XmlAccess
                                 isBracket = false;
                                 if (bracketText[0] == '$')  //Local Info
                                 {
-                                    string[] li = Regex.Split(bracketText, "-");
+                                    var li = Regex.Split(bracketText, "-");
                                     if (li[0].Length > 1)
                                     {
                                         sb.Append("\"" + li[0].Substring(1, li[0].Length - 1) + "\"");     //Currency symbol
@@ -331,8 +314,8 @@ namespace OfficeOpenXml.Style.XmlAccess
                                     }
                                 }
                                 else if (bracketText.StartsWith("<") ||
-                                        bracketText.StartsWith(">") ||
-                                        bracketText.StartsWith("=")) //Conditional
+                                         bracketText.StartsWith(">") ||
+                                         bracketText.StartsWith("=")) //Conditional
                                 {
                                     SpecialDateFormat = eSystemDateFormat.Conditional;
                                 }
@@ -408,12 +391,12 @@ namespace OfficeOpenXml.Style.XmlAccess
                                     prevBslsh = true;
                                 }
                                 else if (c == '0' ||
-                                    c == '#' ||
-                                    c == '.' ||
-                                    c == ',' ||
-                                    c == '%' ||
-                                    clc == 'd' ||
-                                    clc == 's')
+                                         c == '#' ||
+                                         c == '.' ||
+                                         c == ',' ||
+                                         c == '%' ||
+                                         clc == 'd' ||
+                                         clc == 's')
                                 {
                                     sb.Append(c);
                                     if (c=='.')
@@ -457,9 +440,9 @@ namespace OfficeOpenXml.Style.XmlAccess
                                     if (DataType == eFormatType.Number)
                                     {
                                         fractionPos = sb.Length;
-                                        int startPos = pos - 1;
+                                        var startPos = pos - 1;
                                         while (startPos >= 0 &&
-                                                (ExcelFormat[startPos] == '?' ||
+                                               (ExcelFormat[startPos] == '?' ||
                                                 ExcelFormat[startPos] == '#' ||
                                                 ExcelFormat[startPos] == '0'))
                                         {
@@ -467,11 +450,11 @@ namespace OfficeOpenXml.Style.XmlAccess
                                         }
 
                                         if (startPos > 0)  //RemovePart
-                                            sb.Remove(sb.Length-(pos-startPos-1), (pos-startPos-1));
+                                            sb.Remove(sb.Length-(pos-startPos-1), pos-startPos-1);
 
-                                        int endPos = pos + 1;
+                                        var endPos = pos + 1;
                                         while (endPos < ExcelFormat.Length &&
-                                                (ExcelFormat[endPos] == '?' ||
+                                               (ExcelFormat[endPos] == '?' ||
                                                 ExcelFormat[endPos] == '#' ||
                                                 (ExcelFormat[endPos] >= '0' && ExcelFormat[endPos]<= '9')))
                                         {
@@ -542,7 +525,7 @@ namespace OfficeOpenXml.Style.XmlAccess
             {
                 if (lstDec.Count > 1)
                 {
-                    for (int i = lstDec.Count - 1; i >= 0; i--)
+                    for (var i = lstDec.Count - 1; i >= 0; i--)
                     {
                         sb.Insert(lstDec[i] + 1, '\'');
                         sb.Insert(lstDec[i], '\'');
@@ -554,9 +537,9 @@ namespace OfficeOpenXml.Style.XmlAccess
             {
                 int numerator, denomerator;
 
-                int intPart = (int)d;
+                var intPart = (int)d;
 
-                string[] fmt = FractionFormat.Split('/');
+                var fmt = FractionFormat.Split('/');
 
                 int fixedDenominator;
                 if (!int.TryParse(fmt[1], out fixedDenominator))
@@ -570,44 +553,42 @@ namespace OfficeOpenXml.Style.XmlAccess
                     {
                         return new string(' ', FractionFormat.Length);
                     }
-                    else
-                    {
-                        return 0.ToString(fmt[0]) + "/" + 1.ToString(fmt[0]);
-                    }
+
+                    return 0.ToString(fmt[0]) + "/" + 1.ToString(fmt[0]);
                 }
 
-                int maxDigits = fmt[1].Length;
-                string sign = d < 0 ? "-" : "";
+                var maxDigits = fmt[1].Length;
+                var sign = d < 0 ? "-" : "";
                 if (fixedDenominator == 0)
                 {
-                    List<double> numerators = new List<double>() { 1, 0 };
-                    List<double> denominators = new List<double>() { 0, 1 };
+                    var numerators = new List<double>() { 1, 0 };
+                    var denominators = new List<double>() { 0, 1 };
 
                     if (maxDigits < 1 && maxDigits > 12)
                     {
-                        throw (new ArgumentException("Number of digits out of range (1-12)"));
+                        throw new ArgumentException("Number of digits out of range (1-12)");
                     }
 
-                    int maxNum = 0;
-                    for (int i = 0; i < maxDigits; i++)
+                    var maxNum = 0;
+                    for (var i = 0; i < maxDigits; i++)
                     {
-                        maxNum += 9 * (int)(Math.Pow((double)10, (double)i));
+                        maxNum += 9 * (int)Math.Pow((double)10, (double)i);
                     }
 
-                    double divRes = 1 / ((double)Math.Abs(d) - intPart);
+                    var divRes = 1 / ((double)Math.Abs(d) - intPart);
                     double result, prevResult = double.NaN;
                     int listPos = 2, index = 1;
                     while (true)
                     {
                         index++;
-                        double intDivRes = Math.Floor(divRes);
-                        numerators.Add((intDivRes * numerators[index - 1] + numerators[index - 2]));
+                        var intDivRes = Math.Floor(divRes);
+                        numerators.Add(intDivRes * numerators[index - 1] + numerators[index - 2]);
                         if (numerators[index] > maxNum)
                         {
                             break;
                         }
 
-                        denominators.Add((intDivRes * denominators[index - 1] + denominators[index - 2]));
+                        denominators.Add(intDivRes * denominators[index - 1] + denominators[index - 2]);
 
                         result = numerators[index] / denominators[index];
                         if (denominators[index] > maxNum)
@@ -638,23 +619,21 @@ namespace OfficeOpenXml.Style.XmlAccess
                     if (numerator == denomerator) intPart++;
                     return sign + intPart.ToString(NetFormat).Replace("?", new string(' ', FractionFormat.Length));
                 }
-                else if (intPart == 0)
+
+                if (intPart == 0)
                 {
                     return sign + FmtInt(numerator, fmt[0]) + "/" + FmtInt(denomerator, fmt[1]);
                 }
-                else
-                {
-                    return sign + intPart.ToString(NetFormat).Replace("?", FmtInt(numerator, fmt[0]) + "/" + FmtInt(denomerator, fmt[1]));
-                }
+                return sign + intPart.ToString(NetFormat).Replace("?", FmtInt(numerator, fmt[0]) + "/" + FmtInt(denomerator, fmt[1]));
             }
 
             private string FmtInt(double value, string format)
             {
-                string v = value.ToString("#");
-                string pad = "";
+                var v = value.ToString("#");
+                var pad = "";
                 if (v.Length < format.Length)
                 {
-                    for (int i = format.Length - v.Length-1; i >= 0; i--)
+                    for (var i = format.Length - v.Length-1; i >= 0; i--)
                     {
                         if (format[i] == '?')
                         {

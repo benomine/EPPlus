@@ -643,8 +643,8 @@ namespace EPPlusTest
             worksheet.Cells["B5"].Value=10250;
             worksheet.Cells["B6"].Value=10200;
 
-            chart.Series.Add(ExcelRange.GetAddress(1, 2, worksheet.Dimension.End.Row, 2),
-                             ExcelRange.GetAddress(1, 1, worksheet.Dimension.End.Row, 1));
+            chart.Series.Add(ExcelCellBase.GetAddress(1, 2, worksheet.Dimension.End.Row, 2),
+                             ExcelCellBase.GetAddress(1, 1, worksheet.Dimension.End.Row, 1));
 
             var Series = chart.Series[0];
             chart.Axis[0].MinorGridlines.Fill.Color = SKColors.Red;

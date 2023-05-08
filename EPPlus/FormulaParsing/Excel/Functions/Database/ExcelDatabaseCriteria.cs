@@ -71,9 +71,6 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Database
             }
         }
 
-        public virtual IDictionary<ExcelDatabaseCriteriaField, object> Items
-        {
-            get { return _criterias; }
-        }
+        public virtual IDictionary<ExcelDatabaseCriteriaField, object> Items => _criterias;
     }
 }

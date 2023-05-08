@@ -33,7 +33,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Database
         private int _colIndex = 1;
         public object this[string field]
         {
-            get { return _items[field]; }
+            get => _items[field];
 
             set
             {

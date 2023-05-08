@@ -36,14 +36,9 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
 {
     public class SourceCodeTokenizer : ISourceCodeTokenizer
     {
-        public static ISourceCodeTokenizer Default
-        {
-            get { return new SourceCodeTokenizer(FunctionNameProvider.Empty, NameValueProvider.Empty, false); }
-        }
-        public static ISourceCodeTokenizer R1C1
-        {
-            get { return new SourceCodeTokenizer(FunctionNameProvider.Empty, NameValueProvider.Empty, true); }
-        }
+        public static ISourceCodeTokenizer Default => new SourceCodeTokenizer(FunctionNameProvider.Empty, NameValueProvider.Empty, false);
+
+        public static ISourceCodeTokenizer R1C1 => new SourceCodeTokenizer(FunctionNameProvider.Empty, NameValueProvider.Empty, true);
 
 
         public SourceCodeTokenizer(IFunctionNameProvider functionRepository, INameValueProvider nameValueProvider, bool r1c1 = false)
@@ -94,7 +89,7 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
 
         private static void CleanupTokens(TokenizerContext context, IDictionary<string, Token> tokens)
         {
-            for (int i = 0; i < context.Result.Count; i++)
+            for (var i = 0; i < context.Result.Count; i++)
             {
                 var token = context.Result[i];
                 if (token.TokenType == TokenType.Unrecognized)

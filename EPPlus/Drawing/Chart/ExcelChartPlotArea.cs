@@ -39,7 +39,7 @@ namespace OfficeOpenXml.Drawing.Chart
     /// </summary>
     public sealed class ExcelChartPlotArea : XmlHelper
     {
-        ExcelChart _firstChart;
+        private ExcelChart _firstChart;
         internal ExcelChartPlotArea(XmlNamespaceManager ns, XmlNode node, ExcelChart firstChart)
            : base(ns, node)
         {
@@ -50,18 +50,9 @@ namespace OfficeOpenXml.Drawing.Chart
             }
         }
 
-        ExcelChartCollection _chartTypes;
-        public ExcelChartCollection ChartTypes
-        {
-            get
-            {
-                if (_chartTypes == null)
-                {
-                    _chartTypes = new ExcelChartCollection(_firstChart);
-                }
-                return _chartTypes;
-            }
-        }
+        private ExcelChartCollection _chartTypes;
+        public ExcelChartCollection ChartTypes => _chartTypes ??= new ExcelChartCollection(_firstChart);
+
         #region Data table
         /// <summary>
         /// Creates a data table in the plotarea
@@ -72,7 +63,7 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             if (_dataTable!=null)
             {
-                throw (new InvalidOperationException("Data table already exists"));
+                throw new InvalidOperationException("Data table already exists");
             }
 
             _dataTable = new ExcelChartDataTable(NameSpaceManager, TopNode);
@@ -86,44 +77,22 @@ namespace OfficeOpenXml.Drawing.Chart
             DeleteAllNode("c:dTable");
             _dataTable = null;
         }
-        ExcelChartDataTable _dataTable = null;
+
+        private ExcelChartDataTable _dataTable = null;
         /// <summary>
         /// The data table object.
         /// Use the CreateDataTable method to create a datatable if it does not exist.
         /// <see cref="CreateDataTable"/>
         /// <see cref="RemoveDataTable"/>
         /// </summary>
-        public ExcelChartDataTable DataTable
-        {
-            get
-            {
-                return _dataTable;
-            }
-        }
+        public ExcelChartDataTable DataTable => _dataTable;
+
         #endregion
-        ExcelDrawingFill _fill = null;
-        public ExcelDrawingFill Fill
-        {
-            get
-            {
-                if (_fill == null)
-                {
-                    _fill = new ExcelDrawingFill(NameSpaceManager, TopNode, "c:spPr");
-                }
-                return _fill;
-            }
-        }
-        ExcelDrawingBorder _border = null;
-        public ExcelDrawingBorder Border
-        {
-            get
-            {
-                if (_border == null)
-                {
-                    _border = new ExcelDrawingBorder(NameSpaceManager, TopNode, "c:spPr/a:ln");
-                }
-                return _border;
-            }
-        }
+
+        private ExcelDrawingFill _fill = null;
+        public ExcelDrawingFill Fill => _fill ??= new ExcelDrawingFill(NameSpaceManager, TopNode, "c:spPr");
+
+        private ExcelDrawingBorder _border = null;
+        public ExcelDrawingBorder Border => _border ??= new ExcelDrawingBorder(NameSpaceManager, TopNode, "c:spPr/a:ln");
     }
 }

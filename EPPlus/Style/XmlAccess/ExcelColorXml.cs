@@ -68,20 +68,11 @@ namespace OfficeOpenXml.Style.XmlAccess
             }
         }
 
-        internal override string Id
-        {
-            get
-            {
-                return _auto.ToString() + "|" + _theme + "|" + _tint + "|" + _rgb + "|" + _indexed;
-            }
-        }
+        internal override string Id => _auto.ToString() + "|" + _theme + "|" + _tint + "|" + _rgb + "|" + _indexed;
         bool _auto;
         public bool Auto
         {
-            get
-            {
-                return _auto;
-            }
+            get => _auto;
             set
             {
                 _auto = value;
@@ -93,13 +84,8 @@ namespace OfficeOpenXml.Style.XmlAccess
         /// <summary>
         /// Theme color value
         /// </summary>
-        public string Theme
-        {
-            get
-            {
-                return _theme;
-            }
-        }
+        public string Theme => _theme;
+
         decimal _tint;
         /// <summary>
         /// Tint
@@ -112,10 +98,8 @@ namespace OfficeOpenXml.Style.XmlAccess
                 {
                     return 0;
                 }
-                else
-                {
-                    return _tint;
-                }
+
+                return _tint;
             }
             set
             {
@@ -129,10 +113,7 @@ namespace OfficeOpenXml.Style.XmlAccess
         /// </summary>
         public string Rgb
         {
-            get
-            {
-                return _rgb;
-            }
+            get => _rgb;
             set
             {
                 _rgb = value;
@@ -147,15 +128,12 @@ namespace OfficeOpenXml.Style.XmlAccess
         /// </summary>
         public int Indexed
         {
-            get
-            {
-                return (_indexed == int.MinValue ? 0 : _indexed);
-            }
+            get => _indexed == int.MinValue ? 0 : _indexed;
             set
             {
                 if (value < 0 || value > 65)
                 {
-                    throw (new ArgumentOutOfRangeException("Index out of range"));
+                    throw new ArgumentOutOfRangeException("Index out of range");
                 }
                 Clear();
                 _indexed = value;
@@ -208,12 +186,6 @@ namespace OfficeOpenXml.Style.XmlAccess
         }
 
         bool _exists;
-        internal bool Exists
-        {
-            get
-            {
-                return _exists;
-            }
-        }
+        internal bool Exists => _exists;
     }
 }

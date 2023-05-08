@@ -64,7 +64,7 @@ namespace OfficeOpenXml.FormulaParsing
 
             public int GetNCells()
             {
-                return ((_toRow - _fromRow) + 1) * ((_toCol - _fromCol) + 1);
+                return (_toRow - _fromRow + 1) * (_toCol - _fromCol + 1);
             }
 
             public bool IsEmpty
@@ -75,15 +75,13 @@ namespace OfficeOpenXml.FormulaParsing
                     {
                         return false;
                     }
-                    else if (_values.Next())
+
+                    if (_values.Next())
                     {
                         _values.Reset();
                         return false;
                     }
-                    else
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
             public bool IsMulti
@@ -97,13 +95,12 @@ namespace OfficeOpenXml.FormulaParsing
                             _values.Reset();
                             return true;
                         }
-                        else
-                        {
-                            _values.Reset();
-                            return false;
-                        }
+
+                        _values.Reset();
+                        return false;
                     }
-                    else if (_cellCount > 1)
+
+                    if (_cellCount > 1)
                     {
                         return true;
                     }
@@ -111,15 +108,9 @@ namespace OfficeOpenXml.FormulaParsing
                 }
             }
 
-            public ICellInfo Current
-            {
-                get { return _cell; }
-            }
+            public ICellInfo Current => _cell;
 
-            public ExcelWorksheet Worksheet
-            {
-                get { return _ws; }
-            }
+            public ExcelWorksheet Worksheet => _ws;
 
             public void Dispose()
             {
@@ -128,13 +119,7 @@ namespace OfficeOpenXml.FormulaParsing
                 //_cell = null;
             }
 
-            object System.Collections.IEnumerator.Current
-            {
-                get
-                {
-                    return this;
-                }
-            }
+            object System.Collections.IEnumerator.Current => this;
 
             public bool MoveNext()
             {
@@ -165,10 +150,7 @@ namespace OfficeOpenXml.FormulaParsing
                 return this;
             }
 
-            public ExcelAddressBase Address
-            {
-                get { return _address; }
-            }
+            public ExcelAddressBase Address => _address;
 
             public object GetValue(int row, int col)
             {
@@ -181,10 +163,8 @@ namespace OfficeOpenXml.FormulaParsing
                 {
                     return _ws.GetValue(_fromRow + rowOffset, _fromCol + colOffset);
                 }
-                else
-                {
-                    return _ws.GetValue(_values.Row + rowOffset, _values.Column + colOffset);
-                }
+
+                return _ws.GetValue(_values.Row + rowOffset, _values.Column + colOffset);
             }
         }
 
@@ -197,42 +177,20 @@ namespace OfficeOpenXml.FormulaParsing
                 _ws = ws;
                 _values = values;
             }
-            public string Address
-            {
-                get { return _values.CellAddress; }
-            }
+            public string Address => _values.CellAddress;
 
-            public int Row
-            {
-                get { return _values.Row; }
-            }
+            public int Row => _values.Row;
 
-            public int Column
-            {
-                get { return _values.Column; }
-            }
+            public int Column => _values.Column;
 
-            public string Formula
-            {
-                get
-                {
-                    return _ws.GetFormula(_values.Row, _values.Column);
-                }
-            }
+            public string Formula => _ws.GetFormula(_values.Row, _values.Column);
 
-            public object Value
-            {
-                get { return _values.Value._value; }
-            }
+            public object Value => _values.Value._value;
 
-            public double ValueDouble
-            {
-                get { return ConvertUtil.GetValueDouble(_values.Value._value, true); }
-            }
-            public double ValueDoubleLogical
-            {
-                get { return ConvertUtil.GetValueDouble(_values.Value._value, false); }
-            }
+            public double ValueDouble => ConvertUtil.GetValueDouble(_values.Value._value, true);
+
+            public double ValueDoubleLogical => ConvertUtil.GetValueDouble(_values.Value._value, false);
+
             public bool IsHiddenRow
             {
                 get
@@ -242,28 +200,16 @@ namespace OfficeOpenXml.FormulaParsing
                     {
                         return row.Hidden || row.Height==0;
                     }
-                    else
-                    {
-                        return false;
-                    }
+
+                    return false;
                 }
             }
 
-            public bool IsExcelError
-            {
-                get { return ExcelErrorValue.Values.IsErrorValue(_values.Value._value); }
-            }
+            public bool IsExcelError => ExcelErrorValue.Values.IsErrorValue(_values.Value._value);
 
-            public IList<Token> Tokens
-            {
-                get
-                {
-                    return _ws._formulaTokens.GetValue(_values.Row, _values.Column);
-                }
-            }
-
+            public IList<Token> Tokens => _ws._formulaTokens.GetValue(_values.Row, _values.Column);
         }
-        public class NameInfo : ExcelDataProvider.INameInfo
+        public class NameInfo : INameInfo
         {
             public ulong Id { get; set; }
             public string Worksheet { get; set; }
@@ -292,10 +238,8 @@ namespace OfficeOpenXml.FormulaParsing
             {
                 return ws.Names;
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
         public override ExcelNamedRangeCollection GetWorkbookNameValues()
@@ -379,32 +323,30 @@ namespace OfficeOpenXml.FormulaParsing
                     return null;
                 }
             }
-            id = ExcelAddressBase.GetCellID(nameItem.LocalSheetId, nameItem.Index, 0);
+            id = ExcelCellBase.GetCellID(nameItem.LocalSheetId, nameItem.Index, 0);
 
             if (_names.ContainsKey(id))
             {
                 return _names[id];
             }
+
+            var ni = new NameInfo()
+            {
+                Id = id,
+                Name = name,
+                Worksheet = nameItem.Worksheet==null ? nameItem._ws : nameItem.Worksheet.Name,
+                Formula = nameItem.Formula
+            };
+            if (nameItem._fromRow > 0)
+            {
+                ni.Value = new RangeInfo(nameItem.Worksheet ?? ws, nameItem._fromRow, nameItem._fromCol, nameItem._toRow, nameItem._toCol);
+            }
             else
             {
-                var ni = new NameInfo()
-                {
-                    Id = id,
-                    Name = name,
-                    Worksheet = nameItem.Worksheet==null ? nameItem._ws : nameItem.Worksheet.Name,
-                    Formula = nameItem.Formula
-                };
-                if (nameItem._fromRow > 0)
-                {
-                    ni.Value = new RangeInfo(nameItem.Worksheet ?? ws, nameItem._fromRow, nameItem._fromCol, nameItem._toRow, nameItem._toCol);
-                }
-                else
-                {
-                    ni.Value = nameItem.Value;
-                }
-                _names.Add(id, ni);
-                return ni;
+                ni.Value = nameItem.Value;
             }
+            _names.Add(id, ni);
+            return ni;
         }
         public override IEnumerable<object> GetRangeValues(string address)
         {
@@ -412,7 +354,7 @@ namespace OfficeOpenXml.FormulaParsing
             var addr = new ExcelAddress(address);
             var wsName = string.IsNullOrEmpty(addr.WorkSheet) ? _currentWorksheet.Name : addr.WorkSheet;
             var ws = _package.Workbook.Worksheets[wsName];
-            return (IEnumerable<object>)(new CellsStoreEnumerator<ExcelCoreValue>(ws._values, addr._fromRow, addr._fromCol, addr._toRow, addr._toCol));
+            return (IEnumerable<object>)new CellsStoreEnumerator<ExcelCoreValue>(ws._values, addr._fromRow, addr._fromCol, addr._toRow, addr._toCol);
         }
 
 
@@ -491,15 +433,9 @@ namespace OfficeOpenXml.FormulaParsing
             _package.Dispose();
         }
 
-        public override int ExcelMaxColumns
-        {
-            get { return ExcelPackage.MaxColumns; }
-        }
+        public override int ExcelMaxColumns => ExcelPackage.MaxColumns;
 
-        public override int ExcelMaxRows
-        {
-            get { return ExcelPackage.MaxRows; }
-        }
+        public override int ExcelMaxRows => ExcelPackage.MaxRows;
 
         public override string GetRangeFormula(string worksheetName, int row, int column)
         {
@@ -530,7 +466,7 @@ namespace OfficeOpenXml.FormulaParsing
             }
             return ExcelRangeBase.FormatValue(value, ft, format, ft.NetFormat);
         }
-        public override List<LexicalAnalysis.Token> GetRangeFormulaTokens(string worksheetName, int row, int column)
+        public override List<Token> GetRangeFormulaTokens(string worksheetName, int row, int column)
         {
             return _package.Workbook.Worksheets[worksheetName]._formulaTokens.GetValue(row, column);
         }

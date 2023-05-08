@@ -58,17 +58,13 @@ namespace OfficeOpenXml.Style.XmlAccess
             {
                 return node.Value != "0";
             }
-            else
+
+            if (node != null && ((node.Attributes["val"] != null && node.Attributes["val"].Value != "0") || node.Attributes["val"] == null))
             {
-                if (node != null && ((node.Attributes["val"] != null && node.Attributes["val"].Value != "0") || node.Attributes["val"] == null))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return true;
             }
+
+            return false;
         }
 
     }

@@ -79,7 +79,7 @@ namespace OfficeOpenXml
         {
             _cells = cells;
             InitSize(_cells);
-            for (int i = 0; i < _cells.Count; i++)
+            for (var i = 0; i < _cells.Count; i++)
             {
                 _cellIndex[i] = new IndexItem(cells[i].RangeID, i);
             }
@@ -94,38 +94,23 @@ namespace OfficeOpenXml
         /// </summary>
         /// <param name="RangeID"></param>
         /// <returns></returns>
-        internal IRangeID this[ulong RangeID]
-        {
-            get
-            {
-                return _cells[_cellIndex[IndexOf(RangeID)].ListPointer];
-            }
-        }
+        internal IRangeID this[ulong RangeID] => _cells[_cellIndex[IndexOf(RangeID)].ListPointer];
+
         /// <summary>
         /// Return specified index from the sorted list
         /// </summary>
         /// <param name="Index"></param>
         /// <returns></returns>
-        internal IRangeID this[int Index]
-        {
-            get
-            {
-                return _cells[_cellIndex[Index].ListPointer];
-            }
-        }
-        internal int Count
-        {
-            get
-            {
-                return _cells.Count;
-            }
-        }
+        internal IRangeID this[int Index] => _cells[_cellIndex[Index].ListPointer];
+
+        internal int Count => _cells.Count;
+
         internal void Add(IRangeID cell)
         {
             var ix = IndexOf(cell.RangeID);
             if (ix >= 0)
             {
-                throw (new Exception("Item already exists"));
+                throw new Exception("Item already exists");
             }
             Insert(~ix, cell);
         }
@@ -134,14 +119,14 @@ namespace OfficeOpenXml
             var ix = IndexOf(key);
             if (ix < 0)
             {
-                throw (new Exception("Key does not exists"));
+                throw new Exception("Key does not exists");
             }
-            int listPointer = _cellIndex[ix].ListPointer;
+            var listPointer = _cellIndex[ix].ListPointer;
             Array.Copy(_cellIndex, ix + 1, _cellIndex, ix, _cells.Count - ix - 1);
             _cells.RemoveAt(listPointer);
 
             //Item is removed subtract one from all items with greater ListPointer
-            for (int i = 0; i < _cells.Count; i++)
+            for (var i = 0; i < _cells.Count; i++)
             {
                 if (_cellIndex[i].ListPointer >= listPointer)
                 {
@@ -156,7 +141,7 @@ namespace OfficeOpenXml
         }
         internal bool ContainsKey(ulong key)
         {
-            return IndexOf(key) < 0 ? false : true;
+            return IndexOf(key) >= 0;
         }
         int _size { get; set; }
         #region "RangeID manipulation methods"
@@ -168,10 +153,10 @@ namespace OfficeOpenXml
         /// <returns>Index of first rangeItem</returns>
         internal int InsertRowsUpdateIndex(ulong rowID, int rows)
         {
-            int index = IndexOf(rowID);
+            var index = IndexOf(rowID);
             if (index < 0) index = ~index; //No match found invert to get start cell
-            ulong rowAdd = (((ulong)rows) << 29);
-            for (int i = index; i < _cells.Count; i++)
+            var rowAdd = (ulong)rows << 29;
+            for (var i = index; i < _cells.Count; i++)
             {
                 _cellIndex[i].RangeID += rowAdd;
             }
@@ -185,10 +170,10 @@ namespace OfficeOpenXml
         /// <returns>Index of first rangeItem</returns>
         internal int InsertRows(ulong rowID, int rows)
         {
-            int index = IndexOf(rowID);
+            var index = IndexOf(rowID);
             if (index < 0) index = ~index; //No match found invert to get start cell
-            ulong rowAdd = (((ulong)rows) << 29);
-            for (int i = index; i < _cells.Count; i++)
+            var rowAdd = (ulong)rows << 29;
+            for (var i = index; i < _cells.Count; i++)
             {
                 _cellIndex[i].RangeID += rowAdd;
                 _cells[_cellIndex[i].ListPointer].RangeID += rowAdd;
@@ -203,7 +188,7 @@ namespace OfficeOpenXml
         /// <param name="updateCells">Update range id's on cells</param>
         internal int DeleteRows(ulong rowID, int rows, bool updateCells)
         {
-            ulong rowAdd = (((ulong)rows) << 29);
+            var rowAdd = (ulong)rows << 29;
             var index = IndexOf(rowID);
             if (index < 0) index = ~index; //No match found invert to get start cell
 
@@ -213,34 +198,34 @@ namespace OfficeOpenXml
                 Delete(_cellIndex[index].RangeID);
             }
 
-            int updIndex = IndexOf(rowID + rowAdd);
+            var updIndex = IndexOf(rowID + rowAdd);
             if (updIndex < 0) updIndex = ~updIndex; //No match found invert to get start cell
 
-            for (int i = updIndex; i < _cells.Count; i++)
+            for (var i = updIndex; i < _cells.Count; i++)
             {
                 _cellIndex[i].RangeID -= rowAdd;                        //Change the index
                 if (updateCells) _cells[_cellIndex[i].ListPointer].RangeID -= rowAdd;    //Change the cell/row or column object
             }
             return index;
         }
-        internal void InsertColumn(ulong ColumnID, int columns)
+        internal void InsertColumn(ulong columnId, int columns)
         {
-            throw (new Exception("Working on it..."));
+            throw new Exception("Working on it...");
         }
-        internal void DeleteColumn(ulong ColumnID, int columns)
+        internal void DeleteColumn(ulong columnId, int columns)
         {
-            throw (new Exception("Working on it..."));
+            throw new Exception("Working on it...");
         }
         #endregion
         #region "Private Methods"
         /// <summary>
         /// Init the size starting from 128 items. Double the size until the list fits.
         /// </summary>
-        /// <param name="_cells"></param>
-        private void InitSize(List<IRangeID> _cells)
+        /// <param name="cells"></param>
+        private void InitSize(List<IRangeID> cells)
         {
             _size = 128;
-            while (_cells.Count > _size) _size <<= 1;
+            while (cells.Count > _size) _size <<= 1;
             _cellIndex = new IndexItem[_size];
         }
         /// <summary>
@@ -265,10 +250,7 @@ namespace OfficeOpenXml
 
         #region IEnumerator<IRangeID> Members
 
-        IRangeID IEnumerator<IRangeID>.Current
-        {
-            get { throw new NotImplementedException(); }
-        }
+        IRangeID IEnumerator<IRangeID>.Current => throw new NotImplementedException();
 
         #endregion
 
@@ -283,10 +265,7 @@ namespace OfficeOpenXml
 
         #region IEnumerator Members
         int _ix = -1;
-        object IEnumerator.Current
-        {
-            get => _cells[_cellIndex[_ix].ListPointer];
-        }
+        object IEnumerator.Current => _cells[_cellIndex[_ix].ListPointer];
 
         bool IEnumerator.MoveNext()
         {
@@ -305,7 +284,7 @@ namespace OfficeOpenXml
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return this.MemberwiseClone() as IEnumerator;
+            return MemberwiseClone() as IEnumerator;
         }
 
         #endregion

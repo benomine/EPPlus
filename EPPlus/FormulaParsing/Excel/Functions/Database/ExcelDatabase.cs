@@ -38,10 +38,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Database
         private int _rowIndex;
         private readonly List<ExcelDatabaseField> _fields = new List<ExcelDatabaseField>();
 
-        public IEnumerable<ExcelDatabaseField> Fields
-        {
-            get { return _fields; }
-        }
+        public IEnumerable<ExcelDatabaseField> Fields => _fields;
 
         public ExcelDatabase(ExcelDataProvider dataProvider, string range)
         {
@@ -72,10 +69,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Database
             return _dataProvider.GetRangeValue(_worksheet, row, col);
         }
 
-        public bool HasMoreRows
-        {
-            get { return _rowIndex < _endRow; }
-        }
+        public bool HasMoreRows => _rowIndex < _endRow;
 
         public ExcelDatabaseRow Read()
         {

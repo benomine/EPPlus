@@ -50,16 +50,16 @@ namespace OfficeOpenXml
         /// <summary>
         /// Sets a password for the workbook. This does not encrypt the workbook. 
         /// </summary>
-        /// <param name="Password">The password. </param>
-        public void SetPassword(string Password)
+        /// <param name="password">The password. </param>
+        public void SetPassword(string password)
         {
-            if (string.IsNullOrEmpty(Password))
+            if (string.IsNullOrEmpty(password))
             {
                 DeleteNode(workbookPasswordPath);
             }
             else
             {
-                SetXmlNodeString(workbookPasswordPath, ((int)EncryptedPackageHandler.CalculatePasswordHash(Password)).ToString("x"));
+                SetXmlNodeString(workbookPasswordPath, ((int)EncryptedPackageHandler.CalculatePasswordHash(password)).ToString("x"));
             }
         }
         const string lockStructurePath = "d:workbookProtection/@lockStructure";
@@ -68,14 +68,8 @@ namespace OfficeOpenXml
         /// </summary>
         public bool LockStructure
         {
-            get
-            {
-                return GetXmlNodeBool(lockStructurePath, false);
-            }
-            set
-            {
-                SetXmlNodeBool(lockStructurePath, value, false);
-            }
+            get => GetXmlNodeBool(lockStructurePath, false);
+            set => SetXmlNodeBool(lockStructurePath, value, false);
         }
         const string lockWindowsPath = "d:workbookProtection/@lockWindows";
         /// <summary>
@@ -83,14 +77,8 @@ namespace OfficeOpenXml
         /// </summary>
         public bool LockWindows
         {
-            get
-            {
-                return GetXmlNodeBool(lockWindowsPath, false);
-            }
-            set
-            {
-                SetXmlNodeBool(lockWindowsPath, value, false);
-            }
+            get => GetXmlNodeBool(lockWindowsPath, false);
+            set => SetXmlNodeBool(lockWindowsPath, value, false);
         }
         const string lockRevisionPath = "d:workbookProtection/@lockRevision";
 
@@ -99,14 +87,8 @@ namespace OfficeOpenXml
         /// </summary>
         public bool LockRevision
         {
-            get
-            {
-                return GetXmlNodeBool(lockRevisionPath, false);
-            }
-            set
-            {
-                SetXmlNodeBool(lockRevisionPath, value, false);
-            }
+            get => GetXmlNodeBool(lockRevisionPath, false);
+            set => SetXmlNodeBool(lockRevisionPath, value, false);
         }
     }
 }

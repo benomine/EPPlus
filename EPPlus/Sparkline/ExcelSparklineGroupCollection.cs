@@ -56,13 +56,8 @@ namespace OfficeOpenXml.Sparkline
         /// <summary>
         /// Number of items in the collection
         /// </summary>
-        public int Count
-        {
-            get
-            {
-                return _lst.Count;
-            }
-        }
+        public int Count => _lst.Count;
+
         /// <summary>
         /// Adds a new sparklinegroup to the collection
         /// </summary>
@@ -78,34 +73,28 @@ namespace OfficeOpenXml.Sparkline
                 {
                     return AddGroup(type, locationRange, dataRange, true);
                 }
-                else if (locationRange.Columns== dataRange.Columns)
+
+                if (locationRange.Columns== dataRange.Columns)
                 {
                     return AddGroup(type, locationRange, dataRange, false);
                 }
-                else
-                {
-                    throw (new ArgumentException("dataRange is not valid. dataRange columns or rows must match number of rows in locationRange"));
-                }
+                throw new ArgumentException("dataRange is not valid. dataRange columns or rows must match number of rows in locationRange");
             }
-            else if (locationRange.Columns==1)
+
+            if (locationRange.Columns==1)
             {
                 if (locationRange.Rows== dataRange.Columns)
                 {
                     return AddGroup(type, locationRange, dataRange, false);
                 }
-                else if (locationRange.Rows== dataRange.Rows)
+
+                if (locationRange.Rows== dataRange.Rows)
                 {
                     return AddGroup(type, locationRange, dataRange, true);
                 }
-                else
-                {
-                    throw (new ArgumentException("dataRange is not valid. dataRange columns or rows must match number of columns in locationRange"));
-                }
+                throw new ArgumentException("dataRange is not valid. dataRange columns or rows must match number of columns in locationRange");
             }
-            else
-            {
-                throw (new ArgumentException("locationRange is not valid. Range must be one Column or Row only"));
-            }
+            throw new ArgumentException("locationRange is not valid. Range must be one Column or Row only");
         }
 
         private ExcelSparklineGroup AddGroup(eSparklineType type, ExcelAddressBase locationRange, ExcelAddressBase dataRange, bool isRows)
@@ -194,13 +183,7 @@ namespace OfficeOpenXml.Sparkline
         /// </summary>
         /// <param name="index">The position of the Sparklinegroup. 0-base</param>
         /// <returns></returns>
-        public ExcelSparklineGroup this[int index]
-        {
-            get
-            {
-                return (_lst[index]);
-            }
-        }
+        public ExcelSparklineGroup this[int index] => _lst[index];
 
         public IEnumerator<ExcelSparklineGroup> GetEnumerator()
         {

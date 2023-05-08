@@ -41,7 +41,7 @@ namespace OfficeOpenXml.Drawing.Vml
             VmlDrawingXml = new XmlDocument();
             VmlDrawingXml.PreserveWhitespace = false;
 
-            NameTable nt = new NameTable();
+            var nt = new NameTable();
             NameSpaceManager = new XmlNamespaceManager(nt);
             NameSpaceManager.AddNamespace("v", ExcelPackage.schemaMicrosoftVml);
             NameSpaceManager.AddNamespace("o", ExcelPackage.schemaMicrosoftOffice);

@@ -25,7 +25,7 @@ namespace OfficeOpenXml.Sparkline
             {
                 if (value < 0 || value > 65)
                 {
-                    throw (new ArgumentOutOfRangeException("Index out of range"));
+                    throw new ArgumentOutOfRangeException("Index out of range");
                 }
 
                 SetXmlNodeString("@indexed", value.ToString(CultureInfo.InvariantCulture));
@@ -38,10 +38,7 @@ namespace OfficeOpenXml.Sparkline
         public string Rgb
         {
             get => GetXmlNodeString("@rgb");
-            internal set
-            {
-                SetXmlNodeString("@rgb", value);
-            }
+            internal set => SetXmlNodeString("@rgb", value);
         }
 
 
@@ -57,7 +54,7 @@ namespace OfficeOpenXml.Sparkline
             {
                 if (value > 1 || value < -1)
                 {
-                    throw (new ArgumentOutOfRangeException("Value must be between -1 and 1"));
+                    throw new ArgumentOutOfRangeException("Value must be between -1 and 1");
                 }
                 SetXmlNodeString("@tint", value.ToString(CultureInfo.InvariantCulture));
             }

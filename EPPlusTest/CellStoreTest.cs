@@ -178,7 +178,7 @@ namespace EPPlusTest
             LoadData(ws, 100, isNumeric: true);
             ws.Cells["B1"].Formula = "SUM(A1:A500)";
             ws.Calculate();
-            ws.Cells["B1"].Copy(ws.Cells["C1"]);
+            ws.Cells["B1"].Copy(ws.Cells["C1"], null);
             ws.Cells["B1"].Copy(ws.Cells["D1"], ExcelRangeCopyOptionFlags.ExcludeFormulas);
 
             Assert.AreEqual(ws.Cells["B1"].Value, ws.Cells["C1"].Value);

@@ -67,13 +67,7 @@
         //    set;
         //}
 
-        protected internal override string Id
-        {
-            get
-            {
-                return Top.Id + Bottom.Id + Left.Id + Right.Id/* + Diagonal.Id + GetAsString(DiagonalUp) + GetAsString(DiagonalDown)*/;
-            }
-        }
+        protected internal override string Id => Top.Id + Bottom.Id + Left.Id + Right.Id /* + Diagonal.Id + GetAsString(DiagonalUp) + GetAsString(DiagonalDown)*/;
 
         protected internal override void CreateNodes(XmlHelper helper, string path)
         {
@@ -82,16 +76,12 @@
             Top.CreateNodes(helper, path + "/d:top");
             Bottom.CreateNodes(helper, path + "/d:bottom");
         }
-        protected internal override bool HasValue
-        {
-            get
-            {
-                return Left.HasValue ||
-                    Right.HasValue ||
-                    Top.HasValue ||
-                    Bottom.HasValue;
-            }
-        }
+        protected internal override bool HasValue =>
+            Left.HasValue ||
+            Right.HasValue ||
+            Top.HasValue ||
+            Bottom.HasValue;
+
         protected internal override ExcelDxfBorderBase Clone()
         {
             return new ExcelDxfBorderBase(_styles) { Bottom = Bottom.Clone(), Top=Top.Clone(), Left=Left.Clone(), Right=Right.Clone() };

@@ -17,19 +17,21 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Information
                 var val = (bool)arg ? 1d : 0d;
                 return CreateResult(val, DataType.Decimal);
             }
-            else if (IsNumeric(arg))
+
+            if (IsNumeric(arg))
             {
                 var val = ConvertUtil.GetValueDouble(arg);
                 return CreateResult(val, DataType.Decimal);
             }
-            else if (arg is string)
+            if (arg is string)
             {
                 return CreateResult(0d, DataType.Decimal);
             }
-            else if (arg is ExcelErrorValue)
+            if (arg is ExcelErrorValue)
             {
                 return CreateResult(arg, DataType.ExcelError);
             }
+
             throw new ExcelErrorValueException(eErrorType.Value);
         }
     }

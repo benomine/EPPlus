@@ -81,10 +81,8 @@ namespace OfficeOpenXml
                 {
                     return -1;
                 }
-                else
-                {
-                    return _sheet.PositionID-_workbook._package._worksheetAdd;
-                }
+
+                return _sheet.PositionID-_workbook._package._worksheetAdd;
             }
         }
         internal ExcelWorksheet LocalSheet => _sheet;

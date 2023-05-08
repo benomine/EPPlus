@@ -50,28 +50,16 @@ namespace OfficeOpenXml.Table.PivotTable
         }
         internal int Index
         {
-            get
-            {
-                return GetXmlNodeInt("@fld");
-            }
-            set
-            {
-                SetXmlNodeString("@fld", value.ToString());
-            }
+            get => GetXmlNodeInt("@fld");
+            set => SetXmlNodeString("@fld", value.ToString());
         }
         /// <summary>
         /// The Name of the field
         /// </summary>
         public string Name
         {
-            get
-            {
-                return GetXmlNodeString("@name");
-            }
-            set
-            {
-                SetXmlNodeString("@name", value);
-            }
+            get => GetXmlNodeString("@name");
+            set => SetXmlNodeString("@name", value);
         }
         /***** Dont work. Need items to be populated. ****/
         ///// <summary>
@@ -91,25 +79,13 @@ namespace OfficeOpenXml.Table.PivotTable
         //}
         internal int NumFmtId
         {
-            get
-            {
-                return GetXmlNodeInt("@numFmtId");
-            }
-            set
-            {
-                SetXmlNodeString("@numFmtId", value.ToString());
-            }
+            get => GetXmlNodeInt("@numFmtId");
+            set => SetXmlNodeString("@numFmtId", value.ToString());
         }
         internal int Hier
         {
-            get
-            {
-                return GetXmlNodeInt("@hier");
-            }
-            set
-            {
-                SetXmlNodeString("@hier", value.ToString());
-            }
+            get => GetXmlNodeInt("@hier");
+            set => SetXmlNodeString("@hier", value.ToString());
         }
     }
 }

@@ -37,7 +37,7 @@ namespace OfficeOpenXml.Style
     /// </summary>
     public sealed class ExcelNumberFormat : StyleBase
     {
-        internal ExcelNumberFormat(ExcelStyles styles, OfficeOpenXml.XmlHelper.ChangedEventHandler ChangedEvent, int PositionID, string Address, int index) :
+        internal ExcelNumberFormat(ExcelStyles styles, XmlHelper.ChangedEventHandler ChangedEvent, int PositionID, string Address, int index) :
             base(styles, ChangedEvent, PositionID, Address)
         {
             Index = index;
@@ -45,17 +45,12 @@ namespace OfficeOpenXml.Style
         /// <summary>
         /// The numeric index fror the format
         /// </summary>
-        public int NumFmtID
-        {
-            get
-            {
-                return Index;
-            }
-            //set
-            //{
-            //    _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Numberformat, "NumFmtID", value, _workSheetID, _address));
-            //}
-        }
+        public int NumFmtID => Index;
+
+        //set
+        //{
+        //    _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Numberformat, "NumFmtID", value, _workSheetID, _address));
+        //}
         /// <summary>
         /// The numberformat 
         /// </summary>
@@ -63,7 +58,7 @@ namespace OfficeOpenXml.Style
         {
             get
             {
-                for (int i = 0; i<_styles.NumberFormats.Count; i++)
+                for (var i = 0; i<_styles.NumberFormats.Count; i++)
                 {
                     if (Index==_styles.NumberFormats[i].NumFmtId)
                     {
@@ -72,19 +67,11 @@ namespace OfficeOpenXml.Style
                 }
                 return "general";
             }
-            set
-            {
-                _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Numberformat, eStyleProperty.Format, (string.IsNullOrEmpty(value) ? "General" : value), _positionID, _address));
-            }
+            set => _ChangedEvent(this, new StyleChangeEventArgs(eStyleClass.Numberformat, eStyleProperty.Format, string.IsNullOrEmpty(value) ? "General" : value, _positionID, _address));
         }
 
-        internal override string Id
-        {
-            get
-            {
-                return Format;
-            }
-        }
+        internal override string Id => Format;
+
         /// <summary>
         /// If the numeric format is a build-in from.
         /// </summary>

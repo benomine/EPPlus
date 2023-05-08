@@ -39,19 +39,19 @@ namespace OfficeOpenXml
 	/// </summary>
 	public class ExcelColumn : IRangeID
     {
-        private ExcelWorksheet _worksheet;
-        private XmlElement _colElement = null;
+        private readonly ExcelWorksheet _worksheet;
+        private readonly XmlElement _colElement = null;
 
         #region ExcelColumn Constructor
         /// <summary>
         /// Creates a new instance of the ExcelColumn class.  
         /// For internal use only!
         /// </summary>
-        /// <param name="Worksheet"></param>
+        /// <param name="worksheet"></param>
         /// <param name="col"></param>
-        protected internal ExcelColumn(ExcelWorksheet Worksheet, int col)
+        protected internal ExcelColumn(ExcelWorksheet worksheet, int col)
         {
-            _worksheet = Worksheet;
+            _worksheet = worksheet;
             _columnMin = col;
             _columnMax = col;
             _width = _worksheet.DefaultColWidth;
@@ -61,19 +61,16 @@ namespace OfficeOpenXml
         /// <summary>
         /// Sets the first column the definition refers to.
         /// </summary>
-        public int ColumnMin
-        {
-            get { return _columnMin; }
-            //set { _columnMin=value; } 
-        }
+        public int ColumnMin => _columnMin;
 
+        //set { _columnMin=value; } 
         internal int _columnMax;
         /// <summary>
 		/// Sets the last column the definition refers to.
 		/// </summary>
         public int ColumnMax
         {
-            get { return _columnMax; }
+            get => _columnMax;
             set
             {
                 if (value < _columnMin && value > ExcelPackage.MaxColumns)
@@ -96,13 +93,8 @@ namespace OfficeOpenXml
         /// <summary>
         /// Internal range id for the column
         /// </summary>
-        internal ulong ColumnID
-        {
-            get
-            {
-                return ExcelColumn.GetColumnID(_worksheet.SheetID, ColumnMin);
-            }
-        }
+        private ulong ColumnID => GetColumnID(_worksheet.SheetID, ColumnMin);
+
         #region ExcelColumn Hidden
         /// <summary>
         /// Allows the column to be hidden in the worksheet
@@ -110,10 +102,7 @@ namespace OfficeOpenXml
         internal bool _hidden = false;
         public bool Hidden
         {
-            get
-            {
-                return _hidden;
-            }
+            get => _hidden;
             set
             {
                 if (_worksheet._package.DoAdjustDrawings)
@@ -139,10 +128,8 @@ namespace OfficeOpenXml
                 {
                     return 0;
                 }
-                else
-                {
-                    return _width;
-                }
+
+                return _width;
             }
         }
         internal double _width;
@@ -151,10 +138,7 @@ namespace OfficeOpenXml
         /// </summary>
         public double Width
         {
-            get
-            {
-                return _width;
-            }
+            get => _width;
             set
             {
                 if (_worksheet._package.DoAdjustDrawings)
@@ -205,8 +189,8 @@ namespace OfficeOpenXml
         {
             get
             {
-                string letter = ExcelCellBase.GetColumnLetter(ColumnMin);
-                string endLetter = ExcelCellBase.GetColumnLetter(ColumnMax);
+                var letter = ExcelCellBase.GetColumnLetter(ColumnMin);
+                var endLetter = ExcelCellBase.GetColumnLetter(ColumnMax);
                 return _worksheet.Workbook.Styles.GetStyleObject(StyleID, _worksheet.PositionID, letter + ":" + endLetter);
             }
         }
@@ -216,10 +200,7 @@ namespace OfficeOpenXml
 		/// </summary>
 		public string StyleName
         {
-            get
-            {
-                return _styleName;
-            }
+            get => _styleName;
             set
             {
                 StyleID = _worksheet.Workbook.Styles.GetStyleIdFromName(value);
@@ -231,14 +212,8 @@ namespace OfficeOpenXml
         /// </summary>
         public int StyleID
         {
-            get
-            {
-                return _worksheet.GetStyleInner(0, ColumnMin);
-            }
-            set
-            {
-                _worksheet.SetStyleInner(0, ColumnMin, value);
-            }
+            get => _worksheet.GetStyleInner(0, ColumnMin);
+            set => _worksheet.SetStyleInner(0, ColumnMin, value);
         }
         /// <summary>
         /// Adds a manual page break after the column.
@@ -250,14 +225,8 @@ namespace OfficeOpenXml
         }
         public bool Merged
         {
-            get
-            {
-                return _worksheet.MergedCells[ColumnMin, 0] != null;
-            }
-            set
-            {
-                _worksheet.MergedCells.Add(new ExcelAddressBase(1, ColumnMin, ExcelPackage.MaxRows, ColumnMax), true);
-            }
+            get => _worksheet.MergedCells[ColumnMin, 0] != null;
+            set => _worksheet.MergedCells.Add(new ExcelAddressBase(1, ColumnMin, ExcelPackage.MaxRows, ColumnMax), true);
         }
         #endregion
 
@@ -284,10 +253,10 @@ namespace OfficeOpenXml
         /// Note: Cells containing formulas are ignored since EPPlus don't have a calculation engine.
         ///       Wrapped and merged cells are also ignored.
         /// </summary>
-        /// <param name="MinimumWidth">Minimum column width</param>
-        public void AutoFit(double MinimumWidth)
+        /// <param name="minimumWidth">Minimum column width</param>
+        public void AutoFit(double minimumWidth)
         {
-            _worksheet.Cells[1, _columnMin, ExcelPackage.MaxRows, _columnMax].AutoFitColumns(MinimumWidth);
+            _worksheet.Cells[1, _columnMin, ExcelPackage.MaxRows, _columnMax].AutoFitColumns(minimumWidth);
         }
 
         /// <summary>
@@ -295,36 +264,33 @@ namespace OfficeOpenXml
         /// Note: Cells containing formulas are ignored since EPPlus don't have a calculation engine.
         ///       Wrapped and merged cells are also ignored.
         /// </summary>
-        /// <param name="MinimumWidth">Minimum column width</param>
-        /// <param name="MaximumWidth">Maximum column width</param>
-        public void AutoFit(double MinimumWidth, double MaximumWidth)
+        /// <param name="minimumWidth">Minimum column width</param>
+        /// <param name="maximumWidth">Maximum column width</param>
+        public void AutoFit(double minimumWidth, double maximumWidth)
         {
-            _worksheet.Cells[1, _columnMin, ExcelPackage.MaxRows, _columnMax].AutoFitColumns(MinimumWidth, MaximumWidth);
+            _worksheet.Cells[1, _columnMin, ExcelPackage.MaxRows, _columnMax].AutoFitColumns(minimumWidth, maximumWidth);
         }
 
         /// <summary>
         /// Get the internal RangeID
         /// </summary>
-        /// <param name="sheetID">Sheet no</param>
+        /// <param name="sheetId">Sheet no</param>
         /// <param name="column">Column</param>
         /// <returns></returns>
-        internal static ulong GetColumnID(int sheetID, int column)
+        public static ulong GetColumnID(int sheetId, int column)
         {
-            return ((ulong)sheetID) + (((ulong)column) << 15);
+            return (ulong)sheetId + ((ulong)column << 15);
         }
 
         #region IRangeID Members
 
         ulong IRangeID.RangeID
         {
-            get
-            {
-                return ColumnID;
-            }
+            get => ColumnID;
             set
             {
-                int prevColMin = _columnMin;
-                _columnMin = ((int)(value >> 15) & 0x3FF);
+                var prevColMin = _columnMin;
+                _columnMin = (int)(value >> 15) & 0x3FF;
                 _columnMax += prevColMin - ColumnMin;
                 //Todo:More Validation
                 if (_columnMax > ExcelPackage.MaxColumns) _columnMax = ExcelPackage.MaxColumns;
@@ -343,7 +309,7 @@ namespace OfficeOpenXml
         }
         internal ExcelColumn Clone(ExcelWorksheet added, int col)
         {
-            ExcelColumn newCol = added.Column(col);
+            var newCol = added.Column(col);
             newCol.ColumnMax = ColumnMax;
             newCol.BestFit = BestFit;
             newCol.Collapsed = Collapsed;

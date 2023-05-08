@@ -13,7 +13,7 @@ namespace OfficeOpenXml
             SchemaNodeOrder = ws.SchemaNodeOrder; //Fixed issue 15385
             foreach (XmlNode protectedRangeNode in topNode.SelectNodes("d:protectedRanges/d:protectedRange", nsm))
             {
-                if (!(protectedRangeNode is XmlElement))
+                if (protectedRangeNode is not XmlElement)
                     continue;
                 _baseList.Add(new ExcelProtectedRange(protectedRangeNode.Attributes["name"].Value, new ExcelAddress(SqRefUtility.FromSqRefAddress(protectedRangeNode.Attributes["sqref"].Value)), nsm, topNode));
             }
@@ -31,12 +31,12 @@ namespace OfficeOpenXml
             {
                 if (name.Equals(pr.Name, StringComparison.CurrentCultureIgnoreCase))
                 {
-                    throw (new InvalidOperationException($"A protected range with the namn {name} already exists"));
+                    throw new InvalidOperationException($"A protected range with the name {name} already exists");
                 }
             }
             var newNode = TopNode.OwnerDocument.CreateElement("protectedRange", ExcelPackage.schemaMain);
             TopNode.SelectSingleNode("d:protectedRanges", NameSpaceManager).AppendChild(newNode);
-            var item = new ExcelProtectedRange(name, address, base.NameSpaceManager, newNode);
+            var item = new ExcelProtectedRange(name, address, NameSpaceManager, newNode);
             _baseList.Add(item);
             return item;
         }
@@ -57,10 +57,7 @@ namespace OfficeOpenXml
             _baseList.CopyTo(array, arrayIndex);
         }
 
-        public int Count
-        {
-            get { return _baseList.Count; }
-        }
+        public int Count => _baseList.Count;
 
         public bool Remove(ExcelProtectedRange item)
         {
@@ -80,13 +77,7 @@ namespace OfficeOpenXml
             _baseList.RemoveAt(index);
         }
 
-        public ExcelProtectedRange this[int index]
-        {
-            get
-            {
-                return _baseList[index];
-            }
-        }
+        public ExcelProtectedRange this[int index] => _baseList[index];
 
         IEnumerator<ExcelProtectedRange> IEnumerable<ExcelProtectedRange>.GetEnumerator()
         {

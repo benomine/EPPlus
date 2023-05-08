@@ -82,8 +82,8 @@ namespace OfficeOpenXml.FormulaParsing
         private IExpressionGraphBuilder _graphBuilder;
         private IExpressionCompiler _compiler;
 
-        public ILexer Lexer { get { return _lexer; } }
-        public IEnumerable<string> FunctionNames { get { return _parsingContext.Configuration.FunctionRepository.FunctionNames; } }
+        public ILexer Lexer => _lexer;
+        public IEnumerable<string> FunctionNames => _parsingContext.Configuration.FunctionRepository.FunctionNames;
 
         internal virtual object Parse(string formula, RangeAddress rangeAddress)
         {
@@ -132,29 +132,27 @@ namespace OfficeOpenXml.FormulaParsing
                     {
                         return compileResult.Result ?? 0d;
                     }
-                    else
+
+                    if (rangeInfo.IsEmpty)
                     {
-                        if (rangeInfo.IsEmpty)
-                        {
-                            return 0d;
-                        }
-                        if (!rangeInfo.IsMulti)
-                        {
-                            return rangeInfo.First().Value ?? 0d;
-                        }
-                        // ok to return multicell if it is a workbook scoped name.
-                        if (string.IsNullOrEmpty(worksheet))
-                        {
-                            return rangeInfo;
-                        }
-                        if (_parsingContext.Debug)
-                        {
-                            var msg = string.Format("A range with multiple cell was returned at row {0}, column {1}",
-                                row, column);
-                            _parsingContext.Configuration.Logger.Log(_parsingContext, msg);
-                        }
-                        return ExcelErrorValue.Create(eErrorType.Value);
+                        return 0d;
                     }
+                    if (!rangeInfo.IsMulti)
+                    {
+                        return rangeInfo.First().Value ?? 0d;
+                    }
+                    // ok to return multicell if it is a workbook scoped name.
+                    if (string.IsNullOrEmpty(worksheet))
+                    {
+                        return rangeInfo;
+                    }
+                    if (_parsingContext.Debug)
+                    {
+                        var msg = string.Format("A range with multiple cell was returned at row {0}, column {1}",
+                            row, column);
+                        _parsingContext.Configuration.Logger.Log(_parsingContext, msg);
+                    }
+                    return ExcelErrorValue.Create(eErrorType.Value);
                 }
                 catch (ExcelErrorValueException ex)
                 {
@@ -191,10 +189,8 @@ namespace OfficeOpenXml.FormulaParsing
             {
                 return _excelDataProvider.GetRangeValue(worksheetName, row, col);
             }
-            else
-            {
-                return Parse(f, _parsingContext.RangeAddressFactory.Create(worksheetName, col, row));
-            }
+
+            return Parse(f, _parsingContext.RangeAddressFactory.Create(worksheetName, col, row));
             //var dataItem = _excelDataProvider.GetRangeValues(address).FirstOrDefault();
             //if (dataItem == null /*|| (dataItem.Value == null && dataItem.Formula == null)*/) return null;
             //if (!string.IsNullOrEmpty(dataItem.Formula))
@@ -213,10 +209,7 @@ namespace OfficeOpenXml.FormulaParsing
             }
         }
 
-        public IFormulaParserLogger Logger
-        {
-            get { return _parsingContext.Configuration.Logger; }
-        }
+        public IFormulaParserLogger Logger => _parsingContext.Configuration.Logger;
 
         public void Dispose()
         {

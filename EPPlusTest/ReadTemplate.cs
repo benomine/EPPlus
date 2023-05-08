@@ -285,7 +285,7 @@ namespace EPPlusTest
                 var ts = new ThreadState(Finnished)
                 {
                     ws=ws,
-                    StartRow=1+(t*1000),
+                    StartRow=1+t*1000,
                     Rows=1000,
                 };
                 var tstart = new ThreadStart(ts.StartLoad);
@@ -482,7 +482,7 @@ namespace EPPlusTest
             using (var pkg = new ExcelPackage())
             {
                 var templateFile = ReadTemplateFile(@"C:\temp\bug\StackOverflow\EPPlusTest\20141120_01_3.各股累計收結表 (其他案件).xlsx");
-                using (var ms = new System.IO.MemoryStream(templateFile))
+                using (var ms = new MemoryStream(templateFile))
                 {
                     using (var tempPkg = new ExcelPackage(ms))
                     {
@@ -509,9 +509,9 @@ namespace EPPlusTest
         public static byte[] ReadTemplateFile(string templateName)
         {
             byte[] templateFIle;
-            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+            using (MemoryStream ms = new MemoryStream())
             {
-                using (var sw = new System.IO.FileStream(templateName, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite))
+                using (var sw = new FileStream(templateName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
                     byte[] buffer = new byte[2048];
                     int bytesRead;

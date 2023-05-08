@@ -44,7 +44,6 @@ namespace OfficeOpenXml.DataValidation
     {
         private const string _itemElementNodeName = "d:dataValidation";
 
-
         private readonly string _errorStylePath = "@errorStyle";
         private readonly string _errorTitlePath = "@errorTitle";
         private readonly string _errorPath = "@error";
@@ -85,7 +84,7 @@ namespace OfficeOpenXml.DataValidation
         /// <param name="address">address for data validation</param>
         /// <param name="namespaceManager">Xml Namespace manager</param>
         internal ExcelDataValidation(ExcelWorksheet worksheet, string address, ExcelDataValidationType validationType, XmlNode itemElementNode, XmlNamespaceManager namespaceManager)
-            : base(namespaceManager != null ? namespaceManager : worksheet.NameSpaceManager)
+            : base(namespaceManager ?? worksheet.NameSpaceManager)
         {
             Require.Argument(address).IsNotNullOrEmpty("address");
             address = CheckAndFixRangeAddress(address);
@@ -142,7 +141,6 @@ namespace OfficeOpenXml.DataValidation
                     "formula2"
                 };
             }
-
         }
 
         private string CheckAndFixRangeAddress(string address)
@@ -151,7 +149,7 @@ namespace OfficeOpenXml.DataValidation
             {
                 throw new FormatException("Multiple addresses may not be commaseparated, use space instead");
             }
-            address = ConvertUtil._invariantTextInfo.ToUpper(address);
+            address = ConvertUtil.InvariantTextInfo.ToUpper(address);
             if (Regex.IsMatch(address, @"[A-Z]+:[A-Z]+"))
             {
                 address = AddressUtility.ParseEntireColumnSelections(address);
@@ -190,27 +188,15 @@ namespace OfficeOpenXml.DataValidation
         /// <summary>
         /// True if the validation type allows operator to be set.
         /// </summary>
-        public bool AllowsOperator
-        {
-            get
-            {
-                return ValidationType.AllowOperator;
-            }
-        }
+        public bool AllowsOperator => ValidationType.AllowOperator;
 
         /// <summary>
         /// Address of data validation
         /// </summary>
         public ExcelAddress Address
         {
-            get
-            {
-                return new ExcelAddress(GetXmlNodeString(_sqrefPath));
-            }
-            private set
-            {
-                SetAddress(value.Address);
-            }
+            get => new(GetXmlNodeString(_sqrefPath));
+            private set => SetAddress(value.Address);
         }
         /// <summary>
         /// Validation type
@@ -222,10 +208,7 @@ namespace OfficeOpenXml.DataValidation
                 var typeString = GetXmlNodeString(_typeMessagePath);
                 return ExcelDataValidationType.GetBySchemaName(typeString);
             }
-            private set
-            {
-                SetXmlNodeString(_typeMessagePath, value.SchemaName, true);
-            }
+            private set => SetXmlNodeString(_typeMessagePath, value.SchemaName, true);
         }
 
         /// <summary>
@@ -281,14 +264,8 @@ namespace OfficeOpenXml.DataValidation
         /// </summary>
         public bool? AllowBlank
         {
-            get
-            {
-                return GetXmlNodeBoolNullable(_allowBlankPath);
-            }
-            set
-            {
-                SetNullableBoolValue(_allowBlankPath, value);
-            }
+            get => GetXmlNodeBoolNullable(_allowBlankPath);
+            set => SetNullableBoolValue(_allowBlankPath, value);
         }
 
         /// <summary>
@@ -296,14 +273,8 @@ namespace OfficeOpenXml.DataValidation
         /// </summary>
         public bool? ShowInputMessage
         {
-            get
-            {
-                return GetXmlNodeBoolNullable(_showInputMessagePath);
-            }
-            set
-            {
-                SetNullableBoolValue(_showInputMessagePath, value);
-            }
+            get => GetXmlNodeBoolNullable(_showInputMessagePath);
+            set => SetNullableBoolValue(_showInputMessagePath, value);
         }
 
         /// <summary>
@@ -311,14 +282,8 @@ namespace OfficeOpenXml.DataValidation
         /// </summary>
         public bool? ShowErrorMessage
         {
-            get
-            {
-                return GetXmlNodeBoolNullable(_showErrorMessagePath);
-            }
-            set
-            {
-                SetNullableBoolValue(_showErrorMessagePath, value);
-            }
+            get => GetXmlNodeBoolNullable(_showErrorMessagePath);
+            set => SetNullableBoolValue(_showErrorMessagePath, value);
         }
 
         /// <summary>
@@ -326,14 +291,8 @@ namespace OfficeOpenXml.DataValidation
         /// </summary>
         public string ErrorTitle
         {
-            get
-            {
-                return GetXmlNodeString(_errorTitlePath);
-            }
-            set
-            {
-                SetXmlNodeString(_errorTitlePath, value);
-            }
+            get => GetXmlNodeString(_errorTitlePath);
+            set => SetXmlNodeString(_errorTitlePath, value);
         }
 
         /// <summary>
@@ -341,65 +300,35 @@ namespace OfficeOpenXml.DataValidation
         /// </summary>
         public string Error
         {
-            get
-            {
-                return GetXmlNodeString(_errorPath);
-            }
-            set
-            {
-                SetXmlNodeString(_errorPath, value);
-            }
+            get => GetXmlNodeString(_errorPath);
+            set => SetXmlNodeString(_errorPath, value);
         }
 
         public string PromptTitle
         {
-            get
-            {
-                return GetXmlNodeString(_promptTitlePath);
-            }
-            set
-            {
-                SetXmlNodeString(_promptTitlePath, value);
-            }
+            get => GetXmlNodeString(_promptTitlePath);
+            set => SetXmlNodeString(_promptTitlePath, value);
         }
 
         public string Prompt
         {
-            get
-            {
-                return GetXmlNodeString(_promptPath);
-            }
-            set
-            {
-                SetXmlNodeString(_promptPath, value);
-            }
+            get => GetXmlNodeString(_promptPath);
+            set => SetXmlNodeString(_promptPath, value);
         }
 
         /// <summary>
         /// Formula 1
         /// </summary>
-        protected string Formula1Internal
-        {
-            get
-            {
-                return GetXmlNodeString(_formula1Path);
-            }
-        }
+        protected string Formula1Internal => GetXmlNodeString(_formula1Path);
 
         /// <summary>
         /// Formula 2
         /// </summary>
-        protected string Formula2Internal
-        {
-            get
-            {
-                return GetXmlNodeString(_formula2Path);
-            }
-        }
+        protected string Formula2Internal => GetXmlNodeString(_formula2Path);
 
         #endregion
 
-        protected void SetValue<T>(Nullable<T> val, string path)
+        protected void SetValue<T>(T? val, string path)
             where T : struct
         {
             if (!val.HasValue)

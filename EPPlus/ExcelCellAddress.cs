@@ -54,8 +54,8 @@ namespace OfficeOpenXml
         /// <param name="column">The column.</param>
         public ExcelCellAddress(int row, int column)
         {
-            this.Row = row;
-            this.Column = column;
+            Row = row;
+            Column = column;
         }
         /// <summary>
         /// Initializes a new instance of the ExcelCellAddress class.
@@ -63,28 +63,22 @@ namespace OfficeOpenXml
         ///<param name="address">The address</param>
         public ExcelCellAddress(string address)
         {
-            this.Address = address;
+            Address = address;
         }
         /// <summary>
         /// Row
         /// </summary>
         public int Row
         {
-            get
-            {
-                return this._row;
-            }
+            get => _row;
             private set
             {
                 if (value <= 0)
                 {
-                    throw new ArgumentOutOfRangeException("value", "Row cannot be less than 1.");
+                    throw new ArgumentOutOfRangeException(nameof(value), "Row cannot be less than 1.");
                 }
-                this._row = value;
-                if (_column>0)
-                    _address = ExcelCellBase.GetAddress(_row, _column);
-                else
-                    _address = "#REF!";
+                _row = value;
+                _address = _column > 0 ? ExcelCellBase.GetAddress(_row, _column) : "#REF!";
             }
         }
         /// <summary>
@@ -92,17 +86,14 @@ namespace OfficeOpenXml
         /// </summary>
         public int Column
         {
-            get
-            {
-                return this._column;
-            }
+            get => _column;
             private set
             {
                 if (value <= 0)
                 {
-                    throw new ArgumentOutOfRangeException("value", "Column cannot be less than 1.");
+                    throw new ArgumentOutOfRangeException(nameof(value), "Column cannot be less than 1.");
                 }
-                this._column = value;
+                _column = value;
                 if (_row > 0)
                     _address = ExcelCellBase.GetAddress(_row, _column);
                 else
@@ -114,10 +105,7 @@ namespace OfficeOpenXml
         /// </summary>
         public string Address
         {
-            get
-            {
-                return _address;
-            }
+            get => _address;
             internal set
             {
                 _address = value;
@@ -127,13 +115,7 @@ namespace OfficeOpenXml
         /// <summary>
         /// If the address is an invalid reference (#REF!)
         /// </summary>
-        public bool IsRef
-        {
-            get
-            {
-                return _row <= 0;
-            }
-        }
+        public bool IsRef => _row <= 0;
 
         /// <summary>
         /// Returns the letter corresponding to the supplied 1-based column index.

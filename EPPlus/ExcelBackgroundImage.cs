@@ -57,7 +57,7 @@ namespace OfficeOpenXml
             _workSheet = workSheet;
         }
 
-        const string BACKGROUNDPIC_PATH = "d:picture/@r:id";
+        private const string BACKGROUNDPIC_PATH = "d:picture/@r:id";
         /// <summary>
         /// The background image of the worksheet. 
         /// The image will be saved internally as a jpg.
@@ -66,7 +66,7 @@ namespace OfficeOpenXml
         {
             get
             {
-                string relID = GetXmlNodeString(BACKGROUNDPIC_PATH);
+                var relID = GetXmlNodeString(BACKGROUNDPIC_PATH);
                 if (!string.IsNullOrEmpty(relID))
                 {
                     var rel = _workSheet.Part.GetRelationship(relID);
@@ -97,8 +97,8 @@ namespace OfficeOpenXml
         /// Set the picture from an image file. 
         /// The image file will be saved as a blob, so make sure Excel supports the image format.
         /// </summary>
-        /// <param name="PictureFile">The image file.</param>
-        public void SetFromFile(FileInfo PictureFile)
+        /// <param name="pictureFile">The image file.</param>
+        public void SetFromFile(FileInfo pictureFile)
         {
             DeletePrevImage();
 
@@ -106,16 +106,16 @@ namespace OfficeOpenXml
             byte[] fileBytes;
             try
             {
-                fileBytes = File.ReadAllBytes(PictureFile.FullName);
-                img = SKImage.FromEncodedData(PictureFile.FullName);
+                fileBytes = File.ReadAllBytes(pictureFile.FullName);
+                img = SKImage.FromEncodedData(pictureFile.FullName);
             }
             catch (Exception ex)
             {
-                throw (new InvalidDataException("File is not a supported image-file or is corrupt", ex));
+                throw new InvalidDataException("File is not a supported image-file or is corrupt", ex);
             }
 
-            string contentType = ExcelPicture.GetContentType(PictureFile.Extension);
-            var imageURI = XmlHelper.GetNewUri(_workSheet._package.Package, "/xl/media/" + PictureFile.Name.Substring(0, PictureFile.Name.Length - PictureFile.Extension.Length) + "{0}" + PictureFile.Extension);
+            var contentType = ExcelPicture.GetContentType(pictureFile.Extension);
+            var imageURI = GetNewUri(_workSheet._package.Package, "/xl/media/" + pictureFile.Name.Substring(0, pictureFile.Name.Length - pictureFile.Extension.Length) + "{0}" + pictureFile.Extension);
 
             var ii = _workSheet.Workbook._package.AddImage(fileBytes, imageURI, contentType);
 

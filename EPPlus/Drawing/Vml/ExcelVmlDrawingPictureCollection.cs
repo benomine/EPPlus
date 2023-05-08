@@ -74,7 +74,7 @@ namespace OfficeOpenXml.Drawing.Vml
 
         private string CreateVmlDrawings()
         {
-            string vml = string.Format("<xml xmlns:v=\"{0}\" xmlns:o=\"{1}\" xmlns:x=\"{2}\">",
+            var vml = string.Format("<xml xmlns:v=\"{0}\" xmlns:o=\"{1}\" xmlns:x=\"{2}\">",
                 ExcelPackage.schemaMicrosoftVml,
                 ExcelPackage.schemaMicrosoftOffice,
                 ExcelPackage.schemaMicrosoftExcel);
@@ -93,7 +93,7 @@ namespace OfficeOpenXml.Drawing.Vml
         }
         internal ExcelVmlDrawingPicture Add(string id, Uri uri, string name, double width, double height)
         {
-            XmlNode node = AddImage(id, uri, name, width, height);
+            var node = AddImage(id, uri, name, width, height);
             var draw = new ExcelVmlDrawingPicture(node, NameSpaceManager, _ws);
             draw.ImageUri = uri;
             _images.Add(draw);
@@ -117,20 +117,9 @@ namespace OfficeOpenXml.Drawing.Vml
         /// </summary>
         /// <param name="Index">Index</param>
         /// <returns>The VML Drawing Picture object</returns>
-        public ExcelVmlDrawingPicture this[int Index]
-        {
-            get
-            {
-                return _images[Index] as ExcelVmlDrawingPicture;
-            }
-        }
-        public int Count
-        {
-            get
-            {
-                return _images.Count;
-            }
-        }
+        public ExcelVmlDrawingPicture this[int Index] => _images[Index] as ExcelVmlDrawingPicture;
+
+        public int Count => _images.Count;
 
         int _nextID = 0;
         /// <summary>
@@ -146,7 +135,7 @@ namespace OfficeOpenXml.Drawing.Vml
                     if (draw.Id.Length > 3 && draw.Id.StartsWith("vml"))
                     {
                         int id;
-                        if (int.TryParse(draw.Id.Substring(3, draw.Id.Length - 3), System.Globalization.NumberStyles.Number, CultureInfo.InvariantCulture, out id))
+                        if (int.TryParse(draw.Id.Substring(3, draw.Id.Length - 3), NumberStyles.Number, CultureInfo.InvariantCulture, out id))
                         {
                             if (id > _nextID)
                             {

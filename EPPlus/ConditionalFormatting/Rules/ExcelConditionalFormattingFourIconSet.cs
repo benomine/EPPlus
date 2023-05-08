@@ -68,11 +68,11 @@ namespace OfficeOpenXml.ConditionalFormatting
             priority,
             worksheet,
             itemElementNode,
-            (namespaceManager == null) ? worksheet.NameSpaceManager : namespaceManager)
+            namespaceManager == null ? worksheet.NameSpaceManager : namespaceManager)
         {
             if (itemElementNode!=null && itemElementNode.HasChildNodes)
             {
-                XmlNode iconNode4 = TopNode.SelectSingleNode("d:iconSet/d:cfvo[position()=4]", NameSpaceManager);
+                var iconNode4 = TopNode.SelectSingleNode("d:iconSet/d:cfvo[position()=4]", NameSpaceManager);
                 Icon4 = new ExcelConditionalFormattingIconDataBarValue(
                         eExcelConditionalFormattingRuleType.FourIconSet,
                         address,
@@ -82,7 +82,7 @@ namespace OfficeOpenXml.ConditionalFormatting
             }
             else
             {
-                XmlNode iconSetNode = TopNode.SelectSingleNode("d:iconSet", NameSpaceManager);
+                var iconSetNode = TopNode.SelectSingleNode("d:iconSet", NameSpaceManager);
                 var iconNode4 = iconSetNode.OwnerDocument.CreateElement(ExcelConditionalFormattingConstants.Paths.Cfvo, ExcelPackage.schemaMain);
                 iconSetNode.AppendChild(iconNode4);
 

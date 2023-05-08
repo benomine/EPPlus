@@ -153,7 +153,7 @@ namespace OfficeOpenXml.Table
         private string GetStartXml(string name, int tblId)
         {
             name = ConvertUtil.ExcelEscapeString(name);
-            string xml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>";
+            var xml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>";
             xml += string.Format("<table xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" id=\"{0}\" name=\"{1}\" displayName=\"{2}\" ref=\"{3}\" headerRowCount=\"1\">",
             tblId,
             name,
@@ -161,17 +161,17 @@ namespace OfficeOpenXml.Table
             Address.Address);
             xml += string.Format("<autoFilter ref=\"{0}\" />", Address.Address);
 
-            int cols = Address._toCol-Address._fromCol+1;
+            var cols = Address._toCol-Address._fromCol+1;
             xml += string.Format("<tableColumns count=\"{0}\">", cols);
             var names = new Dictionary<string, string>();
-            for (int i = 1; i<=cols; i++)
+            for (var i = 1; i<=cols; i++)
             {
                 var cell = WorkSheet.Cells[Address._fromRow, Address._fromCol+i-1];
                 string colName;
                 if (cell.Value == null || names.ContainsKey(cell.Value.ToString()))
                 {
                     //Get an unique name
-                    int a = i;
+                    var a = i;
                     do
                     {
                         colName = string.Format("Column{0}", a++);
@@ -224,14 +224,8 @@ namespace OfficeOpenXml.Table
         const string ID_PATH = "@id";
         public int Id
         {
-            get
-            {
-                return GetXmlNodeInt(ID_PATH);
-            }
-            set
-            {
-                SetXmlNodeString(ID_PATH, value.ToString());
-            }
+            get => GetXmlNodeInt(ID_PATH);
+            set => SetXmlNodeString(ID_PATH, value.ToString());
         }
         const string NAME_PATH = "@name";
         const string DISPLAY_NAME_PATH = "@displayName";
@@ -240,20 +234,17 @@ namespace OfficeOpenXml.Table
         /// </summary>
         public string Name
         {
-            get
-            {
-                return GetXmlNodeString(NAME_PATH);
-            }
+            get => GetXmlNodeString(NAME_PATH);
             set
             {
                 if (Name.Equals(value, StringComparison.CurrentCultureIgnoreCase)==false && WorkSheet.Workbook.ExistsTableName(value))
                 {
-                    throw (new ArgumentException("Tablename is not unique"));
+                    throw new ArgumentException("Tablename is not unique");
                 }
-                string prevName = Name;
+                var prevName = Name;
                 if (WorkSheet.Tables._tableNames.ContainsKey(prevName))
                 {
-                    int ix = WorkSheet.Tables._tableNames[prevName];
+                    var ix = WorkSheet.Tables._tableNames[prevName];
                     WorkSheet.Tables._tableNames.Remove(prevName);
                     WorkSheet.Tables._tableNames.Add(value, ix);
                 }
@@ -276,10 +267,7 @@ namespace OfficeOpenXml.Table
         /// </summary>
         public ExcelAddressBase Address
         {
-            get
-            {
-                return _address;
-            }
+            get => _address;
             internal set
             {
                 _address = value;
@@ -308,10 +296,7 @@ namespace OfficeOpenXml.Table
         /// </summary>
         public TableStyles TableStyle
         {
-            get
-            {
-                return _tableStyle;
-            }
+            get => _tableStyle;
             set
             {
                 _tableStyle=value;
@@ -328,23 +313,20 @@ namespace OfficeOpenXml.Table
         /// </summary>
         public bool ShowHeader
         {
-            get
-            {
-                return GetXmlNodeInt(HEADERROWCOUNT_PATH)!=0;
-            }
+            get => GetXmlNodeInt(HEADERROWCOUNT_PATH)!=0;
             set
             {
                 if (Address._toRow - Address._fromRow < 0 && value ||
                     Address._toRow - Address._fromRow == 1 && value && ShowTotal)
                 {
-                    throw (new Exception("Cant set ShowHeader-property. Table has too few rows"));
+                    throw new Exception("Cant set ShowHeader-property. Table has too few rows");
                 }
 
                 if (value)
                 {
                     DeleteNode(HEADERROWCOUNT_PATH);
                     WriteAutoFilter(ShowTotal);
-                    for (int i = 0; i < Columns.Count; i++)
+                    for (var i = 0; i < Columns.Count; i++)
                     {
                         var v = WorkSheet.GetValue<string>(Address._fromRow, Address._fromCol + i);
                         if (string.IsNullOrEmpty(v))
@@ -368,15 +350,13 @@ namespace OfficeOpenXml.Table
         {
             get
             {
-                string a = GetXmlNodeString(AUTOFILTER_PATH);
+                var a = GetXmlNodeString(AUTOFILTER_PATH);
                 if (a == "")
                 {
                     return null;
                 }
-                else
-                {
-                    return new ExcelAddressBase(a);
-                }
+
+                return new ExcelAddressBase(a);
             }
         }
         private void WriteAutoFilter(bool showTotal)
@@ -400,10 +380,7 @@ namespace OfficeOpenXml.Table
         /// </summary>
         public bool ShowFilter
         {
-            get
-            {
-                return ShowHeader && AutoFilterAddress != null;
-            }
+            get => ShowHeader && AutoFilterAddress != null;
             set
             {
                 if (ShowHeader)
@@ -419,7 +396,7 @@ namespace OfficeOpenXml.Table
                 }
                 else if (value)
                 {
-                    throw (new InvalidOperationException("Filter can only be applied when ShowHeader is set to true"));
+                    throw new InvalidOperationException("Filter can only be applied when ShowHeader is set to true");
                 }
             }
         }
@@ -430,21 +407,18 @@ namespace OfficeOpenXml.Table
         /// </summary>
         public bool ShowTotal
         {
-            get
-            {
-                return GetXmlNodeInt(TOTALSROWCOUNT_PATH) == 1;
-            }
+            get => GetXmlNodeInt(TOTALSROWCOUNT_PATH) == 1;
             set
             {
                 if (value != ShowTotal)
                 {
                     if (value)
                     {
-                        Address=new ExcelAddress(WorkSheet.Name, ExcelAddressBase.GetAddress(Address.Start.Row, Address.Start.Column, Address.End.Row+1, Address.End.Column));
+                        Address=new ExcelAddress(WorkSheet.Name, ExcelCellBase.GetAddress(Address.Start.Row, Address.Start.Column, Address.End.Row+1, Address.End.Column));
                     }
                     else
                     {
-                        Address = new ExcelAddress(WorkSheet.Name, ExcelAddressBase.GetAddress(Address.Start.Row, Address.Start.Column, Address.End.Row - 1, Address.End.Column));
+                        Address = new ExcelAddress(WorkSheet.Name, ExcelCellBase.GetAddress(Address.Start.Row, Address.Start.Column, Address.End.Row - 1, Address.End.Column));
                     }
                     SetXmlNodeString("@ref", Address.Address);
                     if (value)
@@ -465,10 +439,7 @@ namespace OfficeOpenXml.Table
         /// </summary>
         public string StyleName
         {
-            get
-            {
-                return GetXmlNodeString(STYLENAME_PATH);
-            }
+            get => GetXmlNodeString(STYLENAME_PATH);
             set
             {
                 if (value.StartsWith("TableStyle"))
@@ -500,14 +471,8 @@ namespace OfficeOpenXml.Table
         /// </summary>
         public bool ShowFirstColumn
         {
-            get
-            {
-                return GetXmlNodeBool(SHOWFIRSTCOLUMN_PATH);
-            }
-            set
-            {
-                SetXmlNodeBool(SHOWFIRSTCOLUMN_PATH, value, false);
-            }
+            get => GetXmlNodeBool(SHOWFIRSTCOLUMN_PATH);
+            set => SetXmlNodeBool(SHOWFIRSTCOLUMN_PATH, value, false);
         }
         const string SHOWLASTCOLUMN_PATH = "d:tableStyleInfo/@showLastColumn";
         /// <summary>
@@ -515,14 +480,8 @@ namespace OfficeOpenXml.Table
         /// </summary>
         public bool ShowLastColumn
         {
-            get
-            {
-                return GetXmlNodeBool(SHOWLASTCOLUMN_PATH);
-            }
-            set
-            {
-                SetXmlNodeBool(SHOWLASTCOLUMN_PATH, value, false);
-            }
+            get => GetXmlNodeBool(SHOWLASTCOLUMN_PATH);
+            set => SetXmlNodeBool(SHOWLASTCOLUMN_PATH, value, false);
         }
         const string SHOWROWSTRIPES_PATH = "d:tableStyleInfo/@showRowStripes";
         /// <summary>
@@ -530,14 +489,8 @@ namespace OfficeOpenXml.Table
         /// </summary>
         public bool ShowRowStripes
         {
-            get
-            {
-                return GetXmlNodeBool(SHOWROWSTRIPES_PATH);
-            }
-            set
-            {
-                SetXmlNodeBool(SHOWROWSTRIPES_PATH, value, false);
-            }
+            get => GetXmlNodeBool(SHOWROWSTRIPES_PATH);
+            set => SetXmlNodeBool(SHOWROWSTRIPES_PATH, value, false);
         }
         const string SHOWCOLUMNSTRIPES_PATH = "d:tableStyleInfo/@showColumnStripes";
         /// <summary>
@@ -545,14 +498,8 @@ namespace OfficeOpenXml.Table
         /// </summary>
         public bool ShowColumnStripes
         {
-            get
-            {
-                return GetXmlNodeBool(SHOWCOLUMNSTRIPES_PATH);
-            }
-            set
-            {
-                SetXmlNodeBool(SHOWCOLUMNSTRIPES_PATH, value, false);
-            }
+            get => GetXmlNodeBool(SHOWCOLUMNSTRIPES_PATH);
+            set => SetXmlNodeBool(SHOWCOLUMNSTRIPES_PATH, value, false);
         }
 
         const string TOTALSROWCELLSTYLE_PATH = "@totalsRowCellStyle";
@@ -561,15 +508,12 @@ namespace OfficeOpenXml.Table
         /// </summary>
         public string TotalsRowCellStyle
         {
-            get
-            {
-                return GetXmlNodeString(TOTALSROWCELLSTYLE_PATH);
-            }
+            get => GetXmlNodeString(TOTALSROWCELLSTYLE_PATH);
             set
             {
                 if (WorkSheet.Workbook.Styles.NamedStyles.FindIndexByID(value) < 0)
                 {
-                    throw (new Exception(string.Format("Named style {0} does not exist.", value)));
+                    throw new Exception(string.Format("Named style {0} does not exist.", value));
                 }
                 SetXmlNodeString(TopNode, TOTALSROWCELLSTYLE_PATH, value, true);
 
@@ -585,15 +529,12 @@ namespace OfficeOpenXml.Table
         /// </summary>
         public string DataCellStyleName
         {
-            get
-            {
-                return GetXmlNodeString(DATACELLSTYLE_PATH);
-            }
+            get => GetXmlNodeString(DATACELLSTYLE_PATH);
             set
             {
                 if (WorkSheet.Workbook.Styles.NamedStyles.FindIndexByID(value) < 0)
                 {
-                    throw (new Exception(string.Format("Named style {0} does not exist.", value)));
+                    throw new Exception(string.Format("Named style {0} does not exist.", value));
                 }
                 SetXmlNodeString(TopNode, DATACELLSTYLE_PATH, value, true);
 
@@ -612,15 +553,12 @@ namespace OfficeOpenXml.Table
         /// </summary>
         public string HeaderRowCellStyle
         {
-            get
-            {
-                return GetXmlNodeString(HEADERROWCELLSTYLE_PATH);
-            }
+            get => GetXmlNodeString(HEADERROWCELLSTYLE_PATH);
             set
             {
                 if (WorkSheet.Workbook.Styles.NamedStyles.FindIndexByID(value) < 0)
                 {
-                    throw (new Exception(string.Format("Named style {0} does not exist.", value)));
+                    throw new Exception(string.Format("Named style {0} does not exist.", value));
                 }
                 SetXmlNodeString(TopNode, HEADERROWCELLSTYLE_PATH, value, true);
 

@@ -51,7 +51,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
 
         private bool Evaluate(object obj, string expression)
         {
-            double? candidate = default(double?);
+            var candidate = default(double?);
             if (IsNumeric(obj))
             {
                 candidate = ConvertUtil.GetValueDouble(obj);
@@ -112,7 +112,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
                         var v = sumRange.GetOffset(or, oc);
                         if (v is ExcelErrorValue)
                         {
-                            throw (new ExcelErrorValueException((ExcelErrorValue)v));
+                            throw new ExcelErrorValueException((ExcelErrorValue)v);
                         }
                         nMatches++;
                         retVal += ConvertUtil.GetValueDouble(v, true);
@@ -132,7 +132,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
                 {
                     if (candidate.IsExcelError)
                     {
-                        throw (new ExcelErrorValueException((ExcelErrorValue)candidate.Value));
+                        throw new ExcelErrorValueException((ExcelErrorValue)candidate.Value);
                     }
                     retVal += candidate.ValueDouble;
                     nMatches++;

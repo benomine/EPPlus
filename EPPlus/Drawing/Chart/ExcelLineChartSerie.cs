@@ -56,17 +56,8 @@ namespace OfficeOpenXml.Drawing.Chart
         /// <summary>
         /// Datalabels
         /// </summary>
-        public ExcelChartSerieDataLabel DataLabel
-        {
-            get
-            {
-                if (_DataLabel == null)
-                {
-                    _DataLabel = new ExcelChartSerieDataLabel(_ns, _node);
-                }
-                return _DataLabel;
-            }
-        }
+        public ExcelChartSerieDataLabel DataLabel => _DataLabel ??= new ExcelChartSerieDataLabel(_ns, _node);
+
         const string markerPath = "c:marker/c:symbol/@val";
         /// <summary>
         /// Marker symbol 
@@ -75,20 +66,15 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             get
             {
-                string marker = GetXmlNodeString(markerPath);
+                var marker = GetXmlNodeString(markerPath);
                 if (marker == "")
                 {
                     return eMarkerStyle.None;
                 }
-                else
-                {
-                    return (eMarkerStyle)Enum.Parse(typeof(eMarkerStyle), marker, true);
-                }
+
+                return (eMarkerStyle)Enum.Parse(typeof(eMarkerStyle), marker, true);
             }
-            set
-            {
-                SetXmlNodeString(markerPath, value.ToString().ToLower(CultureInfo.InvariantCulture));
-            }
+            set => SetXmlNodeString(markerPath, value.ToString().ToLower(CultureInfo.InvariantCulture));
         }
         const string smoothPath = "c:smooth/@val";
         /// <summary>
@@ -96,14 +82,8 @@ namespace OfficeOpenXml.Drawing.Chart
         /// </summary>
         public bool Smooth
         {
-            get
-            {
-                return GetXmlNodeBool(smoothPath, false);
-            }
-            set
-            {
-                SetXmlNodeBool(smoothPath, value);
-            }
+            get => GetXmlNodeBool(smoothPath, false);
+            set => SetXmlNodeBool(smoothPath, value);
         }
 
         string LINECOLOR_PATH = "c:spPr/a:ln/a:solidFill/a:srgbClr/@val";
@@ -118,20 +98,10 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             get
             {
-                string color = GetXmlNodeString(LINECOLOR_PATH);
-                if (color == "")
-                {
-                    return SKColors.Black;
-                }
-                else
-                {
-                    return SKColor.Parse(color);
-                }
+                var color = GetXmlNodeString(LINECOLOR_PATH);
+                return color == "" ? SKColors.Black : SKColor.Parse(color);
             }
-            set
-            {
-                SetXmlNodeString(LINECOLOR_PATH, value.ToString().Substring(2), true);
-            }
+            set => SetXmlNodeString(LINECOLOR_PATH, value.ToString().Substring(2), true);
         }
         string MARKERSIZE_PATH = "c:marker/c:size/@val";
         /// <summary>
@@ -149,19 +119,12 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             get
             {
-                string size = GetXmlNodeString(MARKERSIZE_PATH);
-                if (size == "")
-                {
-                    return 5;
-                }
-                else
-                {
-                    return Int32.Parse(GetXmlNodeString(MARKERSIZE_PATH));
-                }
+                var size = GetXmlNodeString(MARKERSIZE_PATH);
+                return size == "" ? 5 : int.Parse(GetXmlNodeString(MARKERSIZE_PATH));
             }
             set
             {
-                int size = value;
+                var size = value;
                 size = Math.Max(2, size);
                 size = Math.Min(72, size);
                 SetXmlNodeString(MARKERSIZE_PATH, size.ToString(), true);
@@ -179,20 +142,15 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             get
             {
-                string size = GetXmlNodeString(LINEWIDTH_PATH);
+                var size = GetXmlNodeString(LINEWIDTH_PATH);
                 if (size == "")
                 {
                     return 2.25;
                 }
-                else
-                {
-                    return double.Parse(GetXmlNodeString(LINEWIDTH_PATH)) / 12700;
-                }
+
+                return double.Parse(GetXmlNodeString(LINEWIDTH_PATH)) / 12700;
             }
-            set
-            {
-                SetXmlNodeString(LINEWIDTH_PATH, ((int)(12700 * value)).ToString(), true);
-            }
+            set => SetXmlNodeString(LINEWIDTH_PATH, ((int)(12700 * value)).ToString(), true);
         }
         //marker line color
         string MARKERLINECOLOR_PATH = "c:marker/c:spPr/a:ln/a:solidFill/a:srgbClr/@val";
@@ -208,20 +166,10 @@ namespace OfficeOpenXml.Drawing.Chart
         {
             get
             {
-                string color = GetXmlNodeString(MARKERLINECOLOR_PATH);
-                if (color == "")
-                {
-                    return SKColors.Black;
-                }
-                else
-                {
-                    return SKColor.Parse(color);
-                }
+                var color = GetXmlNodeString(MARKERLINECOLOR_PATH);
+                return color == "" ? SKColors.Black : SKColor.Parse(color);
             }
-            set
-            {
-                SetXmlNodeString(MARKERLINECOLOR_PATH, value.ToString().Substring(2), true);
-            }
+            set => SetXmlNodeString(MARKERLINECOLOR_PATH, value.ToString().Substring(2), true);
         }
 
 

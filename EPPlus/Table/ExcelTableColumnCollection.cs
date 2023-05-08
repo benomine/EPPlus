@@ -63,13 +63,8 @@ namespace OfficeOpenXml.Table
         /// <summary>
         /// Number of items in the collection
         /// </summary>
-        public int Count
-        {
-            get
-            {
-                return _cols.Count;
-            }
-        }
+        public int Count => _cols.Count;
+
         /// <summary>
         /// The column Index. Base 0.
         /// </summary>
@@ -81,7 +76,7 @@ namespace OfficeOpenXml.Table
             {
                 if (Index < 0 || Index >= _cols.Count)
                 {
-                    throw (new ArgumentOutOfRangeException("Column index out of range"));
+                    throw new ArgumentOutOfRangeException("Column index out of range");
                 }
                 return _cols[Index] as ExcelTableColumn;
             }
@@ -99,10 +94,8 @@ namespace OfficeOpenXml.Table
                 {
                     return _cols[_colNames[Name]];
                 }
-                else
-                {
-                    return null;
-                }
+
+                return null;
             }
         }
 

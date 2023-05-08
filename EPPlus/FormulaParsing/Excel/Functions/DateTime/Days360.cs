@@ -65,7 +65,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime
                     startDay = 30;
                 }
             }
-            var result = (endYear*12*30 + endMonth*30 + endDay) - (startYear*12*30 + startMonth*30 + startDay);
+            var result = endYear*12*30 + endMonth*30 + endDay - (startYear*12*30 + startMonth*30 + startDay);
             return CreateResult(result, DataType.Integer);
         }
 
@@ -73,7 +73,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime
         {
             var startDate = new System.DateTime(dt1.Year, dt1.Month, 1).AddMonths(1);
             var endDate = new System.DateTime(dt2.Year, dt2.Month, 1);
-            return ((endDate.Year - startDate.Year)*12) + (endDate.Month - startDate.Month);
+            return (endDate.Year - startDate.Year)*12 + (endDate.Month - startDate.Month);
         }
     }
 }

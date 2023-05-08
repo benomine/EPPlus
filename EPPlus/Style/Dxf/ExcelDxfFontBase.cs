@@ -42,13 +42,7 @@
 
         public ExcelUnderLineType? Underline { get; set; }
 
-        protected internal override string Id
-        {
-            get
-            {
-                return GetAsString(Bold) + "|" + GetAsString(Italic) + "|" + GetAsString(Strike) + "|" + (Color ==null ? "" : Color.Id) + "|" /*+ GetAsString(VerticalAlign) + "|"*/ + GetAsString(Underline);
-            }
-        }
+        protected internal override string Id => GetAsString(Bold) + "|" + GetAsString(Italic) + "|" + GetAsString(Strike) + "|" + (Color ==null ? "" : Color.Id) + "|" /*+ GetAsString(VerticalAlign) + "|"*/ + GetAsString(Underline);
 
         protected internal override void CreateNodes(XmlHelper helper, string path)
         {
@@ -59,17 +53,13 @@
             SetValue(helper, path + "/d:u/@val", Underline);
             SetValueColor(helper, path + "/d:color", Color);
         }
-        protected internal override bool HasValue
-        {
-            get
-            {
-                return Bold != null ||
-                       Italic != null ||
-                       Strike != null ||
-                       Underline != null ||
-                       Color.HasValue;
-            }
-        }
+        protected internal override bool HasValue =>
+            Bold != null ||
+            Italic != null ||
+            Strike != null ||
+            Underline != null ||
+            Color.HasValue;
+
         protected internal override ExcelDxfFontBase Clone()
         {
             return new ExcelDxfFontBase(_styles) { Bold = Bold, Color = Color.Clone(), Italic = Italic, Strike = Strike, Underline = Underline };
